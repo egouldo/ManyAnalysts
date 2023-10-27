@@ -1,0 +1,18 @@
+{
+  "hash": "dd609139dd3732d5604397405493c6f9",
+  "result": {
+    "markdown": "---\ntitle: \"Case Study Datasets\"\nformat: html\neditor: visual\ncode-fold: true\nauthor:\n  - name: Elliot Gould\nexecute:\n  freeze: auto  # re-render only when source changes\ntoc: false\nbibliography: ../ms/references.bib\n---\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(tidyverse)\nlibrary(ManyAnalysts)\nlibrary(GGally)\n```\n:::\n\n\n\nPairwise-correlation plots for the *Eucalyptus* and blue tit case-study data provided to analysts are shown in @fig-ggpairs-eucalyptus and @fig-ggpairs-bt, respectively. Plots were created with R package `GGally` [@barret2022].\n\n\n\n::: {.cell .fig-column-screen hash='SM4_case_study_datasets_cache/pdf/fig-ggpairs-eucalyptus_e18cea088dc70822353bdf8a3208167e'}\n\n```{.r .cell-code}\nManyAnalysts::euc_data %>%\n  select(where(is_double),\n         -Date, \n         -`Quadrat no`,\n         -Easting, \n         -Northing,\n         -`small*0.25+medium*1.25+large*2.5`,\n         -`average.proportion.of.plots.containing.at.least.one.euc.seedling.of.any.size`) %>%\n  GGally::ggpairs()\n```\n\n::: {.cell-output-display}\n![Pairwise correllation plot for all *Eucalyptus* dataset variables except for `Date`, `Quadrat no`, `Easting`, `Northing`.](SM4_case_study_datasets_files/figure-pdf/fig-ggpairs-eucalyptus-1.pdf){#fig-ggpairs-eucalyptus fig-pos='H'}\n:::\n:::\n\n::: {.cell .fig-column-screen hash='SM4_case_study_datasets_cache/pdf/fig-ggpairs-bt_089845c14e087c68bccb2601ecf9573c'}\n\n```{.r .cell-code}\nManyAnalysts::blue_tit_data %>%\n  naniar::replace_with_na_all(condition = ~ .x == \".\") %>% \n  mutate(across(c(contains(\"_ring\"), \n                  rear_nest_trt, \n                  hatch_year, \n                  hatch_nest_breed_ID,\n                  hatch_Area,\n                  hatch_Box,\n                  day14_measurer,\n                  contains(\"hatch_Box\"),\n                  starts_with(\"rear_\"),\n                  starts_with(\"hatch_nest\"),\n                  home_or_away,\n                  -rear_d0_rear_nest_brood_size,\n                  contains(\"manipulation\"),\n                  chick_sex_molec,\n                  Date_of_day14,\n                  `Extra-pair_paternity`,\n                  -rear_Cs_in,\n                  -rear_Cs_out,\n                  chick_survival_to_first_breed_season,\n                  -rear_Cs_at_start_of_rearing), \n                as.factor),\n         across(where(is.character), as.numeric),\n         across(c(rear_Cs_out,\n                  rear_Cs_in,\n                  rear_Cs_at_start_of_rearing),\n                as.integer)) %>% \n  select(where(is.numeric)) %>% \n  GGally::ggpairs() \n```\n\n::: {.cell-output-display}\n![Pairwise correlation plot of all numeric variables in blue tit case study dataset](SM4_case_study_datasets_files/figure-pdf/fig-ggpairs-bt-1.pdf){#fig-ggpairs-bt fig-pos='H'}\n:::\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {
+      "knitr": [
+        "{\"type\":\"list\",\"attributes\":{},\"value\":[]}"
+      ]
+    },
+    "preserve": null,
+    "postProcess": false
+  }
+}

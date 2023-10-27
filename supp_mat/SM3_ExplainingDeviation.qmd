@@ -1,0 +1,1695 @@
+---
+title: "Explaining Variation in Deviation Scores"
+format: html
+editor: visual
+code-fold: true
+number-sections: true
+execute:
+  freeze: auto  # re-render only when source changes
+bibliography: ../ms/references.bib
+---
+
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+```{r load-libs, include=TRUE,eval=TRUE,message=FALSE}
+library(targets)
+library(withr)
+library(here)
+library(tidyverse)
+library(performance)
+library(broom.mixed)
+library(gt)
+library(lme4)
+library(MuMIn)
+library(ManyEcoEvo)
+library(tidymodels)
+library(multilevelmod)
+
+set.seed(1234)
+```
+
+```{r load-targets, include=TRUE, eval=TRUE, warning=FALSE}
+# withr::with_dir(here::here(),
+#                 targets::tar_load(ManyEcoEvo_viz))
+# withr::with_dir(here::here(),
+#                 targets::tar_load(ManyEcoEvo_results))
+# withr::with_dir(here::here(),
+#                 targets::tar_load(ManyEcoEvo_yi_viz))
+# withr::with_dir(here::here(),
+#                 targets::tar_load(ManyEcoEvo_yi))
+# withr::with_dir(here::here(),
+#                 targets::tar_load(ManyEcoEvo_yi_results))
+```
+
+```{r define-fns, eval = TRUE}
+#TODO turn into own function and pull out of nested targets function and rm here
+fit_MA_mv <- function(effects_analysis, Z_colname, VZ_colname, estimate_type){
+  Zr <- effects_analysis %>%  pull({{Z_colname}})
+  VZr <- effects_analysis %>%  pull({{VZ_colname}})
+  mod <- ManyEcoEvo::fit_metafor_mv(estimate = Zr, 
+                        variance = VZr, 
+                        estimate_type = estimate_type, 
+                        data = effects_analysis)
+  return(mod)
+}
+#TODO I don't think we need the forest function plotting in this document
+plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
+  if(MA_mean == FALSE){
+    data <- filter(data, study_id != "overall")
+  }
+  
+  data <- data %>% 
+    group_by(study_id) %>% 
+    group_nest() %>% 
+    hoist(data, "estimate",.remove = FALSE) %>% 
+    hoist(estimate, y50 = 2) %>% 
+    select(-estimate) %>% 
+    unnest(data) %>% 
+    arrange(y50) %>% 
+    mutate(point_shape = case_when(str_detect(type, "summary") ~ "diamond",
+                                   TRUE ~ "circle"))
+  
+  p <- ggplot(data, aes(y = estimate, 
+                        x =  reorder(study_id, y50),
+                        ymin = conf.low, 
+                        ymax = conf.high,
+                        shape = point_shape,
+                        colour = estimate_type
+                        )) +
+    geom_pointrange(position = position_jitter(width = 0.1)) +
+    ggforestplot::theme_forest() +
+    theme(axis.line = element_line(linewidth = 0.10, colour = "black"),
+          axis.line.y = element_blank(),
+          text = element_text(family = "Helvetica")) +
+    guides(shape = "none", colour = "none") +
+    coord_flip() +
+    labs(y = "Standardised Out of Sample Predictions, Z",
+         x = element_blank()) +
+    scale_y_continuous(breaks = seq(from = round(min(data$conf.low)), to = round(max(data$conf.high)), by = 1),
+                       minor_breaks = seq(from = -4.5, to = 1.5, by = 0.5)) +
+    NatParksPalettes::scale_color_natparks_d("Glacier") 
+  
+  if(intercept == TRUE){
+    p <- p + geom_hline(yintercept = 0)
+  }
+  if(MA_mean == TRUE){
+    # p <- p + geom_hline(aes(yintercept = meta_analytic_mean), 
+    #                     data = data,
+    #                     colour = "#01353D", 
+    #                     linetype = "dashed")
+  }
+  
+  print(p)
+}
+
+#TODO I think we can delete this
+plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE){
+  if(MA_mean == FALSE){
+    data <- filter(data, study_id != "overall")
+  }
+  
+  plot_data <- data %>% 
+    group_by(study_id) %>% 
+    group_nest() %>% 
+    hoist(data, "estimate",.remove = FALSE) %>% 
+    hoist(estimate, y50 = 2) %>% 
+    select(-estimate) %>% 
+    unnest(data) %>% 
+    arrange(y50)
+  
+  p <- ggplot(plot_data, aes(y = estimate, 
+                        x =  reorder(study_id, y50),
+                        ymin = conf.low, 
+                        ymax = conf.high,
+                        # shape = type,
+                        colour = estimate_type
+                        )) +
+    geom_pointrange(position = position_dodge(width = 0.5)) +
+    ggforestplot::theme_forest() +
+    theme(axis.line = element_line(linewidth = 0.10, colour = "black"),
+          axis.line.y = element_blank(),
+          text = element_text(family = "Helvetica")) +
+    guides(shape = "none", colour = "none") +
+    coord_flip() +
+    labs(y = "Model estimated out of sample predictions",
+         x = element_blank()) +
+    scale_y_continuous(breaks = scales::breaks_extended(10)) +
+    NatParksPalettes::scale_color_natparks_d("Glacier") 
+  
+  if(intercept == TRUE){
+    p <- p + geom_hline(yintercept = 0)
+  }
+  if(MA_mean == TRUE){
+    p <- p +
+      geom_hline(aes(yintercept = plot_data %>%
+                       filter(type == "summary", estimate_type == "y25") %>%
+                       pluck("estimate")),
+                 data = data,
+                 colour = "#01353D",
+                 linetype = "dashed") +
+      geom_hline(aes(yintercept = plot_data %>%
+                       filter(type == "summary", estimate_type == "y50") %>%
+                       pluck("estimate")),
+                 data = data,
+                 colour = "#088096",
+                 linetype = "dashed") +
+      geom_hline(aes(yintercept = plot_data %>%
+                       filter(type == "summary", estimate_type == "y75") %>%
+                       pluck("estimate")),
+                 data = data,
+                 colour = "#58B3C7" ,
+                 linetype = "dashed")
+  }
+  
+  print(p)
+}
+
+create_model_workflow <- function(outcome, fixed_effects, random_intercepts){
+  # https://community.rstudio.com/t/programmatically-generate-formulas-for-lmer/8575
+  
+  # ---- roxygen example ----
+  # test_dat <- ManyEcoEvo_results$effects_analysis[[1]]  %>% 
+  # unnest(review_data) %>% 
+  #   select(study_id, 
+  #          starts_with("box_cox_abs_dev"), 
+  #          RateAnalysis, 
+  #          PublishableAsIs,
+  #          ReviewerId,
+  #          box_cox_var)
+  # 
+  # test_dat <- test_dat %>% 
+  #   janitor::clean_names() %>%
+  #   mutate_if(is.character, factor) %>% 
+  #   mutate(weight = importance_weights(1/test_dat$box_cox_var))
+  # create_model_workflow("box_cox_abs_deviation_score_estimate", 
+  #                       "publishable_as_is", 
+  #                       random_intercepts = c("study_id")) %>% 
+  #   fit(test_dat)
+  
+  # ---- Define random effects constructor function ----
+  randomify <- function(feats) {
+    paste0("(1|", feats, ")", collapse = " + ")
+  }
+  
+  # ---- Construct formula ----
+  
+  randomify <- function(feats) paste0("(1|", feats, ")", collapse = " + ")
+  fixed <- paste0(fixed_effects, collapse = " + ")
+  random <- randomify(random_intercepts)
+  
+  model_formula <- as.formula(paste(outcome, "~", fixed, "+", random))
+
+    # ---- Construct Workflow ----
+  model <- linear_reg() %>%
+    set_engine("lmer")
+
+  workflow_formula <-  workflow() %>%
+    add_variables(outcomes = outcome,
+                  predictors =  all_of(c(fixed_effects, random_intercepts))) %>%
+    add_model(model, formula = model_formula) %>% 
+    add_case_weights(weight)
+
+  return(workflow_formula)
+  
+}
+
+# Define Plotting Function
+plot_model_means_box_cox_cat <- function(dat, 
+                                         variable, 
+                                         predictor_means, 
+                                         new_order, 
+                                         title, 
+                                         back_transform = FALSE) {
+  dat <- mutate(dat, 
+                "{{variable}}" := # 
+                  fct_relevel(.f = {{variable}}, 
+                              new_order)
+  )
+  
+  if(back_transform == TRUE){
+    dat <- dat %>% 
+      mutate(box_cox_abs_deviation_score_estimate = 
+               sae::bxcx(unique(dat$lambda),
+                         x = box_cox_abs_deviation_score_estimate, InverseQ = TRUE))
+    
+    predictor_means <- predictor_means %>% 
+      as_tibble() %>% 
+      mutate(lambda = dat$lambda %>% unique()) %>%  
+      mutate(across(.cols = -PublishableAsIs,
+              ~ sae::bxcx(unique(dat$lambda),x = .x, InverseQ = TRUE)))
+  }
+  
+  p <- ggplot(dat, aes(x = {{variable}},
+                        y = box_cox_abs_deviation_score_estimate)) +
+    # Add base dat
+    geom_violin(aes(fill = {{variable}}),
+                trim = TRUE, 
+                # scale = "count", #TODO consider toggle on/off?
+                colour = "white") +
+    see::geom_jitter2(width = 0.05, alpha = 0.5) +
+    # Add pointrange and line from means
+    geom_line(dat = predictor_means, aes(y = Mean, group = 1), linewidth = 1) +
+    geom_pointrange(
+      dat = predictor_means,
+      aes(y = Mean, ymin = CI_low, ymax = CI_high),
+      linewidth = 1,
+      color = "white",
+      alpha = 0.5
+    ) +
+    # Improve colors
+    see::scale_fill_material_d(discrete = TRUE, 
+                               name = "",
+                               palette = "ice",
+                               labels = pull(dat, {{variable}}) %>% 
+                                 levels() %>% 
+                                 capwords(),
+                               reverse = TRUE) +
+    EnvStats::stat_n_text() +
+    see::theme_modern() +
+    theme(axis.text.x = element_text(angle = 90))
+  
+  if(back_transform == TRUE){
+    p <- p + 
+      labs(x = "Categorical Peer Review Rating", 
+         y = "Absolute Deviation from\n Meta-Anaytic Mean Zr") 
+  } else {
+    p <- p + labs(x = "Categorical Peer Review Rating", 
+         y = "Deviation from\nMeta-Analytic Mean Effect Size") 
+  }
+  
+  return(p)
+}
+
+possibly_check_convergence <- possibly(performance::check_convergence,
+                                       otherwise = NA)
+
+possibly_check_singularity <- possibly(performance::check_singularity,
+                                       otherwise = NA)
+
+# Define glm model checknig fun (my pr to performance:: https://github.com/easystats/performance/pull/605)
+check_convergence._glm <- function(x, ...){
+  isTRUE(x$fit$converged)
+}
+
+possibly_check_convergence_glm <- possibly(check_convergence._glm, 
+                                           otherwise = NA)
+
+# define plotting fun for walk plotting
+plot_continuous_rating <- function(plot_data){
+  plot_data %>% 
+    plot_cont_rating_effects(response = "box_cox_abs_deviation_score_estimate", 
+                             predictor = "RateAnalysis", 
+                             back_transform = FALSE,
+                             plot = FALSE) %>% 
+    pluck(2) +
+    ggpubr::theme_pubr() + 
+    ggplot2::xlab("Rating") + 
+    ggplot2::ylab("Deviation In Effect Size from Analytic Mean")
+}
+
+
+walk_plot_effects_diversity <- function(model, plot_data, back_transform = FALSE){
+  out_plot <- plot_effects_diversity(model, plot_data, back_transform) +
+    ggpubr::theme_pubr()
+  
+  return(out_plot)
+}
+
+plot_model_means_RE <- function(data, variable, predictor_means) {
+  p <- ggplot(data, aes(x = as.factor({{variable}}), 
+              y = box_cox_abs_deviation_score_estimate)) +
+  # Add base data
+  geom_violin(aes(fill = as.factor({{variable}})), color = "white") +
+  see::geom_jitter2(width = 0.05, alpha = 0.5) +
+  # Add pointrange and line from means
+  geom_line(data = predictor_means, aes(y = Mean, group = 1), linewidth = 1) +
+  geom_pointrange(
+    data = predictor_means,
+    aes(y = Mean, ymin = CI_low, ymax = CI_high),
+    linewidth = 1,
+    color = "white"
+  ) +
+  # Improve colors
+      scale_x_discrete(labels = c("0" = "No Random Effects", "1" = "Random Effects")) +
+  see::scale_fill_material(palette = "ice",
+                           discrete = TRUE, 
+                           labels = c("No Random Effects", "Random effects"), 
+                           name = "") +
+  see::theme_modern() +
+    EnvStats::stat_n_text() +
+  labs(x = "Random Effects Included", 
+       y = "Deviation from meta-analytic mean")+ 
+    guides(fill = guide_legend(nrow = 2)) +
+    theme(axis.text.x = element_text(angle = 90))
+  return(p)
+}
+
+poss_fit <- possibly(fit, otherwise = NA, quiet = FALSE)
+
+```
+
+## Transforming response variable for model fitting
+
+To aid in interpreting explanatory models where the response variable has been Box-Cox transformed, we plotted the transformation relationship for each of our analysis datasets (@fig-box-cox-transformations).
+Note that `timetk::step_box_cox()` directly optimises the estimation of the transformation parameter, $\lambda$, using the "Guerrero" method such that $\lambda$ minimises the coefficient of variation for sub series of a numeric vector (see `?timetk::step_box_cox()`, for further details see @timetk).
+Consequently, each dataset has its own unique value of the lambda parameter, and therefore a unique transformation relationship.
+
+```{r}
+#| label: fig-box-cox-transformations
+#| fig-cap: "Box-Coxtransformed absolute deviation scores plotted against (untransformed) absolute deviation scores."
+#| column: body-outset
+#| fig-height: 8
+#| message: false
+
+back_transformed_predictions <- 
+  ManyEcoEvo_yi %>% 
+  dplyr::mutate(data = 
+                  purrr::map(data, 
+                             ~ dplyr::filter(.x,
+                                             stringr::str_detect(response_variable_type, "constructed",                                                                       negate = TRUE)))) %>% 
+  prepare_response_variables_yi(estimate_type = "yi",
+                                param_table = ManyEcoEvo:::analysis_data_param_tables) %>% 
+  generate_yi_subsets()
+
+
+raw_mod_data_logged <- 
+  back_transformed_predictions %>% 
+  filter(dataset == "eucalyptus") %>%
+  group_by(estimate_type) %>% 
+  select(estimate_type, data) %>% 
+  unnest(data) %>% 
+  rename(study_id = id_col) %>% 
+  hoist(params, param_mean = list("value", 1), param_sd = list("value", 2)) %>% 
+  rowwise() %>% 
+  mutate(exclusion_threshold = param_mean + 3*param_sd) %>% 
+  filter(fit < exclusion_threshold) %>% 
+  mutate(log_vals = map2(fit, se.fit, log_transform, 1000)) %>% 
+  unnest(log_vals) %>%
+  select(study_id, 
+         TeamIdentifier,
+         estimate_type, 
+         starts_with("response_"), 
+         -response_id_S2, 
+         ends_with("_log")) %>% 
+  group_by(estimate_type) %>% 
+  nest()
+
+mod_data_logged <- raw_mod_data_logged %>% 
+  mutate(MA_mod = 
+           map(data, 
+               ~fit_MA_mv(.x, mean_log, std.error_log, "yi")))
+
+deviation_models_yi_euc <- 
+  raw_mod_data_logged %>% 
+  mutate(dataset = "eucalyptus", 
+         exclusion_set = "complete") %>% 
+  select(dataset, estimate_type, exclusion_set, data) %>%  # rearrange cols
+  left_join({ManyEcoEvo_yi %>% 
+      mutate(review_dat = map(data, select, id_col, review_data, mixed_model)) %>% 
+      select(dataset, review_dat, diversity_data)}, by = "dataset") %>% 
+  mutate(data = map(data, ~ rename(.x, 
+                                   id_col = study_id,
+                                   Z_logged = mean_log,
+                                   VZ_logged = std.error_log)), #required by compute_MA_inputs() and meta_analyse_dataset()
+         data = map2(data, review_dat, left_join, by = "id_col"),
+         diversity_data = # this step filters diversity_data according to matches in data, is also applied in prepare_yi
+           map2(.x = diversity_data, 
+                .y = data,
+                .f = ~ semi_join(.x, .y, by = "id_col") %>% distinct), 
+         .keep = "unused") %>% #drops cols that aren't mutated
+  ManyEcoEvo::compute_MA_inputs() %>% 
+  ManyEcoEvo::meta_analyse_datasets()
+
+transformation_plot_data <- 
+ManyEcoEvo_yi_results %>% 
+  ungroup %>% 
+  filter(exclusion_set == "complete", 
+         dataset == "blue tit") %>% 
+  bind_rows(deviation_models_yi_euc) %>% 
+  bind_rows(ManyEcoEvo_results %>%
+              filter(exclusion_set == "complete", publishable_subset == "All")) %>% 
+  select(dataset, estimate_type, effects_analysis) %>% 
+  hoist(effects_analysis, "abs_deviation_score_estimate",
+                               "box_cox_abs_deviation_score_estimate") %>% 
+  hoist(effects_analysis, "lambda", .simplify = TRUE, .transform = ~unique(.x)) %>% 
+  select(-effects_analysis) %>% 
+  unnest(cols = c(abs_deviation_score_estimate,
+                  box_cox_abs_deviation_score_estimate)) 
+
+transformation_plot_data %>% 
+    ggplot(aes(y = abs_deviation_score_estimate, 
+             x = box_cox_abs_deviation_score_estimate)) + 
+  geom_point() +
+  facet_grid(dataset~estimate_type, scales = "free") +
+  geom_label(aes(x = -Inf, y = Inf, 
+                 label = latex2exp::TeX(paste("$\\lambda =$", round(lambda, digits = 4)), output = "character"), 
+                 hjust = -0.2, vjust = 2), 
+             size = 4, parse = TRUE) +
+  theme_bw() +
+  xlab("Box-Cox transformed absolute deviation score") +
+  ylab("Absolute deviation score")
+```
+
+## Model Convergence and Singularity problems {#sec-convergence-singularity}
+
+During model fitting, especially during fitting of models with random effects using `lme4` [@bates2015], some models failed to converge while others were accompanied with console warnings of singular fit.
+However, the convergence checks from `lme4` are known to be too strict (see `?performance::check_convergence()` documentation for a discussion of this issue), consequently we checked for model warnings of convergence failure using the `check_convergence()` function from the `performance` package [@ludecke2021].
+For all models we double-checked that they did not have singular fit by using `performance::check_singularity`.
+Despite passing `performance::check_singularity()`, `parameters::parameters()` was unable to properly estimate SE and confidence intervals for the random effects of some models, which suggests singular fit.
+For all models we also checked whether the SE of random effects could be calculated, and if not, marked these models as being singular.
+Analyses of singularity and convergence are presented throughout this document under the relevant section-heading for the analysis type and outcome, i.e. effect size ($Z_r$) or out-of-sample predictions ($y_i$).
+
+## Deviation Scores as explained by Reviewer Ratings
+
+### Effect Sizes $Z_r$
+
+For models of deviation explained by categorical peer ratings, including random effects for both the effect ID and the reviewer ID resulted in models with singular fit for both blue tit and *Eucalyptus* datasets (@tbl-explore-Zr-deviation-random-effects-structure).
+For the *Eucalyptus* dataset, when a random effect was included for Reviewer ID only, the model passed the check with `performance::check_singularity()`, however, the SD and CI could not be estimated by `parameters::model_parameters()` with a warning stating this was likely due to singular fit.
+When fitting models of deviation explained by categorical peer ratings, we consequently included a random effect for Reviewer ID only (See @tbl-deviation-rating-estimates).
+
+For models of deviation explained by continuous peer-review ratings, when including both random effects for effect ID and Reviewer ID model fits were singular for both datasets (@tbl-explore-Zr-deviation-random-effects-structure).
+For the *Eucalyptus* dataset when including a random effect only for Reviewer ID and dropping the random effect for effect ID, this model passed the `performance::check_singularity()` check, however, however, the SD and CI could not be estimated by `parameters::model_parameters()` with a warning stating this was likely due to singular fit.
+Consequently, for both blue tit and *Euclayptus* datasets, we fitted and analysed models of deviation explained by continuous peer review ratings with a random effect for Effect ID only (See @tbl-deviation-rating-estimates).
+
+```{r}
+#| label: tbl-explore-Zr-deviation-random-effects-structure
+#| tbl-cap: 'Singularity and convergence checking outcomes for models of deviation in effect-sizes $Z_r$ explained by peer-review ratings for different random effect structures. Problematic checking outcomes are highlighted in red. '
+#| cache: true
+
+model <- linear_reg() %>%
+  set_engine("lmer")
+
+base_wf <- workflow() %>%
+  add_model(model)
+
+formula_study_id <- workflow() %>%
+  add_variables(outcomes = box_cox_abs_deviation_score_estimate, 
+                predictors =  c(publishable_as_is, study_id)) %>% 
+  add_model(model, formula = box_cox_abs_deviation_score_estimate ~ publishable_as_is + (1 | study_id ))
+
+formula_ReviewerId <- workflow() %>%
+  add_variables(outcomes = box_cox_abs_deviation_score_estimate, 
+                predictors =  c(publishable_as_is, reviewer_id)) %>% 
+  add_model(model, 
+            formula = box_cox_abs_deviation_score_estimate ~ publishable_as_is + (1 | reviewer_id ))
+
+formula_both <- workflow() %>%
+  add_variables(outcomes = box_cox_abs_deviation_score_estimate, 
+                predictors =  c(publishable_as_is, reviewer_id, study_id)) %>% 
+  add_model(model,
+            formula = box_cox_abs_deviation_score_estimate ~ publishable_as_is + (1 | study_id) + (1 | reviewer_id))
+
+
+# ---- Create DF for combinatorial model specification ----
+
+model_vars <- 
+  bind_rows(
+    tidyr::expand_grid(outcome = "box_cox_abs_deviation_score_estimate",
+                       fixed_effects = c("publishable_as_is", 
+                                         "rate_analysis"),
+                       random_intercepts = c("study_id", 
+                                             "reviewer_id")) %>% 
+      rowwise() %>% 
+      mutate(random_intercepts = as.list(random_intercepts)),
+    tidyr::expand_grid(outcome = "box_cox_abs_deviation_score_estimate",
+                       fixed_effects = c("publishable_as_is", 
+                                         "rate_analysis"),
+                       random_intercepts = c("study_id", 
+                                             "reviewer_id")) %>% 
+      group_by(outcome, fixed_effects) %>% 
+      reframe(random_intercepts = list(random_intercepts))
+  )
+
+# ----- Run all models for all combinations of dataset, exclusion_set, and publishable_subset ----
+# And Extract 
+
+
+all_model_fits <- 
+  model_vars %>% 
+  cross_join(., 
+             {ManyEcoEvo_results %>% 
+                 select(dataset, 
+                        exclusion_set, 
+                        estimate_type, 
+                        publishable_subset) %>% 
+                 filter(expertise_subset == "All") %>% 
+                 ungroup %>% 
+                 select(-expertise_subset)}) %>% 
+  left_join(., {  ManyEcoEvo_results %>% 
+      select(dataset, 
+             exclusion_set, 
+             estimate_type, 
+             publishable_subset, 
+             effects_analysis) %>% 
+      filter(expertise_subset == "All") %>% 
+      ungroup %>% 
+      select(-expertise_subset)},
+      by = join_by(dataset, 
+                   exclusion_set, 
+                   estimate_type,
+                   publishable_subset)) %>% 
+  ungroup %>% 
+  filter(publishable_subset == "All", 
+         exclusion_set == "complete") %>% 
+  mutate(effects_analysis = 
+            map(effects_analysis, 
+                mutate, 
+                weight = importance_weights(1/box_cox_var)),
+         effects_analysis = 
+           map(effects_analysis, 
+               ~ .x %>% 
+                 unnest(review_data) %>% 
+                 select(study_id, 
+                        starts_with("box_cox_abs_dev"), 
+                        RateAnalysis, 
+                        PublishableAsIs,
+                        ReviewerId,
+                        box_cox_var,
+                        weight) %>% 
+                 janitor::clean_names() %>%
+                 mutate_if(is.character, factor) 
+                 ),
+          model_workflows = pmap(.l = list(outcome, 
+                                          fixed_effects, 
+                                          random_intercepts), 
+                                .f = create_model_workflow),
+         fitted_mod_workflow = map2(model_workflows, effects_analysis, poss_fit), #NOT MEANT TO BE TEST DAT
+         fitted_model = map(fitted_mod_workflow, extract_fit_engine),
+         convergence = map_lgl(fitted_model, performance::check_convergence),
+         singularity = map_lgl(fitted_model, performance::check_singularity),
+         params = map(fitted_model, parameters::parameters)
+  ) %>% 
+  unnest_wider(random_intercepts, names_sep = "_") %>% 
+  select(-outcome, 
+         -model_workflows, 
+         -fitted_mod_workflow, 
+         -effects_analysis,
+         estimate_type) %>% 
+  replace_na(list(convergence = FALSE, singularity = TRUE)) 
+
+
+# If singularity == FALSE and convergence == TRUE, but the model appears here, then that's because
+# the SD and CI's couldn't be estimated by parameters::
+
+Zr_singularity_convergence <- 
+  all_model_fits %>% 
+  left_join({all_model_fits %>% 
+      unnest(params) %>% 
+      filter(Effects == "random") %>% 
+      filter(is.infinite(CI_high) | is.na(SE)) %>% 
+      distinct(fixed_effects, 
+               random_intercepts_1,
+               random_intercepts_2, 
+               dataset, 
+               estimate_type,
+               convergence, 
+               singularity) %>% 
+      mutate(SD_calc = FALSE)}) %>% 
+  mutate(SD_calc = ifelse(is.na(SD_calc), TRUE, SD_calc)) 
+
+# ----- new code showing ALL model fits not just bad fits
+
+Zr_singularity_convergence %>% 
+ select(-fitted_model, -params, -exclusion_set,	-publishable_subset, -estimate_type) %>% 
+  arrange(dataset,
+          fixed_effects,
+          random_intercepts_1,
+          random_intercepts_2
+          ) %>% 
+  mutate(across(starts_with("random"), 
+                ~ str_replace_all(.x, "_", " ") %>%
+                  Hmisc::capitalize() %>% 
+                  str_replace("id", "ID")),
+         dataset = case_when(dataset == "eucalyptus" ~ Hmisc::capitalize(dataset), TRUE ~ dataset)) %>% 
+  group_by(dataset) %>% 
+   gt::gt() %>% 
+  tab_style(
+    style = list(
+      cell_fill(color = scales::alpha("red", 0.6)),
+      cell_text(color = "white", weight = "bold")
+    ),
+    locations = list(
+      cells_body(columns = "singularity", rows = singularity == TRUE),
+      cells_body(columns = "convergence", rows = convergence == FALSE), #TODO why didn't work here??
+      cells_body(columns = "SD_calc", rows = SD_calc == FALSE)
+    )
+  ) %>% 
+  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
+                     locations = cells_body(columns = c("singularity", "convergence", "SD_calc"))) %>% 
+  gt::opt_stylize(style = 6, color = "gray") %>% 
+  gt::cols_label(dataset = "Dataset",
+                 fixed_effects = "Fixed Effect",
+                 singularity = "Singular Fit?",
+                 convergence = "Model converged?",
+                 SD_calc = "Can random effect SD be calculated?") %>% 
+  gt::tab_spanner(label = "Random Effects",
+                  columns = gt::starts_with("random")) %>% 
+  gt::sub_missing() %>% 
+  gt::cols_label_with(columns = gt::starts_with("random"),
+                      fn = function(x) paste0("")) %>% 
+  gt::tab_style(locations = 
+                  cells_body(rows = str_detect(dataset, "Eucalyptus"),
+                             columns = dataset),
+                style = cell_text(style = "italic")) %>% 
+  gt::text_transform(fn = function(x) str_replace(x, "publishable_as_is", "Categorical Peer Rating") %>% 
+                       str_replace(., "rate_analysis", "Continuous Peer Rating"),
+                     locations = cells_body(columns = c("fixed_effects")))
+```
+
+```{r}
+#| label: calculate-summary-stats-yi
+#| warning: false
+#| message: false
+
+plot_data_logged <- mod_data_logged %>% 
+  mutate(tidy_mod = map(.x = MA_mod,
+                        ~broom::tidy(.x,
+                                     conf.int = TRUE, 
+                                     include_studies = TRUE) %>% 
+                          rename(study_id = term))) %>% 
+  select(tidy_mod) %>% 
+  unnest(cols = c(tidy_mod)) 
+
+MA_yi_summary_stats <- # ALL ON logged RESPONSE SCALE for EUC, standardized response values for BT
+  plot_data_logged %>% 
+  mutate(response_scale = map2(estimate, std.error, log_back, 100)) %>% 
+  select(estimate_type, study_id, type, response_scale) %>% 
+  unnest(response_scale) %>% 
+  rename(estimate = mean_origin, conf.low = lower, conf.high = upper) %>% 
+  nest(tidy_mod = -estimate_type) %>% 
+  mutate(dataset = "eucalyptus") %>% 
+  bind_rows({
+    ManyEcoEvo_yi_results %>% 
+      ungroup() %>% 
+      filter(exclusion_set == "complete", dataset == "blue tit") %>% 
+      select(dataset, estimate_type, MA_mod, effects_analysis, -exclusion_set) %>% 
+      group_by(estimate_type, dataset) %>% 
+      transmute(tidy_mod = map(.x = MA_mod,
+                               ~broom::tidy(.x,
+                                            conf.int = TRUE, 
+                                            include_studies = TRUE) %>% 
+                                 rename(study_id = term)))
+  }) %>% 
+  mutate(MA_mean = map(tidy_mod, filter, type == "summary")) %>% 
+  hoist(MA_mean, 
+        mean = "estimate", 
+        MA_conf.low = "conf.low", 
+        MA_conf.high = "conf.high") %>% 
+  mutate(max_min_est = map(tidy_mod, 
+                           ~ filter(.x, type == "study") %>%
+                             summarise(max_est = max(estimate),
+                                       min_est = min(estimate)))) %>% 
+  mutate(max_min_CI = map(tidy_mod, 
+                          ~ filter(.x, type == "study") %>%
+                            summarise(max_upper_CI = max(conf.high),
+                                      min_lower_CI = min(conf.low)))) %>% 
+  unnest_wider(col = c(max_min_est, max_min_CI)) %>% 
+  ungroup %>% 
+  rows_update({plot_data_logged %>% #hells yes to this gem of a function!
+      mutate(dataset = "eucalyptus") %>% 
+      filter(type != "summary") %>% 
+      nest(tidy_mod = c(-estimate_type, -dataset))}, 
+      by = c("dataset", "estimate_type")) %>% 
+  mutate(no_effect = 
+           map_int(tidy_mod, 
+                   ~ filter(.x, 
+                            estimate >0 & conf.low <= 0 | estimate <0 & conf.high >= 0, 
+                            type == "study") %>% 
+                     nrow() ),
+         pos_sign = 
+           map_int(tidy_mod, 
+                   ~ filter(.x, estimate >0, conf.low > 0, 
+                            type == "study") %>% 
+                     nrow()),
+         neg_sign = 
+           map_int(tidy_mod, 
+                   ~ filter(.x, estimate < 0, conf.high < 0, 
+                            type == "study") %>% 
+                     nrow()),
+         total_effects = 
+           map_int(tidy_mod,
+                   ~ filter(.x, 
+                            type == "study") %>% 
+                     nrow()
+           )) %>% 
+  select(-tidy_mod, -MA_mean) %>% 
+  rename(MA_mean = mean)
+```
+
+### Out of sample predictions $y_i$
+
+```{r}
+#| label: yi-Euc
+#| message: false
+#| warning: false
+#| error: true
+
+euc_yi_results <- 
+  ManyEcoEvo::make_viz(deviation_models_yi_euc)
+
+yi_convergence_singularity <- 
+  ManyEcoEvo_yi_viz %>% 
+  filter(exclusion_set == "complete", 
+         dataset == "blue tit",
+         model_name %in% c("box_cox_rating_cat", 
+                           "box_cox_rating_cont")) %>% 
+  bind_rows({euc_yi_results %>% 
+      filter(model_name %in% 
+               c("box_cox_rating_cat", "box_cox_rating_cont"))}) %>% 
+  mutate(singularity = map_lgl(model, possibly_check_singularity),
+         convergence = map_lgl(model, possibly_check_convergence),
+         params = map(model, parameters::parameters)) %>% 
+  select(dataset, estimate_type, model_name, singularity, convergence, params) %>% 
+  mutate(model_name = forcats::as_factor(model_name),
+         model_name = forcats::fct_relevel(model_name, 
+                                           c("box_cox_rating_cat", 
+                                             "box_cox_rating_cont")),
+         model_name = forcats::fct_recode(model_name,
+                                          `Deviation explained by categorical ratings` = "box_cox_rating_cat",
+                                          `Deviation explained by continuous ratings` = "box_cox_rating_cont"),
+         dataset = case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
+                             TRUE ~ dataset)) %>% 
+  hoist(params, SD_calc = "SE",.remove = FALSE) %>% 
+  mutate(SD_calc = map_lgl(SD_calc, ~ is.na(.x) %>% any(.) %>% isFALSE(.)))
+
+yi_singularity_convergence_sorensen_mixed_mod <- 
+  ManyEcoEvo_yi_viz %>% 
+  bind_rows(euc_yi_results) %>% 
+  filter(exclusion_set == "complete", 
+         dataset == "blue tit",
+         model_name %in% c("sorensen_glm")) %>%
+  bind_rows({euc_yi_results %>% 
+      filter(model_name %in% c("sorensen_glm",
+                               "uni_mixed_effects"))}) %>% 
+  mutate(singularity = 
+           map_lgl(model, possibly_check_singularity),
+         convergence = 
+           map_lgl(model, possibly_check_convergence_glm),
+         params = map(model, parameters::parameters),
+         dataset = 
+           case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
+                             TRUE ~ dataset),
+         model_name = 
+           forcats::as_factor(model_name),
+         model_name = 
+           forcats::fct_relevel(model_name,
+                                c("sorensen_glm","uni_mixed_effects")),
+         model_name = forcats::fct_recode(model_name,
+                                          `Deviation explained by Sorensen's index` =  "sorensen_glm",
+                                          `Deviation explained by inclusion of random effects` =  "uni_mixed_effects")) %>% 
+  select(dataset, 
+         estimate_type, 
+         model_name, 
+         singularity, 
+         convergence,
+         params) %>% 
+  group_by(model_name) 
+```
+
+We fitted the same deviation models on the yi dataset that we fitted for the Zr dataset.
+However, while all models converged, models of deviation explained by categorical peer-ratings suffered from singular fit for the following datasets and estimate types: `r yi_convergence_singularity %>% filter(singularity == TRUE, str_detect(model_name, "categorical")) %>% unite("singular_models", dataset, estimate_type, sep = " - ") %>% pull(singular_models) %>% paste0(collapse = ", ")` (@tbl-yi-deviation-ratings-convergence-singularity).
+Results are therefore presented only for models with non-singular fit, converging for the following datasets and estimate types: `r yi_convergence_singularity %>% filter(singularity == FALSE, str_detect(model_name, "categorical")) %>% unite("singular_models", dataset, estimate_type, sep = " - ") %>% pull(singular_models) %>% paste0(collapse = ", ")` (@tbl-yi-deviation-ratings-convergence-singularity).
+
+```{r}
+#| label: tbl-yi-deviation-ratings-convergence-singularity
+#| tbl-cap: "Singularity and convergence checking for models of deviation in out-of-sample-predictions $y_i$ explained by peer-ratings."
+yi_convergence_singularity %>% 
+  select(-params) %>% 
+  group_by(model_name) %>% 
+  gt::gt(rowname_col = "dataset") %>% 
+   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
+                                       columns = dataset),
+                style = cell_text(style = "italic")) %>% 
+  gt::cols_label(dataset = "Dataset",
+                 estimate_type = "Estimate Type",
+                 singularity = "Singular Fit?",
+                 convergence = "Model converged?",
+                 SD_calc = "Can random effect SE be calculated?") %>% 
+  gt::opt_stylize(style = 6, color = "gray") %>% 
+  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
+                     locations = cells_body(columns = c("singularity",
+                                                        "convergence",
+                                                        "SD_calc")
+                                            )) %>% 
+  gt::text_transform(
+    locations = cells_stub(
+      rows = estimate_type != "y25"
+    ),
+    fn = function(x){
+      paste0("")
+    }
+  ) %>% 
+  gt::tab_style(locations = cells_stub(rows = str_detect(dataset, "Eucalyptus")),
+                style = cell_text(style = "italic")) %>% 
+  tab_style(
+    style = list(
+      cell_fill(color = scales::alpha("red", 0.6)),
+      cell_text(color = "white", weight = "bold")
+    ),
+    locations = list(
+      cells_body(columns = "singularity", rows = singularity == TRUE),
+      cells_body(columns = "convergence", rows = convergence == FALSE),
+      cells_body(columns = "SD_calc", rows = SD_calc == FALSE)
+    )
+  ) 
+```
+
+Group means and $95\%$ confidence intervals for different categories of peer-review rating are all overlapping (@fig-yi-deviation-cat-rating).
+The fixed effect of peer review rating also explains virtually no variability in $y_i$ deviation score (@tbl-yi-deviation-ratings-convergence-singularity).
+
+```{r}
+#| label: fig-yi-deviation-cat-rating
+#| fig-cap: "Violin plot of Box-Cox transformed deviation from meta-analytic mean as a function of categorical peer-review rating. Grey points for each rating group denote model-estimated marginal mean deviation, and error bars denote 95% CI of the estimate. **A** blue tit dataset, $y_{50}$ **B** blue tit dataset, $y_{75}$ **C** *Eucalyptus* dataset, $y_{50}$."
+#| message: false
+#| fig-height: 12
+#| fig-width: 7
+#| column: page-inset-right
+
+# Omit all singular models
+yi_violin_cat_plot_data <- 
+  ManyEcoEvo_yi_viz %>% 
+  filter(exclusion_set == "complete", #TODO NEED TO PULL OUT LAMBDA!
+         dataset == "blue tit",
+         model_name %in% c("box_cox_rating_cat")) %>% 
+  bind_rows({euc_yi_results %>% 
+      filter(model_name %in% c("box_cox_rating_cat"))}) %>% 
+  mutate( dataset = case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
+                              TRUE ~ dataset)) %>% 
+  semi_join({yi_convergence_singularity %>% # filter out singular models #TODO rm mods with NA/Inf/0 random effect SE
+      filter(singularity == FALSE, 
+             str_detect(model_name, "categorical")) }, 
+      by = join_by("dataset", "estimate_type")) %>% 
+  select(dataset:model, -exclusion_set, -model_name) %>% 
+  mutate(predictor_means = 
+           map(model, modelbased::estimate_means),
+         model_data = map(model, ~pluck(.x, "frame") %>% 
+                            drop_na() %>% 
+                            as_tibble()),
+         plot_name = paste(dataset, 
+                           estimate_type,
+                           "violin_cat",
+                           sep = "_")) %>% 
+     mutate(model_data = map(model_data, 
+                          .f = ~ mutate(.x, PublishableAsIs =
+                           str_replace(PublishableAsIs,
+                                       "publishable with ", "") %>%
+                           str_replace("deeply flawed and ", "") %>% 
+                           capwords())),
+         predictor_means = map(predictor_means,
+           .f = ~ mutate(.x, PublishableAsIs =
+                           str_replace(PublishableAsIs,
+                                       "publishable with ", "") %>%
+                           str_replace("deeply flawed and ", "") %>% 
+                           capwords()))) 
+
+yi_violin_cat_plot_data %>% 
+  pwalk(.l = list(.$model_data, .$predictor_means, .$plot_name),
+       .f = ~ plot_model_means_box_cox_cat(..1, 
+                                           PublishableAsIs, 
+                                           ..2,
+                                           new_order = 
+                                            c("Unpublishable",
+                                               "Major Revision",
+                                               "Minor Revision",
+                                               "Publishable As Is"),
+                                           ..3) %>% 
+         assign(x = ..3, value = ., envir = .GlobalEnv))
+
+library(patchwork)
+`blue tit_y50_violin_cat` /
+  `blue tit_y75_violin_cat` /
+     Eucalyptus_y50_violin_cat /
+  patchwork::plot_layout(guides = 'collect') +
+  patchwork::plot_annotation(tag_levels = 'A') &
+  theme(legend.position = "right")
+```
+
+Models of deviation explained by *continuous* ratinsg all converged, however models for the `r yi_convergence_singularity %>% filter(singularity == TRUE, dataset == "blue tit") %>% pull(estimate_type)` out-of-sample predictions were singular for both *Eucalyptus* and blue tit datasets.
+
+There was a lack of any clear relationships between quantitative review scores and $y_i$ deviation scores (@tbl-yi-deviation-parameter-estimates).
+Plots of these relationships indicated either no relationship or extremely weak positive relationships (@fig-yi-deviation-cont-rating).
+Recall that positive relationships mean that as review scores became more favorable, the deviation from the meta-analytic mean increased, which is surprising.
+Because almost no variability in $y_i$ deviation score was explained by reviewer ratings (@tbl-yi-deviation-parameter-estimates), this pattern does not appear to merit further consideration.
+
+```{r}
+#| label: calc-yi-deviation-cont-rating
+
+# Omit all singular models
+yi_cont_plot_data <-
+  ManyEcoEvo_yi_viz %>% 
+  filter(exclusion_set == "complete", 
+         dataset == "blue tit",
+         model_name %in% c("box_cox_rating_cont")) %>% 
+  bind_rows({euc_yi_results %>% 
+      filter(model_name %in% c("box_cox_rating_cont"))}) %>% 
+  mutate( dataset = case_when(str_detect(dataset,
+                                         "eucalyptus") ~
+                                "Eucalyptus",
+                              TRUE ~ dataset)) %>% 
+  semi_join({yi_convergence_singularity %>% 
+      filter(singularity == FALSE, SD_calc == TRUE, 
+             str_detect(model_name, "cont")) }, 
+      by = join_by("dataset", "estimate_type")) %>% 
+  select(dataset:model, -exclusion_set, -model_name) %>% 
+  mutate(plot_data = map(model, pluck, "frame")) 
+
+subfigcaps <- yi_cont_plot_data %>% 
+  mutate(dataset = 
+           case_when(dataset == "Eucalyptus" ~ paste0("*", dataset, "*"), 
+                     TRUE ~ Hmisc::capitalize(dataset))) %>%  
+  unite(plot_name, dataset, estimate_type, sep = ", ") %>% 
+  pull(plot_name)
+
+fig_cap_yi_deviation_cont_rating <- 
+  paste0("Scatterplots exaining Box-Cox transfored deviation fro the eta-analytic mean for $y_i$ estimates as a function of continuous ratings. Note that higher (less negative) values of the deviation score result from greater deviation from the meta-analytic mean.", subfigcaps %>% 
+           paste0(paste0(paste0("**", LETTERS[1:4], "**", sep = ""), sep = ": "), ., collapse = ", "), ".")
+```
+
+```{r}
+#| label: fig-yi-deviation-cont-rating
+#| message: false
+#| warning: false
+#| layout-nrow: 2
+#| fig-cap: !expr fig_cap_yi_deviation_cont_rating
+#| fig-height: 8
+yi_cont_plots <- 
+  yi_cont_plot_data$plot_data %>% 
+  map(.f =  ~ plot_continuous_rating(.x))
+
+patchwork::wrap_plots(yi_cont_plots,heights = 4, byrow = TRUE) +
+  patchwork::plot_annotation(tag_levels = 'A')
+```
+
+```{r}
+#| label: tbl-yi-deviation-model-params
+#| tbl-cap: "Parameter estimates for univariate models of Box-Cox transformed deviation from the mean $y_i$ estimate as a function of categorical peer-review rating, continuous peer-review rating, and Sorensen's index for blue tit and *Eucalyptus* analyses, and also for the inclusion of random effects for *Eucalyptus* analyses."
+#| column: page-right
+ManyEcoEvo_yi_viz %>%
+  filter(exclusion_set == "complete", 
+         dataset == "blue tit",
+         model_name %nin% c("MA_mod", "box_cox_rating_cat_no_int")) %>% 
+  bind_rows({euc_yi_results %>% 
+      filter(model_name %nin% c("MA_mod", "box_cox_rating_cat_no_int"))}) %>% 
+  mutate( dataset = case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
+                              TRUE ~ dataset),
+          model_name = forcats::as_factor(model_name) %>% 
+           forcats::fct_relevel(c("box_cox_rating_cat", 
+                                  "box_cox_rating_cont", 
+                                  "sorensen_glm", 
+                                  "uni_mixed_effects")) %>% 
+           forcats::fct_recode(`Deviation explained by categorical ratings` = "box_cox_rating_cat",
+                               `Deviation explained by continuous ratings` = "box_cox_rating_cont",
+                               `Deviation explained by Sorensen's index` =  "sorensen_glm",
+                               `Deviation explained by inclusion of random effects` =  "uni_mixed_effects")) %>% 
+  semi_join(
+    {bind_rows(yi_singularity_convergence_sorensen_mixed_mod, 
+               yi_convergence_singularity) %>% 
+        filter(singularity == FALSE, convergence == TRUE, SD_calc == TRUE) },
+    by = join_by("dataset", "estimate_type", "model_name")
+  ) %>% 
+  select(dataset, estimate_type, model_name, model) %>% 
+  mutate(tbl_output = map(model, parameters::parameters)
+  ) %>% 
+  select(dataset, 
+         estimate_type,
+         model_name, 
+         tbl_output) %>% 
+  unnest(tbl_output) %>% 
+  mutate(dataset = case_when(str_detect(dataset, "eucalyptus") ~ "*Eucalyptus*",
+                             TRUE ~ dataset),
+         Group = case_when(Group == "study_id" ~ "Effect ID",
+                           Group == "ReviewerId" ~ "Reviewer ID",
+                           TRUE ~ Group),
+         df_error = as.integer(df_error),
+         Parameter =  str_remove(Parameter, "PublishableAsIs") %>% 
+           str_replace("diversity", "Sorensen's") %>% 
+           str_replace_all(., "_", " ") %>%
+           str_remove(., "1") %>% 
+           Hmisc::capitalize() ) %>%
+  group_by(model_name) %>% 
+  arrange(desc(model_name), 
+          dataset, estimate_type) %>%
+  select(-CI) %>% 
+    dplyr::filter(dataset != "blue tit" | str_detect(model_name, "random", negate = TRUE)) %>% 
+   gt::gt(rowname_col = "dataset") %>% 
+  gt::fmt(columns = "p",
+          fns = function(x) gtsummary::style_pvalue(x)) %>% 
+  gt::cols_label(CI_low = gt::md("95\\%CI"),
+                 estimate_type = "Estimate Type") %>% 
+  gt::cols_label(df_error = "df") %>% 
+  gt::cols_merge(columns = starts_with("CI_"), 
+                 pattern = "[{1},{2}]") %>% 
+  gt::cols_move(columns = CI_low, after = SE) %>% 
+  gt::opt_stylize(style = 6, color = "gray") %>% 
+  gt::fmt(columns = c(Coefficient, SE, starts_with("CI_"), t) ,
+          rows = Parameter %nin% c("RateAnalysis", "SD (Observations)", "mixed_model1"),
+          fns = function(x) format(round(x, 2),nsmall = 2)) %>%
+  gt::fmt(columns = c(Coefficient, SE, t, starts_with("CI_")) ,
+          rows = Parameter %in% c("RateAnalysis", "SD (Observations)", "mixed_model1"),
+          fns = function(x) ifelse(x < 0.0009, 
+                                   format(x, nsmall = 2, digits = 1),
+                                   round(x, digits = 2))) %>%
+  gt::cols_move(columns = c(Effects, Group), after = Parameter) %>% 
+  gt::sub_missing(columns = c(Effects, Group, t, df_error, p), 
+                  missing_text = "") %>% 
+  gt::text_transform(fn = function(x) map(x, gt::md), 
+                     locations = gt::cells_row_groups()) %>% 
+   gt::text_transform(
+    locations = cells_stub(
+      rows = Parameter != "(Intercept)"
+    ),
+    fn = function(x){
+      paste0("")
+    }
+  ) %>% 
+  gt::fmt(columns = c(Coefficient, SE, t, starts_with("CI_")) ,
+          # rows = Parameter %in% c("RateAnalysis", "SD (Observations)", "mixed_model1"),
+          fns = function(x) ifelse(x < 0.0009, 
+                                   format(x, nsmall = 2, digits = 1),
+                                   round(x, digits = 2))) %>% 
+    gt::tab_style(locations = gt::cells_stub(rows = str_detect(dataset, "Eucalyptus")),
+                style = cell_text(style = "italic")) %>% 
+  gt::as_raw_html()
+
+```
+
+## Deviation scores as explained by the distinctiveness of variables in each analysis
+
+### Effect Sizes $Z_r$
+
+### Out of sample predictions $y_i$ {#sec-sorensen-yi}
+
+Given the convergence and singularity issues encountered with most other analyses, we also checked for convergence and singularity issues in models of deviation explained by Sorensen's similarity index for $y_i$ estimates (@tbl-deviation-similarity-convergence-singularity-yi).
+All models fitted without problem.
+
+```{r}
+#| label: calc-yi-sorensen-plots
+#| message: false
+#| warning: false
+yi_sorensen_plot_data <- 
+  ManyEcoEvo_yi_viz %>% 
+  filter(exclusion_set == "complete", 
+         dataset == "blue tit",
+         str_detect(model_name, "sorensen_glm")) %>% 
+  bind_rows({euc_yi_results %>% 
+      filter(model_name %in% c("sorensen_glm"))}) %>% 
+  mutate( dataset = case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
+                              TRUE ~ dataset)) %>% 
+  select(dataset, estimate_type, model_name, model) %>% 
+  semi_join(
+    {yi_singularity_convergence_sorensen_mixed_mod %>% 
+        filter(str_detect(model_name, "Sorensen"), 
+               singularity == FALSE)},
+    by = join_by("dataset", "estimate_type")
+  ) %>% 
+  mutate(dataset = case_when(dataset == "Eucalyptus" ~ paste0("*", dataset, "*"),
+                             TRUE ~ Hmisc::capitalize(dataset)),
+         plot_data = map(model, ~ pluck(.x, "fit", "data") %>% 
+                           rename(box_cox_abs_deviation_score_estimate = ..y))) %>% 
+  unite(plot_names, dataset, estimate_type, sep = ", ")
+
+yi_sorensen_subfigcaps <- 
+  yi_sorensen_plot_data$plot_names %>% 
+  paste0(paste0(paste0("**", LETTERS[1:4], "**", sep = ""), sep = ": "), ., collapse = ", ")
+
+yi_sorensen_fig_cap <- paste0("Scatter plots examining Box-Cox transformed deviation from the meta-analytic mean for $y_i$ estimates as a function of Sorensen's similarity index. Note that higher (less negative) values of the deviation score result from greater deviation from the meta-analytic mean. ",
+                              yi_sorensen_plot_data$plot_names %>% paste0(paste0(paste0("**", LETTERS[1:6], "**", sep = ""), sep = ": "), ., collapse = ", "),
+                              ".")
+```
+
+```{r}
+#| label: fig-yi-sorensen-plots
+#| fig-cap: !expr yi_sorensen_fig_cap
+#| layout-nrow: 2
+#| fig-height: 8
+#| message: false
+
+yi_sorensen_plots <- 
+  map2(.x = yi_sorensen_plot_data$model, 
+       .y = yi_sorensen_plot_data$plot_data,
+       .f = ~ walk_plot_effects_diversity(model = .x, plot_data = .y))
+
+patchwork::wrap_plots(yi_sorensen_plots,heights = 4, byrow = TRUE) +
+  patchwork::plot_annotation(tag_levels = 'A')
+```
+
+```{r}
+#| label: tbl-deviation-similarity-convergence-singularity-yi
+#| tbl-cap: "Singularity and convergence checks for models of deviation explained by Sorensen's similarity index and inclusion of random effects for out-of-sample predictions, $y_i$. Models of Deviation explained by inclusion of random effects are not presented for blue tit analyses because the number of models not using random effects was less than our preregistered threshold."
+#| warning: false
+#| message: false
+
+yi_singularity_convergence_sorensen_mixed_mod %>% 
+ filter(dataset != "blue tit" | str_detect(model_name, 
+                                            "random", 
+                                            negate = TRUE)) %>% 
+  select(-params) %>% 
+  gt::gt(rowname_col = "dataset") %>% 
+  gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
+                                       columns = dataset),
+                style = cell_text(style = "italic")) %>% 
+  gt::cols_label(dataset = "Dataset",
+                 estimate_type = "Estimate Type",
+                 singularity = "Singular Fit?",
+                 convergence = "Model converged?") %>% 
+  gt::opt_stylize(style = 6, color = "gray") %>% 
+  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
+                     locations = cells_body(columns = c("singularity",
+                                                        "convergence")
+                                            )) %>% 
+  gt::text_transform(
+    locations = cells_stub(
+      rows = estimate_type != "y25"
+    ),
+    fn = function(x){
+      paste0("")
+    }
+  ) %>% 
+  gt::tab_style(locations = cells_stub(rows = str_detect(dataset, "Eucalyptus")),
+                style = cell_text(style = "italic")) %>% 
+  tab_style(
+    style = list(
+      cell_fill(color = scales::alpha("red", 0.6)),
+      cell_text(color = "white", weight = "bold")
+    ),
+    locations = list(
+      cells_body(columns = "singularity", rows = singularity == TRUE),
+      cells_body(columns = "convergence", rows = convergence == FALSE)
+    )
+  ) 
+
+```
+
+## Deviation scores as explained by the inclusion of random effects
+
+### Out of sample predictions $y_i$
+
+There were only three blue tit analyses that did not include random effects, which is below the pre-registered threshold for fitting a model of the Box-Cox transformed deviation from the meta-analytic mean as a function of whether the analysis included random-effects.
+However, 16 *Eucalyptus* analyses included in the out-of-sample ($y_{i}$) results included only fixed effects, which crossed our pre-registered threshold.
+
+Consequently, we performed this analysis for the *Eucalyptus* dataset only, here we present results for the out of sample prediction $y_{i}$ results.
+There is consistent evidence of somewhat higher Box-Cox-transformed deviation values for models including a random effect, meaning the models including random effects averaged slightly higher deviation from the meta-analytic means.
+This is most evident for the $y_{50}$ predictions which both shows the greatest difference in Box-Cox transformed deviation values (@fig-yi-euc-deviation-RE-plots) and explains the most variation in $y_i$ deviation score (@tbl-yi-deviation-parameter-estimates, @tbl-yi-deviation-parameter-estimates).
+
+```{r}
+#| label: calc-yi-euc-deviation-RE-plots
+#| warning: false
+#| message: false
+
+yi_deviation_RE_plot_data <- 
+  euc_yi_results %>% 
+  filter(str_detect(model_name, "uni_mixed_effects")) %>%
+  select(dataset, estimate_type, model) %>% 
+  mutate(predictor_means = map(model, .f = ~ pluck(.x, "fit") %>% 
+                                 modelbased::estimate_means(.)),
+         plot_data = map(model, pluck, "fit", "data"),
+         plot_data = map(plot_data, 
+                         rename, 
+                         box_cox_abs_deviation_score_estimate = ..y)) %>% 
+  mutate(dataset = Hmisc::capitalize(dataset) %>% paste0("*", ., "*")) %>%
+  unite(plot_names, dataset, estimate_type, sep = ", ")
+
+yi_deviation_RE_plot_subfigcaps <- yi_deviation_RE_plot_data %>% 
+  pull(plot_names)
+
+yi_deviation_RE_plot_figcap <- 
+  paste0("Violin plot of Box-Cox transformed deviation from meta-analytic mean as a function of presence or absence of random effects in the analyst's model. White points for each rating group denote model-estimated marginal mean deviation, and error bars denote 95% CI of the estimate. Note that higher (less negative) values of Box-Cox transformed deviation result from greater deviation from the meta-analytic mean. ",
+         yi_deviation_RE_plot_data %>% 
+           pull(plot_names) %>% 
+           paste0(paste0(paste0("**", LETTERS[1:nrow(yi_deviation_RE_plot_data)], "**", sep = ""), sep = ": "), ., collapse = ", "),
+         ".")
+
+```
+
+```{r}
+#| label: fig-yi-euc-deviation-RE-plots
+#| fig-cap: !expr yi_deviation_RE_plot_figcap
+#| layout-nrow: 1
+#| fig-width: 8
+#| column: page-inset-right
+
+yi_deviation_RE_plots <- 
+  yi_deviation_RE_plot_data %>% 
+  map2(.x = .$plot_data, .y = .$predictor_means, 
+       .f = ~ plot_model_means_RE(.x, mixed_model, .y))
+
+patchwork::wrap_plots(yi_deviation_RE_plots, byrow = TRUE) +
+  patchwork::plot_annotation(tag_levels = 'A') +
+  patchwork::plot_layout(guides = 'collect') &
+  theme(legend.position = "bottom", axis.ticks = element_blank()) &
+  xlab(NULL)
+```
+
+## Multivariate Analysis
+
+### Effect Sizes $Z_r$
+
+```{r}
+#| label: multivariate-models-mod-summary
+
+# lmer(box_cox_abs_deviation_score_estimate ~ RateAnalysis + PublishableAsIs + mean_diversity_index + (1|study_id) + (1|ReviewerId), data = ManyEcoEvo_results$effects_analysis[[1]] %>% unnest(review_data)) 
+
+bt_multivar_mod <- lmer(box_cox_abs_deviation_score_estimate ~ RateAnalysis + PublishableAsIs + mean_diversity_index + mixed_model + (1|ReviewerId), 
+     data = ManyEcoEvo_results$effects_analysis[[1]] %>% 
+       unnest(review_data))
+
+euc_multivar_mod <- 
+lmer(box_cox_abs_deviation_score_estimate ~ RateAnalysis + PublishableAsIs + mean_diversity_index + mixed_model + (1|ReviewerId), 
+     data = ManyEcoEvo_results$effects_analysis[[2]] %>% 
+       unnest(review_data))
+
+bt_multivar_mod_R <- bt_multivar_mod %>% MuMIn::r.squaredGLMM()
+euc_multivar_mod_R <- euc_multivar_mod %>% MuMIn::r.squaredGLMM()
+bt_multivar_mod_sigma<- bt_multivar_mod %>% sigma()
+euc_multivar_mod_sigma<- euc_multivar_mod %>% sigma()
+```
+
+```{r}
+#| label: tbl-multivariate-models-coefs
+#| echo: false
+#| message: false
+#| column: page-right
+#| tbl-cap: "Parameter estimates from models explaining Box-Cox transformed deviation scores from the mean $Z_r$ as a function of continuous and categorical peer-review ratings in multivariate analyses. Standard Errors (SE), 95% Confidence Intervals (95%CI) are reported for all estimates, while t values, degrees of freedom and p-values are presented for fixed-effects."
+list(bt_multivar_mod, euc_multivar_mod) %>% 
+  set_names(c("blue tit", "eucalyptus")) %>% 
+  map_dfr(parameters::parameters, .id = "dataset") %>% 
+  group_by(dataset) %>% 
+  select(-CI) %>% 
+  mutate(dataset = str_replace(dataset, "eucalyptus", "*Eucalyptus*")) %>% 
+  gt::gt() %>% 
+  gt::fmt(columns = "p",
+          fns = function(x) gtsummary::style_pvalue(x, prepend_p = TRUE)) %>% 
+  gt::fmt(columns = function(x) rlang::is_bare_numeric(x),fns = function(x) round(x, 3))  %>% 
+  gt::cols_label(CI_low = gt::md("95\\%CI"),
+                 df_error = "df") %>% 
+  gt::cols_merge(columns = starts_with("CI_"), 
+                 pattern = "[{1},{2}]") %>% 
+  gt::cols_move(columns = CI_low, after = SE) %>% 
+  gt::opt_stylize(style = 6, color = "gray") %>% 
+  gt::cols_move(columns = c(Effects, Group), after = Parameter) %>% 
+  gt::text_transform(fn = function(x){
+    str_remove(x, "PublishableAsIs") %>% 
+      str_replace_all("_", " ") %>% 
+      str_replace("diversity", "Sorensen's") %>% 
+      Hmisc::capitalize()
+  },
+  locations = cells_body(columns = Parameter)) %>% 
+  gt::text_transform(fn = function(x) str_replace(x, "ReviewerId", "Reviewer ID")) %>% 
+    gt::text_transform(fn = function(x) map(x, gt::md), 
+                     locations = gt::cells_row_groups()) %>% 
+  gt::sub_missing(missing_text = "")
+
+multivar_mod_tidy <- list(bt_multivar_mod, euc_multivar_mod) %>% 
+  set_names(c("blue tit", "eucalyptus")) %>% 
+  map_dfr(broom.mixed::tidy, conf.int = TRUE, .id = "dataset") 
+```
+
+The multivariate models did a poor job of explaining how different from the meta-analytic mean each analysis would be.
+For the blue tit analyses the $R^{2}$ value for the whole model was `r round(bt_multivar_mod_R[1,2],2)` and for the fixed effects component was `r round (bt_multivar_mod_R[1,1],2)`, and the residual standard deviation for the model was `r round(bt_multivar_mod_sigma,2)`.
+Further, all of the fixed effects had 95% confidence intervals that overlaped 0.
+This evidence is all consistent with none of the predictor variables in this model (continuous review rating, categorical review rating, distinctiveness of variables included) having any meaningful effect on how far $Z_r$ estimates fell from the meta-analytic mean for the blue tit analyses.
+The pattern is largely similar for the *Eucalyptus* multivariate analysis, in which $R^{2}$ for the whole model was `r round(euc_multivar_mod_R[1,2],2)` and for the fixed effects component was `r round (euc_multivar_mod_R[1,1],2)`, and the residual standard deviation for the model was `r round(euc_multivar_mod_sigma,2)`.
+There is somewhat more of a hint of a pattern when examining the paramaeter estimates from the *Eucalyptus* analysis.
+In the case of the fixed effect of categorical reviewer ratings, analyses that were reviewed as 'publishable as is' and 'publishable with major revisions' appeared to produce results more different from the meta-analytic mean than those that were in the reference class of 'deeply flawed and unpublishable'.
+However, the estimates are very uncertain (Eucalyptus fixed effect for 'publishable as is' `r round(multivar_mod_tidy %>%  filter(str_detect(term, "as is"), dataset == "eucalyptus") %>% pull("estimate") ,2)` (95% CI `r round(multivar_mod_tidy %>%  filter(str_detect(term, "as is"), dataset == "eucalyptus") %>% pull(conf.low) ,2)`,`r round(multivar_mod_tidy %>%  filter(str_detect(term, "as is"), dataset == "eucalyptus") %>% pull(conf.high) ,2)`), and for 'publishable with major revision' `r round(multivar_mod_tidy %>%  filter(str_detect(term, "as is"), dataset == "blue tit") %>% pull(estimate) ,2)` (95% CI `r round(multivar_mod_tidy %>%  filter(str_detect(term, "as is"), dataset == "blue tit") %>% pull(conf.low) ,2)`,`r round(multivar_mod_tidy %>%  filter(str_detect(term, "as is"), dataset == "blue tit") %>% pull(conf.high) ,2)`).
+Further, the collinearity between the categorical and continuous ratings make interpretation of effects involving either of these two variables unclear, and so we recommend against interpreting the pattern observed here.
+We report this analysis only for the sake of transparency.
+
+```{r}
+#| label: tbl-multivariate-models-mod-summary
+#| message: false
+#| warning: false
+#| tbl-cap: "Model summary metrics for multivariate models. $\\sigma$ is the residual standard deviation, ICC is the intra-class correlation coefficient, and ${R}_{M}^2$ and ${R}_{C}^2$ are the marginal and conditional $R^2$, respectively."
+
+list(bt_multivar_mod, euc_multivar_mod) %>% 
+  set_names(c("blue tit", "eucalyptus")) %>% 
+  map_dfr(broom.mixed::glance, .id = "dataset") %>% 
+  left_join(list(bt_multivar_mod, euc_multivar_mod) %>% 
+              set_names(c("blue tit", "eucalyptus")) %>% 
+              map_dfr(performance::performance, .id = "dataset")) %>% 
+  select(dataset, starts_with("R2_"),  ICC, RMSE, Sigma) %>% 
+  mutate(dataset = case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
+                             TRUE ~ dataset)) %>% 
+  gt::gt() %>% 
+  gt::fmt(columns = function(x) rlang::is_bare_numeric(x),
+          fns = function(x) round(x, 2)) %>% 
+  gt::opt_stylize(style = 6, color = "gray") %>% 
+  gt::cols_label(R2_conditional = gt::md("$$R^{2}_{Conditional}$$"),
+                 R2_marginal = gt::md("$$R^{2}_{Marginal}$$"),
+                 Sigma = gt::md("$$\\sigma$$"),
+                 dataset = "Dataset") %>% 
+  gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
+                                       columns = dataset),
+                style = cell_text(style = "italic")) %>% 
+  gt::as_raw_html()
+```
+
+### Out of sample predictions $y_i$
+
+```{r}
+#| label: tbl-yi-multivar-singularity-convergence
+#| tbl-cap: "Singularity and convergence for all random effects structure combinations of multivariate models trialled for all subsets of out of sample predictions $y_i$."
+
+formula_study_id <- workflow() %>%
+  add_variables(outcomes = box_cox_abs_deviation_score_estimate, 
+                predictors =  c(publishable_as_is, 
+                                rate_analysis, 
+                                mean_diversity_index, 
+                                mixed_model, 
+                                study_id)) %>% 
+  add_model(model, 
+            formula = box_cox_abs_deviation_score_estimate ~ publishable_as_is + rate_analysis + mean_diversity_index + mixed_model + (1 | study_id ))
+
+formula_ReviewerId <- workflow() %>%
+  add_variables(outcomes = box_cox_abs_deviation_score_estimate, 
+                predictors =  c(publishable_as_is, 
+                                rate_analysis, 
+                                mean_diversity_index, 
+                                mixed_model,
+                                reviewer_id)) %>% 
+  add_model(model, 
+            formula = box_cox_abs_deviation_score_estimate ~ publishable_as_is + rate_analysis + mean_diversity_index + mixed_model + (1 | reviewer_id ))
+
+formula_both <- workflow() %>%
+  add_variables(outcomes = box_cox_abs_deviation_score_estimate, 
+                predictors =  c(publishable_as_is, 
+                                rate_analysis, 
+                                mean_diversity_index, 
+                                mixed_model,
+                                reviewer_id, 
+                                study_id)) %>% 
+  add_model(model,
+            formula = box_cox_abs_deviation_score_estimate ~ publishable_as_is + rate_analysis + mean_diversity_index + mixed_model + (1 | study_id) + (1 | reviewer_id))
+
+
+# ---- Create DF for combinatorial model specification ----
+possibly_parameters <- possibly(parameters::parameters, otherwise = NA)
+
+poss_extract_fit_engine <- possibly(extract_fit_engine, otherwise = NA)
+
+model_vars_multivar <- 
+  bind_rows(
+    tidyr::expand_grid(outcome = "box_cox_abs_deviation_score_estimate",
+                       random_intercepts = c("study_id", 
+                                             "reviewer_id")) %>% 
+      rowwise() %>% 
+      mutate(random_intercepts = as.list(random_intercepts)),
+    tidyr::expand_grid(outcome = "box_cox_abs_deviation_score_estimate",
+                       random_intercepts = c("study_id", 
+                                             "reviewer_id")) %>% 
+      group_by(outcome) %>% 
+      reframe(random_intercepts = list(random_intercepts))
+  ) %>% 
+  mutate(fixed_effects = list(c("publishable_as_is", 
+                                "rate_analysis", 
+                                "mean_diversity_index", 
+                                "mixed_model")))
+
+all_model_fits_multivar <- 
+  ManyEcoEvo_yi_results %>% 
+  filter(dataset == "blue tit", exclusion_set == "complete") %>% 
+  ungroup %>% 
+  select(dataset, estimate_type, effects_analysis) %>% 
+  bind_rows({deviation_models_yi_euc %>% 
+      ungroup %>% 
+      select(dataset, estimate_type, effects_analysis) }) %>% 
+  cross_join(model_vars_multivar) %>% 
+  mutate(effects_analysis = 
+           map(effects_analysis, 
+               mutate, 
+               weight = importance_weights(1/box_cox_var)),
+         effects_analysis = 
+           map(effects_analysis, 
+               ~ .x %>% 
+                 unnest(review_data) %>% 
+                 select(study_id, 
+                        starts_with("box_cox_abs_dev"), 
+                        RateAnalysis, 
+                        PublishableAsIs,
+                        ReviewerId,
+                        box_cox_var,
+                        weight,
+                        mean_diversity_index,
+                        mixed_model) %>% 
+                 janitor::clean_names() %>%
+                 mutate_if(is.character, factor) 
+           ),
+         model_workflows = pmap(.l = list(outcome, 
+                                          fixed_effects, 
+                                          random_intercepts), 
+                                .f = create_model_workflow),
+         fitted_mod_workflow = map2(model_workflows, 
+                                    effects_analysis, 
+                                    poss_fit), 
+         fitted_model = map(fitted_mod_workflow, poss_extract_fit_engine),
+         convergence = map_if(fitted_model, 
+                              ~ !is.na(.x),
+                              possibly_check_convergence) %>% 
+           as.logical(),
+         singularity = map_if(fitted_model, 
+                              ~ !is.na(.x),
+                              possibly_check_singularity) %>% 
+           as.logical(),
+         params = map_if(fitted_model, 
+                      ~ !is.na(.x),
+                      parameters::parameters),
+         fixed_effects = map_chr(fixed_effects, paste0, collapse = ", ")
+  ) %>% 
+  unnest_wider(random_intercepts, names_sep = "_") %>% 
+    select(-outcome, 
+         -model_workflows, 
+         -fitted_mod_workflow, 
+         -effects_analysis,
+         estimate_type) %>% 
+  replace_na(list(convergence = FALSE, singularity = TRUE)) 
+
+yi_multivar_singularity_convergence <- 
+  all_model_fits_multivar %>% 
+  left_join({all_model_fits_multivar %>% 
+      unnest(params) %>% 
+      filter(Effects == "random") %>% 
+      filter(is.infinite(CI_high) | is.na(SE)) %>% 
+      distinct(fixed_effects, 
+               random_intercepts_1,
+               random_intercepts_2, 
+               dataset, 
+               estimate_type,
+               convergence, 
+               singularity) %>% 
+      mutate(SD_calc = FALSE)}) %>% 
+  mutate(SD_calc = ifelse(is.na(SD_calc), TRUE, SD_calc))
+
+# If singularity == FALSE and convergence == TRUE, but the model appears here, then that's because
+# the SD and CI's couldn't be estimated by parameters::
+
+yi_multivar_singularity_convergence %>% 
+  select(-fixed_effects, -fitted_model, -params) %>% 
+  arrange(random_intercepts_1,
+          random_intercepts_2, 
+          dataset,
+          estimate_type) %>% 
+  mutate(across(starts_with("random"), 
+                ~ str_replace_all(.x, "_", " ") %>%
+                  Hmisc::capitalize() %>% 
+                  str_replace("id", "ID")),
+         dataset = str_replace(dataset, "eucalyptus", "*Eucalyptus*")) %>% 
+  group_by(dataset) %>% 
+  gt::gt() %>% 
+  tab_style(
+    style = list(
+      cell_fill(color = scales::alpha("red", 0.6)),
+      cell_text(color = "white", weight = "bold")
+    ),
+    locations = list(
+      cells_body(columns = "singularity", rows = singularity == TRUE),
+      cells_body(columns = "convergence", rows = convergence == FALSE), #TODO why didn't work here??
+      cells_body(columns = "SD_calc", rows = SD_calc == FALSE)
+    )
+  ) %>% 
+  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
+                     locations = cells_body(columns = c("singularity", "convergence", "SD_calc"))) %>% 
+  gt::opt_stylize(style = 6, color = "gray") %>% 
+  gt::cols_label(dataset = "Dataset",
+                 singularity = "Singular Fit?",
+                 convergence = "Model converged?",
+                 SD_calc = "Can random effect SE be calculated?") %>% 
+  gt::tab_spanner(label = "Random Effects",
+                  columns = gt::starts_with("random")) %>% 
+  gt::sub_missing() %>% 
+  gt::cols_label_with(columns = gt::starts_with("random"),
+                      fn = function(x) paste0("")) %>% 
+  gt::text_transform(fn = function(x) map(x, gt::md), locations = cells_row_groups())
+
+
+```
+
+For the blue tit analyses, models with Reviewer ID as the only random effect were the only models that converged, and that weren't singular (@tbl-yi-multivar-singularity-convergence).
+Conversely, of the different random effects structures we trialled for the Eucalyptus analyses, none successfully fitted, with models either failing to converge due to complete separation (`lme4::` error: `Downdated VtV is not positive definite`, see <https://github.com/lme4/lme4/issues/483>).
+Consequently we did not fit multivariate models on out-of-sample predictions for the *Eucalyptus* dataset, and instead deviated from our intended plan of using random effects for both Effect ID and Reviewer ID, and instead using a single random effect for Reviewer ID (@tbl-BT-yi-multivar-summary, @tbl-BT-yi-multivar-params).
+
+```{r}
+#| label: tbl-BT-yi-multivar-summary
+#| tbl-cap: "Model summary statistic for non-singular, converging multivariate models fit to out-of-sample predictions for blue tit dataset"
+yi_multivar_singularity_convergence %>% 
+  select(-params) %>% 
+  filter(dataset == "blue tit", 
+         random_intercepts_1 == "reviewer_id") %>%
+  mutate(broom_summary = 
+           map(fitted_model, broom.mixed::glance), 
+         performance_summary = 
+           map(fitted_model, performance::performance)) %>% 
+  unnest(c(performance_summary, 
+           broom_summary), names_sep = "-") %>% 
+  select(dataset, estimate_type, 
+         contains(c("RMSE", "sigma",  "R2", "nobs", "ICC")), 
+         -contains("AICc")) %>% 
+  rename_with(~ str_remove(.x, "performance_summary-") %>%
+                str_remove("broom_summary-")) %>% 
+  select(-sigma) %>% 
+  gt::gt() %>% 
+  gt::fmt(columns = function(x) rlang::is_bare_numeric(x),
+          fns = function(x) round(x, 3)) %>% 
+  gt::opt_stylize(style = 6, color = "gray") %>% 
+  gt::cols_label(R2_conditional = gt::md("$$R^{2}_{Conditional}$$"),
+                 R2_marginal = gt::md("$$R^{2}_{Marginal}$$"),
+                 Sigma = gt::md("$$\\sigma$$"),
+                 dataset = "Dataset",
+                 nobs = gt::md("$N_{Obs}$")) %>% 
+  gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
+                                       columns = dataset),
+                style = cell_text(style = "italic")) %>% 
+   gt::cols_hide(dataset) %>% 
+  gt::as_raw_html()
+  
+
+```
+
+```{r}
+#| label: tbl-BT-yi-multivar-params
+#| tbl-cap: "Parameter estimates for converging, non-singular multivariate models fitted to blue tit out-of-sample-prediction estimates $y_i$."
+#| column: page-right
+
+yi_multivar_singularity_convergence %>% 
+  filter(dataset == "blue tit", 
+         random_intercepts_1 == "reviewer_id") %>% 
+  select(estimate_type, params) %>% 
+  unnest(params) %>% 
+  relocate(c(Effects, Group), .after = Parameter) %>% 
+  group_by() %>% 
+  gt::gt(rowname_col = "estimate_type") %>% 
+   gt::text_transform(fn = function(x) str_replace(x, "publishable_as_is", "Categorical Peer Rating") %>% 
+                       str_replace(., "rate_analysis", "Continuous Peer Rating") %>% 
+                        str_replace(., "mean_diversity_index", "Sorensen's Index") %>% 
+                        str_replace(., "mixed_model", "Mixed Model"),
+                     locations = cells_body(columns = c("Parameter"))) %>% 
+   gt::opt_stylize(style = 6, color = "gray") %>% 
+   gt::sub_missing(missing_text = "") %>% 
+  gt::fmt(columns = function(x) rlang::is_bare_numeric(x),
+          fns = function(x) format(x, digits = 3)) %>% 
+      gt::fmt(columns = "p",
+          fns = function(x) gtsummary::style_pvalue(x)) %>% 
+  gt::text_transform(
+    locations = cells_stub(
+      rows = Parameter != "(Intercept)"
+    ),
+    fn = function(x){
+      paste0("")
+    }
+  ) %>% 
+  gt::text_transform(locations = cells_body(columns = Group, rows = Group == "reviewer_id"),
+                     fn = function(x){
+                       str_replace(x, "_", " ") %>% 
+                         Hmisc::capitalize() %>% 
+                         str_replace("id", "ID")
+                     }) %>% 
+  
+  gt::cols_label(CI_low = gt::md("95\\%CI")) %>% 
+  gt::cols_label(df_error = "df") %>% 
+  gt::cols_merge(columns = starts_with("CI_"), 
+                 pattern = "[{1},{2}]") %>% 
+  gt::cols_hide("CI")
+```
+
+## Model Summary Metrics for out-of-sample predictions $y_i$ {#sec-yi-summary}
+
+```{r}
+#| label: calc-tbl-yi-deviation-parameter-estimates
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+all_yi_deviation_models <-   ManyEcoEvo_yi_viz %>%
+  filter(exclusion_set == "complete", 
+         dataset == "blue tit",
+         model_name %nin% c("MA_mod", "box_cox_rating_cat_no_int")) %>% 
+  bind_rows({euc_yi_results %>% 
+      filter(model_name %nin% c("MA_mod", "box_cox_rating_cat_no_int"))}) %>% 
+  mutate( dataset = case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
+                              TRUE ~ dataset)) %>% 
+  semi_join(
+    {yi_singularity_convergence_sorensen_mixed_mod %>% 
+        filter(singularity == FALSE)},
+    by = join_by("dataset", "estimate_type")
+  )
+
+tbl_data_yi_deviation_model_params <- all_yi_deviation_models %>% 
+  mutate(perf = map(model, performance::performance),
+         mod_sum_stats = map(model, broom.mixed::glance)
+         ) %>% 
+  select(dataset, estimate_type, model_name, perf, mod_sum_stats) %>% 
+   hoist(mod_sum_stats, "nobs") %>% 
+  hoist(perf, "R2", "R2_conditional", "R2_marginal", "ICC", "Sigma", "RMSE") %>% 
+  select(-perf, -mod_sum_stats) %>% 
+   mutate(model_name = forcats::as_factor(model_name),
+         model_name = forcats::fct_relevel(model_name, 
+                                           c("box_cox_rating_cat", 
+                                             "box_cox_rating_cont", 
+                                             "sorensen_glm", 
+                                             "uni_mixed_effects")),
+         model_name = forcats::fct_recode(model_name,
+                                         `Deviation explained by categorical ratings` = "box_cox_rating_cat",
+                                         `Deviation explained by continuous ratings` = "box_cox_rating_cont",
+                                         `Deviation explained by Sorensen's index` =  "sorensen_glm",
+                                         `Deviation explained by inclusion of random effects` =  "uni_mixed_effects")) %>% 
+  group_by(model_name) %>% 
+  relocate("R2", .before = starts_with("R2_")) 
+```
+
+```{r}
+#| label: tbl-yi-deviation-parameter-estimates
+#| message: false
+#| warning: false
+#| tbl-cap: "Model summary metrics for models of Box-Cox transformed deviation from the mean $y_i$ estimate as a function of categorical peer-review rating, continuous peer-review rating, and Sorensen's index for blue tit and *Eucalyptus* analyses, and also for the inclusion of random effects for *Eucalyptus* analyses. Coefficient of determination, $R^2$, is reported for models of deviation as a function of Sorensen diversity scores and presence of random effects, while $R^{2}_{Conditional}$, $R^{2}_{Marginal}$ and the intra-class correlation (ICC) are reported for models of deviation as explained by peer-review ratings. For all models the residual standard deviation $\\sigma$, root mean squared error (RMSE) were calculated. The number of observations ($N_{Obs.}$) is displayed for reference."
+#| column: page-inset-right
+tbl_data_yi_deviation_model_params %>% 
+  dplyr::filter(dataset != "blue tit" | str_detect(model_name, "random", negate = TRUE)) %>% 
+  gt::gt(rowname_col = "dataset") %>% 
+  gt::opt_stylize(style = 6, color = "gray") %>% 
+  gt::sub_missing(missing_text = "") %>% 
+  gt::fmt(columns = function(x) rlang::is_bare_numeric(x),
+          fns = function(x) format(x, digits = 3)) %>% 
+  gt::cols_label(dataset = "Dataset",
+                 R2 = gt::md("$$R^2$$"),
+                 R2_conditional = "$$R^{2}_{Conditional}$$",
+                 R2_marginal = "$$R^{2}_{Marginal}$$",
+                 Sigma = "$$\\sigma$$",
+                 nobs = "$$N_{Obs.}$$",
+                 estimate_type = "Prediction Scenario") %>% 
+  gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
+                                       columns = dataset),
+                                      style = cell_text(style = "italic")) %>% 
+  gt::text_transform(
+    locations = cells_stub(
+      rows = estimate_type != "y25"
+    ),
+    fn = function(x){
+      paste0("")
+    }
+  ) %>% 
+  gt::tab_style(locations = gt::cells_stub(rows = str_detect(dataset, "Eucalyptus")),
+                style = cell_text(style = "italic"))
+```

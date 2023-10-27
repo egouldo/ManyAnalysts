@@ -1,0 +1,726 @@
+---
+title: "Effect Size Analysis"
+format: html
+editor: visual
+number-sections: true
+code-fold: true
+execute:
+  freeze: auto  # re-render only when source changes
+---
+
+```{r load-libs, include=TRUE,eval=TRUE,message=FALSE}
+library(targets)
+library(withr)
+library(here)
+library(tidyverse)
+library(performance)
+library(broom.mixed)
+library(gt)
+library(lme4)
+library(MuMIn)
+library(ManyEcoEvo)
+library(ggrepel)
+set.seed(1234)
+```
+
+```{r}
+#| label: load-data
+#| include: true
+#| eavl: true
+#| warning: false
+#| message: false
+
+ManyEcoEvo_results <- 
+  ManyEcoEvo_results %>% 
+  mutate(effects_analysis = 
+           map(effects_analysis, 
+               rename, 
+               id_col = study_id)) #%>% 
+  # mutate_at(c("data", 
+  #             "diversity_data", 
+  #             "diversity_indices", 
+  #             "effects_analysis"),
+  #           .funs = ~ map(.x, anonymise_teams,
+  #                         TeamIdentifier_lookup))
+
+
+```
+
+## Meta-analysis
+
+### Effect Sizes $Z_r$
+
+#### Effect of categorical review rating
+
+The figures below (@fig-euc-cat-ratings-MA,@fig-bt-cat-ratings-MA) shows the fixed effect of categorical review rating on deviation from the meta-analytic mean.
+There is very little difference in deviation for analyses in any of the review categories.
+It is worth noting that each analysis features multiple times in these figures corresponding to the multiple reviewers that provided ratings.
+
+```{r fig-euc-cat-ratings-MA, echo = FALSE, warning = FALSE, message = FALSE, fig.cap = "Orchard plot of meta-analytic model fitted to all eucalyptus analyses with a fixed effect for categorical peer-review ratings, and random effects for analyst ID and reviewer ID. Black circles denote coefficient mean for each categorical publishability rating. Thick error bars represent 95% confidence intervals and whiskers indicate 95% prediction intervals. Effect sizes are represented by circles and their size corresponds to the precision of the estimate.", fig.height=5, fig.width=8}
+orchard_publishability <- function(dat){
+  rma_mod_rating <-  
+    metafor::rma.mv(yi = Zr, 
+                    V = VZr, 
+                    data = dat, 
+                    control = list(maxiter = 1000),mods = ~ PublishableAsIs,
+                    sparse = TRUE,
+                    random = list(~1|response_id, ~1|ReviewerId)) 
+  
+  orchaRd::orchard_plot(rma_mod_rating, 
+                        mod = "PublishableAsIs", 
+                        group = "id_col", 
+                        xlab = "Standardised Correlation Coefficient (Zr)",
+                        cb = TRUE,angle = 45) 
+}
+
+ManyEcoEvo_results$effects_analysis[[2]] %>% 
+    filter(Zr > -4) %>% 
+    unnest(review_data) %>% 
+    select(Zr, VZr, id_col, PublishableAsIs, ReviewerId, response_id) %>% 
+    mutate(PublishableAsIs = forcats::as_factor(PublishableAsIs) %>% 
+               forcats::fct_relevel(c("deeply flawed and unpublishable", 
+                                      "publishable with major revision", 
+                                      "publishable with minor revision", 
+                                      "publishable as is" ))) %>% 
+    orchard_publishability() +
+    theme(text = element_text(size = 20),axis.text.y = element_text(size = 20)) +
+    scale_x_discrete(labels=c("Deeply Flawed\n & Unpublishable", "Publishable With\n Major Revision", "Publishable With\n Minor Revision", "Publishable\n As Is"))
+```
+
+```{r fig-bt-cat-ratings-MA, echo = FALSE, warning = FALSE, message = FALSE, fig.cap = "Orchard plot of meta-analytic model fitted to all blue tit analyses with a fixed effect for categorical peer-review ratings, and random effects for analyst ID and reviewer ID. Black circles denote coefficient mean for each categorical publishability rating. Thick error bars represent 95% confidence intervals and whiskers indicate 95% prediction intervals. Effect sizes are represented by circles and their size corresponds to the precision of the estimate.", fig.height=5, fig.width=8}
+
+ManyEcoEvo_results$effects_analysis[[1]] %>% 
+#    filter(Zr > -4) %>% 
+    unnest(review_data) %>% 
+    select(Zr, VZr, id_col, PublishableAsIs, ReviewerId, response_id) %>% 
+    mutate(PublishableAsIs = forcats::as_factor(PublishableAsIs) %>% 
+               forcats::fct_relevel(c("deeply flawed and unpublishable", 
+                                      "publishable with major revision", 
+                                      "publishable with minor revision", 
+                                      "publishable as is" ))) %>% 
+    orchard_publishability() +
+    theme(text = element_text(size = 20),axis.text.y = element_text(size = 20)) +
+    scale_x_discrete(labels=c("Deeply Flawed\n & Unpublishable", "Publishable With\n Major Revision", "Publishable With\n Minor Revision", "Publishable\n As Is"))
+```
+
+#### Post-hoc analysis: Exploring the effect of removing analyses with poor peer-review ratings on heterogeneity
+
+In @fig-all-forest-plots-Zr we display the results of our post-hoc analysis, examining the effect of removing analyses that were reviewed at least once as being 'unpublishable', 'unpublishable' or requiring 'major revisions', as compared with retaining the full set of analyses.
+Removing these analyses from the blue tit data had little impact on the overall amount of deviation or the distribution of the results.
+For the *Eucalytpus* analyses, removing 'unpublishable' analyses meant dropping the outlier 'Brooklyn-2-2-1' which made a substantial difference to the amount of observerd deviation from the meta-analytic mean.
+
+```{r}
+#| label: fig-all-forest-plots-Zr
+#| column: body-outset-right
+#| fig-cap: "Forest plots of meta-analytic estimated standardized effect sizes ($Zr$, blue circles) and their 95% confidence intervals for each effect size included in the meta-analysis model. The meta-analytic mean effect size is denoted by a black triangle and a dashed vertical line, with error bars also representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0, indicating no relationship between the test variable and the response variable. The left side of each panel shows the analysis team names (anonymous arbitrary names assigned by us), each followed by three numbers. The first number is the submission ID (some analyst teams submitted results to us on >1 submission form), the second number is the analysis ID (some analyst teams included results of >1 analysis in a given submission), and the third number is the effect ID (some analysts submitted values for >1 effect per analysis). Thus, each row in each forest plot is uniquely identified, but it is possible to determine which effects come from which analyses and which analysis teams. The plots in the top row depict effects from analyses of blue tit data, and the bottom row plots depict effects from analyses of Eucalyptus data. The right-most plots depict all usable effect sizes. The, plots on the left side exclude effects from analysis sets that received at least one rating of “unpublishable” from peer reviewers, and the plots in the middle exclude effects from analysis sets that received at least one rating of either “unpublishable” or “major revision” from peer reviewers."
+#| message: false
+#| echo: false
+#| fig-height: 14
+#| fig-width: 10
+# TeamIdentifier_lookup <- read_csv(here::here("data-raw/metadata_and_key_data/TeamIdentifierAnonymised.csv"))
+
+plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
+  if (MA_mean == FALSE){
+    data <- filter(data, Parameter != "overall")
+  }
+  
+  p <- ggplot(data, aes(y = estimate, 
+                        x =  term, 
+                        ymin = conf.low, 
+                        ymax = conf.high,
+                        shape = point_shape,
+                        colour = parameter_type)) +
+    geom_pointrange(fatten = 2) +
+    ggforestplot::theme_forest() +
+    theme(axis.line = element_line(linewidth = 0.10, 
+                                   colour = "black"),
+          axis.line.y = element_blank(),
+          text = element_text(family = "Helvetica")#,
+          # axis.text.y = element_blank()
+    ) +
+    guides(shape = "none", colour = "none") +
+    coord_flip() +
+    ylab(bquote(Standardised~Effect~Size~Z[r])) +
+    xlab(element_blank()) +
+    # scale_y_continuous(breaks = c(-4,-3,-2,-1,0,1),
+    # minor_breaks = seq(from = -4.5, to = 1.5, by = 0.5)) +
+    NatParksPalettes::scale_color_natparks_d("Glacier")
+  
+  if(intercept == TRUE){
+    p <- p + geom_hline(yintercept = 0)
+  }
+  if(MA_mean == TRUE){
+    p <- p + geom_hline(aes(yintercept = meta_analytic_mean), 
+                        data = data,
+                        colour = "#01353D", 
+                        linetype = "dashed")
+  }
+  
+  return(p)
+}
+
+publishable_subsets_forest_data <- 
+  ManyEcoEvo_viz %>% 
+  filter(model_name == "MA_mod",
+         exclusion_set == "complete",
+         expertise_subset == "All") %>% 
+  select(ends_with("set"), model, -expertise_subset) %>%  
+  mutate(plot_data = 
+           map(model, 
+               .f = 
+                 ~broom::tidy(.x, 
+                              conf.int = TRUE, 
+                              include_studies = TRUE) %>% 
+                 mutate(Parameter = 
+                          forcats::fct_reorder(term, estimate))),
+         meta_analytic_mean = 
+           map_dbl(plot_data, 
+                   ~ filter(.x, 
+                            Parameter == "overall") %>% 
+                     pull(estimate))) %>% 
+  select(dataset, 
+         publishable_subset, 
+         plot_data, 
+         meta_analytic_mean) %>% 
+  unnest(cols = c("plot_data")) %>% 
+  mutate(parameter_type = 
+           case_when(
+             str_detect(Parameter, "overall") ~ "mean",
+             TRUE ~ "study"))  %>% 
+  group_by(dataset, publishable_subset) %>%
+dplyr::mutate(point_shape = 
+                         ifelse(stringr::str_detect(term, "overall"), 
+                                "diamond", 
+                                "circle")) 
+
+# publishable_subsets_forest_data <- 
+#   publishable_subsets_forest_data %>% 
+#    rename(id_col = term) %>% 
+#   group_by(type) %>%  
+#   group_split() %>% 
+#   set_names(., publishable_subsets_forest_data$type %>%  unique) %>% 
+#   # map_if(.x = ., names(.) == "study",
+#   #        .f = ~ anonymise_teams(.x, TeamIdentifier_lookup)) %>% 
+#   bind_rows() %>% 
+#   rename(term = id_col)
+
+library(tidytext)
+
+tidy_overall_labeller <- . %>% 
+  str_split("_") %>% 
+  flatten_chr() %>% 
+  pluck(1)
+
+tidy_forest_labels <- Vectorize(tidy_overall_labeller)
+
+publishable_subsets_forest_data %>% 
+  group_by(dataset, publishable_subset) %>% 
+  mutate(term = case_when(term == "overall" ~ 
+                            paste(term, 
+                                   dataset, 
+                                   publishable_subset,
+                                  sep = "_"), 
+                          TRUE ~ term),
+         dataset = case_when(dataset == "blue tit" ~ "Blue tit",
+                              dataset == "eucalyptus" ~ "Eucalyptus",
+                              TRUE ~ NA)) %>% 
+  arrange(across(.cols = c(type, estimate)),
+          .by_group = TRUE) %>% 
+  rowid_to_column() %>% 
+  mutate(term = reorder(term, rowid),
+         publishable_subset = 
+           case_when(publishable_subset == "All" ~ 
+                       "All analyses",
+                     publishable_subset == "data_flawed" ~ 
+                       "'Unpublishable'\nremoved",
+                     publishable_subset == "data_flawed_major" ~ 
+                       "'Unpublishable' &\n'Major Revisions'\nremoved",
+                     TRUE ~ "")) %>%  
+  plot_forest() +
+  scale_x_reordered(labels =  tidy_forest_labels) +
+  ggh4x::facet_nested(dataset ~ publishable_subset,
+                      independent = "y", 
+                      scales = "free")
+```
+
+#### Post-hoc analysis: Exploring the effect of excluding estimates in which we had reduced confidence
+
+For each dataset (blue tit, *Eucalyptus*), we created a second, more conservative version, that excluded effects based on estimates of $df$ that we considered less reliable (@tbl-Zr-exclusion-subsetting).
+We compared the outcomes of analyses of the primary dataset (constituted according to our registered plan) with the outcomes of analyses of the more conservative version of the dataset.
+We also compared results from analyses of both of these versions of the dataset to versions with our post-hoc removal of outliers described in the main text.
+Our more conservative exclusions (based on unreliable estimates of $df$) had minimal impact on the meta-analytic mean for both blue tit and *Eucalyptus* analyses, regardless of whether outliers were excluded (@tbl-Zr-exclusion-subsetting).
+
+```{r}
+#| label: tbl-Zr-exclusion-subsetting
+#| tbl-cap: "Estimated meta-analytic mean, standard error, and 95% confidence intervals, from analyses of the primary data set, the more conservative version of the dataset which excluded effects based on less reliable estimates of $df$, and both of these datasets with outliers removed."
+ManyEcoEvo_viz %>% 
+    dplyr::filter(estimate_type == "Zr", 
+                  model_name == "MA_mod") %>% 
+  hoist(tidy_mod_summary) %>% 
+  unnest(tidy_mod_summary) %>% 
+    filter(publishable_subset == "All", expertise_subset == "All") %>% 
+  select(-publishable_subset, -expertise_subset) %>% 
+  select(dataset, 
+         exclusion_set, 
+         estimate, 
+         std.error, 
+         statistic, 
+         p.value, 
+         starts_with("conf")) %>% 
+  mutate(exclusion_set = 
+           case_when(exclusion_set == "complete" ~ 
+                       "Primary dataset",
+                     exclusion_set == "complete-rm_outliers" ~ 
+                       "Primary dataset, outliers removed",
+                     exclusion_set == "partial" ~ 
+                       "Conservative exclusions",
+                     TRUE ~ "Conservative exclusions, outliers removed")) %>% 
+group_by(exclusion_set) %>% 
+  gt::gt() %>% 
+  gt::opt_stylize(style = 6, color = "gray") %>% 
+  gt::fmt(columns = "p.value",
+          fns = function(x) gtsummary::style_pvalue(x, prepend_p = FALSE)) %>% 
+  gt::fmt_number(columns = c(-p.value, -dataset)) %>% 
+  gt::cols_label(estimate = gt::md("$$\\hat\\mu$$"), 
+                 std.error = gt::md("$$SE[\\hat\\mu]$$"),
+                 conf.low = gt::md("95\\%CI")) %>% 
+  gt::cols_merge(columns = starts_with("conf"), 
+                 pattern = "[{1},{2}]") %>% 
+  gt::cols_move(columns = conf.low, after = std.error) 
+```
+
+```{r plot-forest-outlier-sm}
+plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE ){
+  if(MA_mean == FALSE){
+    data <- filter(data, term != "Overall")
+  }
+  
+    p <- ggplot(data, aes(y = term, 
+                        x =  estimate, 
+                        ymin = conf.low, 
+                        ymax = conf.high,
+                        # shape = point_shape,
+                        colour = parameter_type)) +
+    geom_pointrange() +
+    ggforestplot::theme_forest() +
+    theme(axis.line = element_line(size = 0.10, colour = "black"),
+          axis.line.y = element_blank(),
+          text = element_text(family = "Helvetica"),
+          axis.text.y = element_blank()) +
+    guides(shape = "none", colour = "none") +
+    coord_flip() +
+    labs(y = "Standardised Effect Size, Zr",
+         x = element_blank()) +
+    scale_x_continuous(breaks = c(-4,-3,-2,-1,0,1),
+                       minor_breaks = seq(from = -4.5, to = 1.5, by = 0.5)) +
+    NatParksPalettes::scale_color_natparks_d("Glacier")
+    
+    if(intercept == TRUE){
+      p <- p + geom_hline(yintercept = 0)
+    }
+    if(MA_mean == TRUE){
+      p <- p + geom_hline(aes(yintercept = meta_analytic_mean), 
+                          data = data,
+                          colour = "#01353D", 
+                          linetype = "dashed")
+    }
+    
+  return(p)
+}
+
+
+```
+
+```{r}
+#| label: euc-Zr-outliers-sm
+#| echo: true
+#| warning: false
+#| message: false
+complete_euc_data <- 
+  ManyEcoEvo_viz %>% 
+  filter(exclusion_set == "complete", 
+         estimate_type == "Zr", 
+         model_name == "MA_mod",
+         dataset == "eucalyptus",
+         publishable_subset == "All") %>% 
+  select(model) %>% 
+  mutate(plot_data = map(model, 
+                         .f = ~ broom::tidy(.x, 
+                                            conf.int = TRUE, 
+                                            include_studies = TRUE) %>% 
+                           dplyr::mutate(point_shape = 
+                                           ifelse(stringr::str_detect(term, "overall"), 
+                                                  "diamond", 
+                                                  "circle"),
+                                         Parameter = 
+                                           forcats::fct_reorder(term, 
+                                                                estimate) %>% 
+                                           forcats::fct_reorder(., 
+                                                                point_shape,
+                                                                .desc = TRUE))
+  ),
+  meta_analytic_mean = map_dbl(plot_data, 
+                               ~ filter(.x, Parameter == "overall") %>% 
+                                 pull(estimate))) %>% 
+  select(plot_data, meta_analytic_mean) %>% 
+  unnest(cols = c("plot_data")) %>% 
+  mutate(parameter_type = case_when(str_detect(Parameter, "overall") ~ "mean",
+                                    TRUE ~ "study"))
+
+# complete_euc_data <- 
+#   complete_euc_data %>% 
+#   rename(id_col = term) %>% 
+#   group_by(type) %>%  
+#   group_split() %>% 
+#   set_names(., complete_euc_data$type %>%  unique) %>% 
+#   # map_if(.x = ., names(.) == "study",
+#          # .f = ~ anonymise_teams(.x, TeamIdentifier_lookup)) %>% 
+#   bind_rows() %>% 
+#   rename(term = id_col)
+
+min_outlier_euc <- complete_euc_data %>% 
+  filter(type == "study") %>% 
+  slice_min(estimate, n = 3) %>% 
+  pull(term)
+
+sample_size_euc_Zr <- ManyEcoEvo_results %>% 
+    filter(exclusion_set == "complete", dataset == "eucalyptus") %>% 
+    pluck("data", 1) %>% 
+    select(id_col, sample_size) %>% 
+    rename(term = id_col) %>% 
+    mutate(sample_size = as.numeric(sample_size))
+
+mean_n_euc_Zr <- sample_size_euc_Zr %>% 
+  drop_na(sample_size) %>% 
+  pull(sample_size) %>% 
+  mean() %>% 
+  round(2)
+
+N_outliers_Zr_euc <- sample_size_euc_Zr %>% 
+  filter(term %in% min_outlier_euc) %>% 
+   arrange(desc(sample_size))
+```
+
+#### Post-hoc analysis: Exploring the effect of including only analyses conducted by analysis teams with at least one member self-rated as "highly proficient" or "expert" in conducting statitistical analyses in their research area
+
+```{r}
+#| label: fig-forest-plot-expertise
+#| fig-cap: 'Estimated meta-analytic mean effect size ($Z_r$), standard error, and 95% confidence intervals, from analyses of the primary data set with at least one member self-rated as "highly proficient" or "expert" in conducting statistical analyses in their research area.'
+#| fig-subcap: 
+#| - "Blue tit dataset analyses"
+#| - "*Eucalyptus* dataset analyses"
+
+plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
+  if (MA_mean == FALSE){
+    data <- filter(data, Parameter != "overall")
+  }
+  
+  p <- ggplot(data, aes(y = estimate, 
+                        x =  term, 
+                        ymin = conf.low, 
+                        ymax = conf.high,
+                        shape = parameter_type,
+                        colour = parameter_type)) +
+    geom_pointrange(fatten = 2) +
+    ggforestplot::theme_forest() +
+    theme(axis.line = element_line(linewidth = 0.10, colour = "black"),
+          axis.line.y = element_blank(),
+          text = element_text(family = "Helvetica")#,
+          # axis.text.y = element_blank()
+    ) +
+    guides(shape = guide_legend(title = NULL), 
+           colour = guide_legend(title = NULL)) +
+    coord_flip() +
+    ylab(bquote(Standardised~Effect~Size~Z[r])) +
+    xlab(element_blank()) +
+    # scale_y_continuous(breaks = c(-4,-3,-2,-1,0,1),
+    # minor_breaks = seq(from = -4.5, to = 1.5, by = 0.5)) +
+    NatParksPalettes::scale_color_natparks_d("Glacier")
+  
+  if(intercept == TRUE){
+    p <- p + geom_hline(yintercept = 0)
+  }
+  if(MA_mean == TRUE){
+    p <- p + geom_hline(aes(yintercept = meta_analytic_mean), 
+                        data = data,
+                        colour = "#01353D", 
+                        linetype = "dashed")
+  }
+  
+  return(p)
+}
+
+bt_experts_only <- 
+  ManyEcoEvo_viz %>% 
+  filter(exclusion_set == "complete", 
+         estimate_type == "Zr", 
+         model_name == "MA_mod",
+         dataset == "blue tit",
+         publishable_subset == "All", 
+         expertise_subset == "expert") %>% 
+  select(model) %>% 
+  mutate(plot_data = map(model, 
+                         .f = ~ broom::tidy(.x, 
+                                            conf.int = TRUE, 
+                                            include_studies = TRUE)%>% 
+                           dplyr::mutate(point_shape = 
+                                           ifelse(stringr::str_detect(term, "overall"), 
+                                                  "diamond", 
+                                                  "circle"),
+                                         Parameter = 
+                                           forcats::fct_reorder(term, 
+                                                                estimate) %>% 
+                                           forcats::fct_reorder(., 
+                                                                point_shape,
+                                                                .desc = TRUE))
+  ),
+  meta_analytic_mean = map_dbl(plot_data, 
+                               ~ filter(.x, Parameter == "overall") %>% 
+                                 pull(estimate))) %>% 
+  select(plot_data, meta_analytic_mean) %>% 
+  unnest(cols = c("plot_data")) %>% 
+  mutate(parameter_type = case_when(str_detect(Parameter, "overall") ~ "mean",
+                                    TRUE ~ "study")) 
+
+# bt_experts_only <- 
+#   bt_experts_only %>% 
+#   rename(id_col = term) %>% 
+#   group_by(type) %>%  
+#   group_split() %>% 
+#   set_names(., bt_experts_only$type %>%  unique) %>% 
+#   # map_if(.x = ., names(.) == "study",
+#          # .f = ~ anonymise_teams(.x, TeamIdentifier_lookup)) %>% 
+#   bind_rows() %>% 
+#   rename(term = id_col)
+
+bt_forest_experts <- bt_experts_only %>% 
+  arrange(desc(type)) %>% 
+  mutate(type = forcats::as_factor(type)) %>% 
+  group_by(type) %>% 
+  arrange(desc(estimate),.by_group = TRUE) %>% 
+  mutate(term = forcats::as_factor(term),
+         point_shape = case_when(str_detect(type, "summary") ~ "mean",
+                                 TRUE ~ "study")) %>% 
+  plot_forest(intercept = TRUE, MA_mean = TRUE) +
+  theme(axis.text.x = element_text(size = 15), 
+        axis.title.x = element_text(size = 15),
+        axis.text.y = element_blank()
+  ) +
+  scale_y_continuous(limits = c(-1.6, 0.65)) 
+
+euc_experts_only <- 
+  ManyEcoEvo_viz %>% 
+  filter(exclusion_set == "complete", 
+         estimate_type == "Zr", 
+         model_name == "MA_mod",
+         dataset == "eucalyptus",
+         publishable_subset == "All",
+         expertise_subset == "expert") %>% 
+  select(model) %>% 
+  mutate(plot_data = map(model, 
+                         .f = ~ broom::tidy(.x, 
+                                            conf.int = TRUE, 
+                                            include_studies = TRUE) %>% 
+                           dplyr::mutate(point_shape = 
+                                           ifelse(stringr::str_detect(term, "overall"), 
+                                                  "diamond", 
+                                                  "circle"),
+                                         Parameter = 
+                                           forcats::fct_reorder(term, 
+                                                                estimate) %>% 
+                                           forcats::fct_reorder(., 
+                                                                point_shape,
+                                                                .desc = TRUE))
+  ),
+  meta_analytic_mean = map_dbl(plot_data, 
+                               ~ filter(.x, Parameter == "overall") %>% 
+                                 pull(estimate))) %>% 
+  select(plot_data, meta_analytic_mean) %>% 
+  unnest(cols = c("plot_data")) %>% 
+  mutate(parameter_type = case_when(str_detect(Parameter, "overall") ~ "mean",
+                                    TRUE ~ "study"))
+
+
+# euc_experts_only <- 
+#   euc_experts_only %>% 
+#   rename(id_col = term) %>% 
+#   group_by(type) %>%  
+#   group_split() %>% 
+#   set_names(., euc_experts_only$type %>%  unique) %>% 
+#   # map_if(.x = ., names(.) == "study",
+#          # .f = ~ anonymise_teams(.x, TeamIdentifier_lookup)) %>% 
+#   bind_rows() %>% 
+#   rename(term = id_col)
+
+euc_forest_experts <- euc_experts_only %>% 
+  arrange(desc(type)) %>% 
+  mutate(type = forcats::as_factor(type)) %>% 
+  group_by(type) %>% 
+  arrange(desc(estimate),.by_group = TRUE) %>% 
+  mutate(term = forcats::as_factor(term),
+         point_shape = case_when(str_detect(type, "summary") ~ "mean",
+                                 TRUE ~ "study")) %>% 
+  plot_forest(intercept = TRUE, MA_mean = TRUE) +
+  theme(axis.text.x = element_text(size = 15), 
+        axis.title.x = element_text(size = 15),
+        axis.text.y = element_blank()
+  ) +
+  scale_y_continuous(limits = c(-5, 1), 
+                     breaks = c(-5, -4, -3, -2, -1, 0, 1) )
+
+# ---- Extract Viz & Summary Stats
+
+bt_forest_experts
+
+euc_forest_experts
+```
+
+### Out of sample predictions $y_i$
+
+#### Non-truncated $y_{i}$ meta-analysis forest plot
+
+Below is the non-truncated version of @fig-euc-yi-forest-plot showing a forest plot of the out-of-sample predictions, $y_{i}$, on the response-scale (stems counts), for *Eucalyptus* analyses, showing the full error bars of all model estimates.
+
+```{r}
+#| label: fig-euc-yi-forest-plot-full
+#| fig-cap: "Forest plot of meta-analytic estimated out of sample  predictions, $y_{i}$, on the response-scale (stems counts), for *Eucalyptus* analyses. Circles represent individual analysis estimates. Triangles represent the meta-analytic mean for each prediction scenario. Navy blue coloured points correspond to $y_{25}$ scenario, blue coloured points correspond to the $y_{50}$ scenario, while light blue points correspond to the $y_{75}$ scenario. Error bars are 95% confidence intervals. Outliers (observations more than 3SD above the mean) have been removed prior to model fitting."
+#| fig-height: 8
+#| echo: true
+#| message: false
+
+plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE, y_zoom = numeric(2L)){
+  if(MA_mean == FALSE){
+    data <- filter(data, study_id != "overall")
+  }
+  
+  plot_data <- data %>% 
+    group_by(study_id) %>% 
+    group_nest() %>% 
+    hoist(data, "estimate",.remove = FALSE) %>% 
+    hoist(estimate, y50 = 2) %>% 
+    select(-estimate) %>% 
+    unnest(data) %>% 
+    arrange(desc(type)) %>% 
+    mutate(type = forcats::as_factor(type)) %>% 
+    group_by(type) %>% 
+    arrange(desc(y50),.by_group = TRUE) %>% 
+    mutate(study_id = forcats::as_factor(study_id),
+           point_shape = case_when(str_detect(type, "summary") ~ "diamond",
+                                   TRUE ~ "circle"))
+  
+  p <- ggplot(plot_data, aes(y = estimate, 
+                        x =  study_id,
+                        ymin = conf.low, 
+                        ymax = conf.high,
+                        # shape = type,
+                        shape = point_shape,
+                        colour = estimate_type
+                        )) +
+    geom_pointrange(position = position_dodge(width = 0.5)) +
+    ggforestplot::theme_forest() +
+    theme(axis.line = element_line(linewidth = 0.10, colour = "black"),
+          axis.line.y = element_blank(),
+          text = element_text(family = "Helvetica")) +
+    guides(shape = "none", colour = "none") +
+    coord_flip(ylim = y_zoom) +
+    labs(y = "Model estimated out of sample predictions, stem counts",
+         x = element_blank()) +
+    scale_y_continuous(breaks = scales::breaks_extended(10)) +
+    NatParksPalettes::scale_color_natparks_d("Glacier") 
+  
+  if(intercept == TRUE){
+    p <- p + geom_hline(yintercept = 0)
+  }
+  if(MA_mean == TRUE){
+    p <- p +
+      geom_hline(aes(yintercept = plot_data %>%
+                       filter(type == "summary", estimate_type == "y25") %>%
+                       pluck("estimate")),
+                 data = data,
+                 colour = "#01353D",
+                 linetype = "dashed") +
+      geom_hline(aes(yintercept = plot_data %>%
+                       filter(type == "summary", estimate_type == "y50") %>%
+                       pluck("estimate")),
+                 data = data,
+                 colour = "#088096",
+                 linetype = "dashed") +
+      geom_hline(aes(yintercept = plot_data %>%
+                       filter(type == "summary", estimate_type == "y75") %>%
+                       pluck("estimate")),
+                 data = data,
+                 colour = "#58B3C7" ,
+                 linetype = "dashed")
+  }
+  
+  print(p)
+}
+
+# TODO put into R/ and build into package to call!
+fit_MA_mv <- function(effects_analysis, Z_colname, VZ_colname, estimate_type){
+  Zr <- effects_analysis %>%  pull({{Z_colname}})
+  VZr <- effects_analysis %>%  pull({{VZ_colname}})
+  mod <- ManyEcoEvo::fit_metafor_mv(estimate = Zr, 
+                        variance = VZr, 
+                        estimate_type = estimate_type, 
+                        data = effects_analysis)
+  return(mod)
+}
+
+back_transformed_predictions <- 
+  ManyEcoEvo_yi %>% 
+  dplyr::mutate(data = 
+                  purrr::map(data, 
+                             ~ dplyr::filter(.x,
+                                             stringr::str_detect(response_variable_type, "constructed",                                                                       negate = TRUE)))) %>% 
+  prepare_response_variables_yi(estimate_type = "yi",
+                                param_table = ManyEcoEvo:::analysis_data_param_tables) %>% 
+  generate_yi_subsets()
+
+
+raw_mod_data_logged <- 
+  back_transformed_predictions %>% 
+  filter(dataset == "eucalyptus") %>%
+  group_by(estimate_type) %>% 
+  select(estimate_type, data) %>% 
+  unnest(data) %>% 
+  rename(study_id = id_col) %>% 
+  hoist(params, param_mean = list("value", 1), param_sd = list("value", 2)) %>% 
+  rowwise() %>% 
+  mutate(exclusion_threshold = param_mean + 3*param_sd) %>% 
+  filter(fit < exclusion_threshold) %>% 
+  mutate(log_vals = map2(fit, se.fit, log_transform, 1000)) %>% 
+  unnest(log_vals) %>%
+  select(study_id, 
+         TeamIdentifier,
+         estimate_type, 
+         starts_with("response_"), 
+         -response_id_S2, 
+         ends_with("_log")) %>% 
+  group_by(estimate_type) %>% 
+  nest()
+  
+
+mod_data_logged <- raw_mod_data_logged %>% 
+  mutate(MA_mod = 
+           map(data, 
+               ~fit_MA_mv(.x, mean_log, std.error_log, "yi")))
+
+
+plot_data_logged <- mod_data_logged %>% 
+  mutate(tidy_mod = map(.x = MA_mod,
+                        ~broom::tidy(.x,
+                                     conf.int = TRUE, 
+                                     include_studies = TRUE) %>% 
+                          rename(study_id = term))) %>% 
+  select(tidy_mod) %>% 
+  unnest(cols = c(tidy_mod)) 
+
+plot_data_logged %>% 
+  mutate(response_scale = map2(estimate, std.error, log_back, 1000)) %>% 
+  select(estimate_type, study_id, type, response_scale) %>% 
+  unnest(response_scale) %>% 
+  rename(estimate = mean_origin, conf.low = lower, conf.high = upper) %>% 
+#  filter(estimate <1000) %>% 
+  plot_forest_2(MA_mean = T,y_zoom = c(0,140))
+```

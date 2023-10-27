@@ -1,0 +1,89 @@
+project:
+  type: book
+  render:
+     - "!internal/"
+     - "!outputs/"
+     - "!vignettes/"
+     - "supp_mat/"
+
+book:
+  chapters:
+    - index.qmd
+  appendices:
+    - supp_mat/SM1_summary.qmd
+    - supp_mat/SM2_EffectSizeAnalysis.qmd
+    - supp_mat/SM3_ExplainingDeviation.qmd
+    - supp_mat/SM4_case_study_datasets.qmd
+  sidebar: false
+  favicon: 'inst/hex_keys/ManyEcoEvoHex.jpg'
+  google-analytics: 
+    tracking-id: 'G-FCEPG8QE44'
+    anonymize-ip: true
+  cookie-consent:
+    type: implied
+    style: simple
+    palette: light
+  twitter-card: true
+  # collapse-level: 3
+    # pinned: true
+
+crossref:
+  appendix-title: "SM"
+  appendix-delim: ":"
+
+format:
+  html:
+    theme: 
+      - cosmo
+    comments:
+      hypothesis: false
+    citations-hover: true
+    crossrefs-hover: true
+    toc: false
+
+  
+    # toc-location: left
+    # number-depth: 1
+#  docx: default
+#  hikmah-pdf: 
+#    keep-tex: true
+
+  # (other formats)
+  # pdf: default
+
+execute:
+  freeze: true
+
+
+
+# ---- manuscript ----
+# project:
+#   type: manuscript
+#   render:
+#      - "!internal/"
+#      - "!outputs/"
+#      - "!vignettes/"
+#      - "supp_mat/"
+# 
+# manuscript:
+#   article: index.qmd
+# 
+# 
+# format:
+#   html:
+#     comments:
+#       hypothesis: false
+#     citations-hover: true
+#     crossrefs-hover: true
+#     toc: true
+#     toc-location: left
+#     #title-block-style: manuscript
+#   # docx: default
+#   hikmah-docx: default
+#   hikmah-pdf: default
+# 
+#   # (other formats)
+#   # pdf: default
+# 
+# execute:
+#   freeze: true
