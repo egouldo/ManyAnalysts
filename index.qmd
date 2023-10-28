@@ -22,7 +22,7 @@ authors:
       - Investigation
       - Manuscript Writing
   - name: "Timothy H. Parker"
-    email: "parkerth@whitman.edu.au"
+    email: "parkerth@whitman.edu"
     orcid: "0000-0003-2995-5284"
     attributes:
       corresponding: true
@@ -427,8 +427,8 @@ authors:
   - name: "Thalita Ferreira-Arruda Ferreira-Arruda" 
     orcid: "0000-0003-1385-0226" 
     affiliation: 
-      - name: "Biodiversity, Macroecology & Biogeography, Faculty of Forest Sciences and Forest Ecology  - University of Göttingen"
-        department: ""
+      - name: "University of Göttingen"
+        department: "Biodiversity, Macroecology & Biogeography, Faculty of Forest Sciences and Forest Ecology"
   - name: "John Fieberg" 
     orcid: "0000-0002-3180-7021" 
     affiliation: 
