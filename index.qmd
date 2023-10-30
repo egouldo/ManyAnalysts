@@ -2147,7 +2147,7 @@ Interpretation of $\tau^2$ also differs somewhat from traditional meta-analysis,
 
 Finally, we assessed the extent to which deviations from the meta-analytic mean by individual effect sizes ($Z_r$) or the predicted values of the dependent variable ($y_i$) were explained by the peer rating of each analysis team's method section, by a measurement of the distinctiveness of the set of predictor variables included in each analysis, and by the choice of whether or not to include random effects in the model.
 The deviation score, which served as the dependent variable in these analyses, is the absolute value of the difference between the meta-analytic mean $Z_r$ (or $y_i$) and the individual $Z_r$ (or $y_i$) estimate for each analysis.
-We used the Box-Cox transformation on the absolute values of deviation scores to achieve an approximately normal distribution [c.f. @fanelli2013; @fanelli2017 : supplement].
+We used the Box-Cox transformation on the absolute values of deviation scores to achieve an approximately normal distribution [c.f. @fanelli2013; @fanelli2017].
 We described variation in this dependent variable with both a series of univariate analyses and a multivariate analysis.
 All these analyses were general linear (mixed) models.
 These analyses were secondary to our estimation of variation in effect sizes described above.
