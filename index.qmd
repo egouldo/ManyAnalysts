@@ -2311,12 +2311,6 @@ We built an R package, *ManyEcoEvo* to conduct the analyses described in this ch
 This same package can be used to reproduce our analyses or replicate the analyses described here using alternate datasets.
 The full suite of analyses we conducted is completely reproducible and can be reproduced and queried using (WE WILL INSERT LINK TO BINDR when coding complete).
 
-## Ethics, consent and permissions
-
-We obtained permission to conduct this research from the Whitman College Institutional Review Board (IRB).
-As part of this permission, the IRB approved the consent form (<https://osf.io/xyp68/>) that all participants completed prior to joining the study.
-The authors declare that they have no competing interests.
-
 # Results
 
 ```{r descriptive-munging, eval=TRUE,include=TRUE, echo = FALSE, message=FALSE, warning=FALSE}
@@ -4194,6 +4188,8 @@ However, we find the counter arguments to "business as usual" to be compelling. 
 
 A potentially larger argument against "business as usual" is that it provides the raw material for biasing the literature. When different model specifications readily lead to different results, analysts may be tempted to report the result that appears most interesting, or that is most consistent with expectation [@gelman2013; @forstmeier2017]. There is growing evidence that researchers in ecology and evolutionary biology often report a biased subset of the results they produce [@deressa2023; @kimmel2023], and that this bias exaggerates the average size of effects in the published literature between 30 and 150% [@yang2023; @parker2023]. The bias then accumulates in meta-analyses, apparently more than doubling the rate of conclusions of "statistical significance" in published meta-analyses above what would have been found in the absence of bias [@yang2023]. Thus, "business as usual" does not just create noisy results, it helps create systematically misleading results.
 
+# Conclusions
+
 Overall, our results suggest to us that, where there is a diverse set of plausible analysis options, no single analysis should be considered a complete or reliable answer to a research question. We contend that ecologists and evolutionary biologists typically do multiple analyses (as many of our analyst teams did) however, soe of these analyses dont make it into the published manuscript. Further, because of the evidence that ecologists and evolutionary biologists often present a biased subset of the analyses they conduct [@deressa2023; @yang2023; @kimmel2023], we do not expect that even a collection of different effect sizes from different studies will accurately represent the true distribution of effects [@yang2023]. Therefore, we believe that an increased level of skepticism of the outcomes of single analyses, or even single meta-analyses, is warranted going forward. We recognize that some researchers have long maintained a healthy level of skepticism of individual studies as part of sound and practical scientific practice, and it is possible that those researchers will be neither surprised nor concerned by our results. However, we doubt that many researchers are sufficiently aware of the potential problems of analytical flexibility to be appropriately skeptical.
 
 
@@ -4202,6 +4198,27 @@ If we are skeptical of single analyses, the path forward may be multiple analyse
 
 Although we have reviewed a variety of potential responses to the existence of variability in analytical outcomes, we certainly do not wish to imply that this is a comprehensive set of possible responses. Nor do we wish to imply that the opinions we have expressed about these options are correct. Determining how the disciplines of ecology and evolutionary biology should respond to knowledge of the variability in analytical outcome will benefit from the contribution and discussion of ideas from across these disciplines. We look forward to learning from these discussions and to seeing how these disciplines ultimately respond.
 
+#Declarations
+
+## Ethics, consent and permissions
+
+We obtained permission to conduct this research from the Whitman College Institutional Review Board (IRB).
+As part of this permission, the IRB approved the consent form (<https://osf.io/xyp68/>) that all participants completed prior to joining the study.
+The authors declare that they have no competing interests.
+
+## Availability of data and materials
+
+All data cleaning and preparation for our analyses was conducted in R (R Core Team 2022) and is publicly archived at [https://zenodo.org/doi/10.5281/zenodo.10046152](https://zenodo.org/doi/10.5281/zenodo.10046152). Please see session info for the full list of packages and their citations used in our analysis pipeline. We built an R package, ManyAnalysts to conduct the analyses described in this chapter. This same package can be used to reproduce our analyses or replicate the analyses described here using alternate datasets. 
+
+## Competing interests
+
+The authors declare that they have no competing interests
+
+## Funding
+EG’s contributions were supported by an Australian Government Research Training Program Scholarship, AIMOS top-up scholarship (2022) and Melbourne Centre of Data Science Doctoral Academy Fellowship (2021). FF’s contributions were supported by ARC Future Fellowship FT150100297.
+
+## Author’s contributions
+HF, THP and FF conceptualized the project. PV provided raw data for Eucalyptus analyses and SG and THP provided raw data for blue tit analyses. DGH, HF and THP prepared surveys for collecting participating analysts and reviewer’s data. EG, HF, THP, PV, SN and FF planned the analyses of the data provided by our analysts and reviewers, EG, HF, and THP curated the data, EG and HF wrote the software code to implement the analyses and prepare data visualisations. EG ensured that analyses were documented and reproducible. THP and HF administered the project, including coordinating with analysts and reviewers. FF provided funding for the project. THP, HF, and EG wrote the manuscript. Authors listed alphabetically contributed analyses of the primary datasets or reviews of analyses. All authors read and approved the final manuscript.
 
 ## References {.unnumbered}
 
