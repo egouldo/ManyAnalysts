@@ -1963,7 +1963,7 @@ Researchers conducted three rounds of surveys at 18 sites across the Goulburn Br
 
 ## **Step 2: Recruitment and Initial Survey of Analysts**
 
-The lead team (TP, HF, SN, EG, SG, PV, FF) created a publicly available document providing a general description of the project (<https://osf.io/mn5aj/>).
+The lead team (TP, HF, SN, EG, SG, PV, DH, FF) created a publicly available document providing a general description of the project (<https://osf.io/mn5aj/>).
 The project was advertised at conferences, via Twitter, using mailing lists for ecological societies (including Ecolog, Evoldir, and lists for the Environmental Decisions Group, and Transparency in Ecology and Evolution), and via word of mouth.
 The target population was active ecology, conservation, or evolutionary biology researchers with a graduate degree (or currently studying for a graduate degree) in a relevant discipline.
 Researchers could choose to work independently or in a small team.
