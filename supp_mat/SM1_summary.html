@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.424">
+<meta name="generator" content="quarto-1.4.489">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -168,11 +168,11 @@ cookieconsent.run({
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
         <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../supp_mat/SM1_summary.html">Appendices</a></li><li class="breadcrumb-item"><a href="../supp_mat/SM1_summary.html"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Summarising Variation Among Analysis Specifications</span></a></li></ol></nav>
-        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
@@ -183,7 +183,7 @@ cookieconsent.run({
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
         <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
@@ -235,7 +235,7 @@ cookieconsent.run({
     </ul>
     </div>
 </nav>
-<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     
 <!-- main -->
@@ -268,7 +268,7 @@ cookieconsent.run({
 
 
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(targets)</span>
@@ -295,7 +295,7 @@ cookieconsent.run({
 <h3 data-number="A.1.1" class="anchored" data-anchor-id="number-of-analyses-of-different-types"><span class="header-section-number">A.1.1</span> Number of analyses of different types</h3>
 <p>As described in the summary statistics section of the manuscript, 63 teams submitted 132 <span class="math inline">\(Z_r\)</span> model estimates and 43 teams submitted 65 out of sample predictions for the blue tit dataset. Similarly, 40 submitted 79 <span class="math inline">\(Z_r\)</span> model estimates and 14 teams submitted 24 out of sample predictions for the <em>Eucalytpus</em> dataset. The majority of the blue tit analyses specified normal error distributions and were non-Bayesian mixed effects models. Analyses of the <em>Eucalyptus</em> dataset rarely specified normal error distributions, likely because the response variable was in the form of counts. Mixed effects models were also common for <em>Eucalytpus</em> analyses (<a href="#tbl-Table1" class="quarto-xref">Table&nbsp;<span>A.1</span></a>).</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Table1 <span class="sc">%&gt;%</span> </span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">str_remove</span>(., <span class="st">"sum_"</span>)) <span class="sc">%&gt;%</span> </span>
@@ -395,7 +395,7 @@ Table&nbsp;A.1: Summary of the number of anaysis teams, total analyses, models w
 <h3 data-number="A.1.2" class="anchored" data-anchor-id="model-composition"><span class="header-section-number">A.1.2</span> Model composition</h3>
 <p>The composition of models varied substantially (<a href="#tbl-Table2" class="quarto-xref">Table&nbsp;<span>A.2</span></a>) in regards to the number of fixed and random effects, interaction terms and the number of data points used. For the blue tit dataset, models used up to 19 fixed effects, 12 random effects, and 10 interaction terms and had sample sizes ranging from 76 to 3720 For the Eucalyptus dataset models had up to 13 fixed effects, 4 random effects, 5 interaction terms and sample sizes ranging from 18 to 351.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Table2 <span class="sc">%&gt;%</span> </span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">SD =</span> sd) <span class="sc">%&gt;%</span>   </span>
@@ -570,7 +570,7 @@ Table&nbsp;A.2: Mean, standard deviation and range of number of fixed and random
 <h3 data-number="A.1.3" class="anchored" data-anchor-id="choice-of-variables"><span class="header-section-number">A.1.3</span> Choice of variables</h3>
 <p>The choice of variables also differed substantially among models (<a href="#tbl-Table3" class="quarto-xref">Table&nbsp;<span>A.3</span></a>). Considering all submitted analyses, the blue tit dataset had 52 candidate variables, which were used in a mean of 20.58 <span class="math inline">\(Z_r\)</span> analyses (range 0- 101), the <em>Eucalyptus</em> dataset had 58 candidate variables which were used in a mean of 9.07 <span class="math inline">\(Z_r\)</span> analyses (range 0-55).</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#table 3 - summary of mean, sd and range for the number of analyses in which each variable was used</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>Table3 <span class="sc">%&gt;%</span> </span>
@@ -1108,7 +1108,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
 <h3 data-number="A.2.1" class="anchored" data-anchor-id="blue-tit"><span class="header-section-number">A.2.1</span> Blue tit</h3>
 <p>We observed few clear trends in the blue tit specification curve (<a href="#fig-specr-bt" class="quarto-xref">Figure&nbsp;<span>A.1</span></a>). The clearest trend was for the independent variable ‘contrast: reduced broods vs.&nbsp;unmanipulated broods’ to produce weak or even positive relationships, but never strongly negative relationships. The biological interpretation of this pattern is that nestlings in reduced broods averaged similar growth to nestlings in unmanipulated broods, and sometimes the nestlings in reduced broods even grew less than the nestlings in unmanipulated broods. Therefore, it may be that competition limits nestling growth primarily when the number of nestlings exceeds the clutch size produced by the parents, and not in unmanipulated broods. The other relatively clear trend was that the strongest negative relationships were never based on the independent variable ‘contrast: unmanipulated broods vs.&nbsp;enlarged broods’. These observations demonstrate the potential value of specification curves.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># knitr::read_chunk(here::here("index.qmd"), labels = "calc_MA_mod_coefs")</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1127,7 +1127,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
 </details>
 </div>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>analytical_choices_bt <span class="ot">&lt;-</span> ManyEcoEvo_results<span class="sc">$</span>effects_analysis[[<span class="dv">1</span>]] <span class="sc">%&gt;%</span> </span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(study_id, </span>
@@ -1211,7 +1211,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
 <span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>                   <span class="at">axis =</span> <span class="st">"rbl"</span>,<span class="at">labels =</span> <span class="st">"AUTO"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display page-columns page-full">
-<div id="fig-specr-bt" class="quarto-figure quarto-figure-center anchored page-columns page-full" width="1152" data-fig-align="center">
+<div id="fig-specr-bt" class="quarto-figure quarto-figure-center anchored page-columns page-full" data-fig-align="center" width="1152">
 <figure class="quarto-float quarto-float-fig figure page-columns page-full">
 <div aria-describedby="fig-specr-bt-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
 <img src="SM1_summary_files/figure-html/fig-specr-bt-1.png" class="img-fluid quarto-figure-center figure-img column-page-right" width="1152">
@@ -1228,7 +1228,7 @@ Figure&nbsp;A.1: <strong>A.</strong> Forest plot for blue tit analyses: standard
 <h3 data-number="A.2.2" class="anchored" data-anchor-id="eucalyptus"><span class="header-section-number">A.2.2</span> <em>Eucalyptus</em></h3>
 <p>In the <em>Eucalyptus</em> specification curve, there are no strong trends (<a href="#fig-specr-euc" class="quarto-xref">Figure&nbsp;<span>A.2</span></a>). It is, perhaps, the case that choosing the dependent variable ‘count of seedlings 0-0.5m high’ corresponds to more positive results and choosing ‘count of all <em>Eucalytpus</em> seedlings’ might find more negative results. Choosing the independent variable ‘sum of all grass types (with or without non-grass graminoids)’ might be associated with more results close to zero consistent with the absence of an effect.</p>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>analytical_choices_euc <span class="ot">&lt;-</span> ManyEcoEvo_results<span class="sc">$</span>effects_analysis[[<span class="dv">2</span>]] <span class="sc">%&gt;%</span> </span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(study_id, </span>
@@ -1318,7 +1318,7 @@ Figure&nbsp;A.1: <strong>A.</strong> Forest plot for blue tit analyses: standard
 <span id="cb7-86"><a href="#cb7-86" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis =</span> <span class="st">"rbl"</span>,<span class="at">labels =</span> <span class="st">"AUTO"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display page-columns page-full">
-<div id="fig-specr-euc" class="quarto-figure quarto-figure-center anchored page-columns page-full" width="1152" data-fig-align="center">
+<div id="fig-specr-euc" class="quarto-figure quarto-figure-center anchored page-columns page-full" data-fig-align="center" width="1152">
 <figure class="quarto-float quarto-float-fig figure page-columns page-full">
 <div aria-describedby="fig-specr-euc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
 <img src="SM1_summary_files/figure-html/fig-specr-euc-1.png" class="img-fluid quarto-figure-center figure-img column-page-right" width="1152">
@@ -1751,7 +1751,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../index.html" class="pagination-link  aria-label=" <span="">1&nbsp; <span class="chapter-title">Same data, different analysts: variation in effect sizes due to analytical decisions in ecology and evolutionary biology.</span>"&gt;
+      <a href="../index.html" class="pagination-link  aria-label=" &lt;span="" data,="" different="" analysts:="" variation="" in="" effect="" sizes="" due="" to="" analytical="" decisions="" ecology="" and="" evolutionary="" biology.&lt;="" span&gt;"="">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Same data, different analysts: variation in effect sizes due to analytical decisions in ecology and evolutionary biology.</span></span>
       </a>          
   </div>

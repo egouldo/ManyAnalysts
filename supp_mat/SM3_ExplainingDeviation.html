@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.424">
+<meta name="generator" content="quarto-1.4.489">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -166,11 +166,11 @@ cookieconsent.run({
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
         <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../supp_mat/SM1_summary.html">Appendices</a></li><li class="breadcrumb-item"><a href="../supp_mat/SM3_ExplainingDeviation.html"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Explaining Variation in Deviation Scores</span></a></li></ol></nav>
-        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
@@ -181,7 +181,7 @@ cookieconsent.run({
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
         <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
@@ -233,7 +233,7 @@ cookieconsent.run({
     </ul>
     </div>
 </nav>
-<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     
 <!-- main -->
@@ -259,7 +259,7 @@ cookieconsent.run({
 
 
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(targets)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(withr)</span>
@@ -278,7 +278,7 @@ cookieconsent.run({
 </details>
 </div>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># withr::with_dir(here::here(),</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#                 targets::tar_load(ManyEcoEvo_viz))</span></span>
@@ -293,7 +293,7 @@ cookieconsent.run({
 </details>
 </div>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#TODO turn into own function and pull out of nested targets function and rm here</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fit_MA_mv <span class="ot">&lt;-</span> <span class="cf">function</span>(effects_analysis, Z_colname, VZ_colname, estimate_type){</span>
@@ -604,7 +604,7 @@ cookieconsent.run({
 <h2 data-number="C.1" class="anchored" data-anchor-id="transforming-response-variable-for-model-fitting"><span class="header-section-number">C.1</span> Transforming response variable for model fitting</h2>
 <p>To aid in interpreting explanatory models where the response variable has been Box-Cox transformed, we plotted the transformation relationship for each of our analysis datasets (<a href="#fig-box-cox-transformations" class="quarto-xref">Figure&nbsp;<span>C.1</span></a>). Note that <code>timetk::step_box_cox()</code> directly optimises the estimation of the transformation parameter, <span class="math inline">\(\lambda\)</span>, using the “Guerrero” method such that <span class="math inline">\(\lambda\)</span> minimises the coefficient of variation for sub series of a numeric vector (see <code>?timetk::step_box_cox()</code>, for further details see <span class="citation" data-cites="timetk">Dancho and Vaughan (<a href="../index.html#ref-timetk" role="doc-biblioref">2023</a>)</span>). Consequently, each dataset has its own unique value of the lambda parameter, and therefore a unique transformation relationship.</p>
 <div class="cell page-columns page-full">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>back_transformed_predictions <span class="ot">&lt;-</span> </span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  ManyEcoEvo_yi <span class="sc">%&gt;%</span> </span>
@@ -719,7 +719,7 @@ Figure&nbsp;C.1: Box-Coxtransformed absolute deviation scores plotted against (u
 <p>For models of deviation explained by categorical peer ratings, including random effects for both the effect ID and the reviewer ID resulted in models with singular fit for both blue tit and <em>Eucalyptus</em> datasets (<a href="#tbl-explore-Zr-deviation-random-effects-structure" class="quarto-xref">Table&nbsp;<span>C.1</span></a>). For the <em>Eucalyptus</em> dataset, when a random effect was included for Reviewer ID only, the model passed the check with <code>performance::check_singularity()</code>, however, the SD and CI could not be estimated by <code>parameters::model_parameters()</code> with a warning stating this was likely due to singular fit. When fitting models of deviation explained by categorical peer ratings, we consequently included a random effect for Reviewer ID only (See <a href="../index.html#tbl-deviation-rating-estimates" class="quarto-xref">Table&nbsp;<span>3.6</span></a>).</p>
 <p>For models of deviation explained by continuous peer-review ratings, when including both random effects for effect ID and Reviewer ID model fits were singular for both datasets (<a href="#tbl-explore-Zr-deviation-random-effects-structure" class="quarto-xref">Table&nbsp;<span>C.1</span></a>). For the <em>Eucalyptus</em> dataset when including a random effect only for Reviewer ID and dropping the random effect for effect ID, this model passed the <code>performance::check_singularity()</code> check, however, however, the SD and CI could not be estimated by <code>parameters::model_parameters()</code> with a warning stating this was likely due to singular fit. Consequently, for both blue tit and <em>Euclayptus</em> datasets, we fitted and analysed models of deviation explained by continuous peer review ratings with a random effect for Effect ID only (See <a href="../index.html#tbl-deviation-rating-estimates" class="quarto-xref">Table&nbsp;<span>3.6</span></a>).</p>
 <div class="cell" data-hash="SM3_ExplainingDeviation_cache/html/tbl-explore-Zr-deviation-random-effects-structure_567fccc5e80013452b8ca841e55883c3">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lmer"</span>)</span>
@@ -1475,7 +1475,7 @@ Table&nbsp;C.1: Singularity and convergence checking outcomes for models of devi
 </div>
 </div>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plot_data_logged <span class="ot">&lt;-</span> mod_data_logged <span class="sc">%&gt;%</span> </span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tidy_mod =</span> <span class="fu">map</span>(<span class="at">.x =</span> MA_mod,</span>
@@ -1556,7 +1556,7 @@ Table&nbsp;C.1: Singularity and convergence checking outcomes for models of devi
 <section id="out-of-sample-predictions-y_i" class="level3 page-columns page-full" data-number="C.3.2">
 <h3 data-number="C.3.2" class="anchored" data-anchor-id="out-of-sample-predictions-y_i"><span class="header-section-number">C.3.2</span> Out of sample predictions <span class="math inline">\(y_i\)</span></h3>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>euc_yi_results <span class="ot">&lt;-</span> </span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  ManyEcoEvo<span class="sc">::</span><span class="fu">make_viz</span>(deviation_models_yi_euc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1567,7 +1567,7 @@ Random effect variances not available. Returned R2 does not account for random e
 Random effect variances not available. Returned R2 does not account for random effects.
 Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
 </div>
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>yi_convergence_singularity <span class="ot">&lt;-</span> </span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  ManyEcoEvo_yi_viz <span class="sc">%&gt;%</span> </span>
@@ -1630,7 +1630,7 @@ Random effect variances not available. Returned R2 does not account for random e
 </div>
 <p>We fitted the same deviation models on the yi dataset that we fitted for the Zr dataset. However, while all models converged, models of deviation explained by categorical peer-ratings suffered from singular fit for the following datasets and estimate types: blue tit - y25, Eucalyptus - y25, Eucalyptus - y75 (<a href="#tbl-yi-deviation-ratings-convergence-singularity" class="quarto-xref">Table&nbsp;<span>C.2</span></a>). Results are therefore presented only for models with non-singular fit, converging for the following datasets and estimate types: blue tit - y50, blue tit - y75, Eucalyptus - y50 (<a href="#tbl-yi-deviation-ratings-convergence-singularity" class="quarto-xref">Table&nbsp;<span>C.2</span></a>).</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>yi_convergence_singularity <span class="sc">%&gt;%</span> </span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>params) <span class="sc">%&gt;%</span> </span>
@@ -2232,7 +2232,7 @@ Table&nbsp;C.2: Singularity and convergence checking for models of deviation in 
 </div>
 <p>Group means and <span class="math inline">\(95\%\)</span> confidence intervals for different categories of peer-review rating are all overlapping (<a href="#fig-yi-deviation-cat-rating" class="quarto-xref">Figure&nbsp;<span>C.2</span></a>). The fixed effect of peer review rating also explains virtually no variability in <span class="math inline">\(y_i\)</span> deviation score (<a href="#tbl-yi-deviation-ratings-convergence-singularity" class="quarto-xref">Table&nbsp;<span>C.2</span></a>).</p>
 <div class="cell page-columns page-full">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Omit all singular models</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>yi_violin_cat_plot_data <span class="ot">&lt;-</span> </span>
@@ -2308,7 +2308,7 @@ Figure&nbsp;C.2: Violin plot of Box-Cox transformed deviation from meta-analytic
 <p>Models of deviation explained by <em>continuous</em> ratinsg all converged, however models for the y25 out-of-sample predictions were singular for both <em>Eucalyptus</em> and blue tit datasets.</p>
 <p>There was a lack of any clear relationships between quantitative review scores and <span class="math inline">\(y_i\)</span> deviation scores (<a href="#tbl-yi-deviation-parameter-estimates" class="quarto-xref">Table&nbsp;<span>C.10</span></a>). Plots of these relationships indicated either no relationship or extremely weak positive relationships (<a href="#fig-yi-deviation-cont-rating" class="quarto-xref">Figure&nbsp;<span>C.3</span></a>). Recall that positive relationships mean that as review scores became more favorable, the deviation from the meta-analytic mean increased, which is surprising. Because almost no variability in <span class="math inline">\(y_i\)</span> deviation score was explained by reviewer ratings (<a href="#tbl-yi-deviation-parameter-estimates" class="quarto-xref">Table&nbsp;<span>C.10</span></a>), this pattern does not appear to merit further consideration.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Omit all singular models</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>yi_cont_plot_data <span class="ot">&lt;-</span></span>
@@ -2341,7 +2341,7 @@ Figure&nbsp;C.2: Violin plot of Box-Cox transformed deviation from meta-analytic
 <span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>           <span class="fu">paste0</span>(<span class="fu">paste0</span>(<span class="fu">paste0</span>(<span class="st">"**"</span>, LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>], <span class="st">"**"</span>, <span class="at">sep =</span> <span class="st">""</span>), <span class="at">sep =</span> <span class="st">": "</span>), ., <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>yi_cont_plots <span class="ot">&lt;-</span> </span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  yi_cont_plot_data<span class="sc">$</span>plot_data <span class="sc">%&gt;%</span> </span>
@@ -2367,7 +2367,7 @@ Figure&nbsp;C.3: Scatterplots exaining Box-Cox transfored deviation fro the eta-
 </div>
 </div>
 <div class="cell column-page-right page-columns page-full">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ManyEcoEvo_yi_viz <span class="sc">%&gt;%</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(exclusion_set <span class="sc">==</span> <span class="st">"complete"</span>, </span>
@@ -3055,7 +3055,7 @@ Table&nbsp;C.3: Parameter estimates for univariate models of Box-Cox transformed
 <h3 data-number="C.4.2" class="anchored" data-anchor-id="sec-sorensen-yi"><span class="header-section-number">C.4.2</span> Out of sample predictions <span class="math inline">\(y_i\)</span></h3>
 <p>Given the convergence and singularity issues encountered with most other analyses, we also checked for convergence and singularity issues in models of deviation explained by Sorensen’s similarity index for <span class="math inline">\(y_i\)</span> estimates (<a href="#tbl-deviation-similarity-convergence-singularity-yi" class="quarto-xref">Table&nbsp;<span>C.4</span></a>). All models fitted without problem.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>yi_sorensen_plot_data <span class="ot">&lt;-</span> </span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  ManyEcoEvo_yi_viz <span class="sc">%&gt;%</span> </span>
@@ -3088,7 +3088,7 @@ Table&nbsp;C.3: Parameter estimates for univariate models of Box-Cox transformed
 <span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>yi_sorensen_plots <span class="ot">&lt;-</span> </span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map2</span>(<span class="at">.x =</span> yi_sorensen_plot_data<span class="sc">$</span>model, </span>
@@ -3115,7 +3115,7 @@ Figure&nbsp;C.4: Scatter plots examining Box-Cox transformed deviation from the 
 </div>
 </div>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>yi_singularity_convergence_sorensen_mixed_mod <span class="sc">%&gt;%</span> </span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">filter</span>(dataset <span class="sc">!=</span> <span class="st">"blue tit"</span> <span class="sc">|</span> <span class="fu">str_detect</span>(model_name, </span>
@@ -3692,7 +3692,7 @@ Table&nbsp;C.4: Singularity and convergence checks for models of deviation expla
 <p>There were only three blue tit analyses that did not include random effects, which is below the pre-registered threshold for fitting a model of the Box-Cox transformed deviation from the meta-analytic mean as a function of whether the analysis included random-effects. However, 16 <em>Eucalyptus</em> analyses included in the out-of-sample (<span class="math inline">\(y_{i}\)</span>) results included only fixed effects, which crossed our pre-registered threshold.</p>
 <p>Consequently, we performed this analysis for the <em>Eucalyptus</em> dataset only, here we present results for the out of sample prediction <span class="math inline">\(y_{i}\)</span> results. There is consistent evidence of somewhat higher Box-Cox-transformed deviation values for models including a random effect, meaning the models including random effects averaged slightly higher deviation from the meta-analytic means. This is most evident for the <span class="math inline">\(y_{50}\)</span> predictions which both shows the greatest difference in Box-Cox transformed deviation values (<a href="#fig-yi-euc-deviation-RE-plots" class="quarto-xref">Figure&nbsp;<span>C.5</span></a>) and explains the most variation in <span class="math inline">\(y_i\)</span> deviation score (<a href="#tbl-yi-deviation-parameter-estimates" class="quarto-xref">Table&nbsp;<span>C.10</span></a>, <a href="#tbl-yi-deviation-parameter-estimates" class="quarto-xref">Table&nbsp;<span>C.10</span></a>).</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>yi_deviation_RE_plot_data <span class="ot">&lt;-</span> </span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  euc_yi_results <span class="sc">%&gt;%</span> </span>
@@ -3718,7 +3718,7 @@ Table&nbsp;C.4: Singularity and convergence checks for models of deviation expla
 <span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>         <span class="st">"."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>yi_deviation_RE_plots <span class="ot">&lt;-</span> </span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  yi_deviation_RE_plot_data <span class="sc">%&gt;%</span> </span>
@@ -3754,7 +3754,7 @@ Figure&nbsp;C.5: Violin plot of Box-Cox transformed deviation from meta-analytic
 <section id="effect-sizes-z_r-2" class="level3 page-columns page-full" data-number="C.6.1">
 <h3 data-number="C.6.1" class="anchored" data-anchor-id="effect-sizes-z_r-2"><span class="header-section-number">C.6.1</span> Effect Sizes <span class="math inline">\(Z_r\)</span></h3>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># lmer(box_cox_abs_deviation_score_estimate ~ RateAnalysis + PublishableAsIs + mean_diversity_index + (1|study_id) + (1|ReviewerId), data = ManyEcoEvo_results$effects_analysis[[1]] %&gt;% unnest(review_data)) </span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -4452,7 +4452,7 @@ Table&nbsp;C.5: Parameter estimates from models explaining Box-Cox transformed d
 </div>
 <p>The multivariate models did a poor job of explaining how different from the meta-analytic mean each analysis would be. For the blue tit analyses the <span class="math inline">\(R^{2}\)</span> value for the whole model was 0.13 and for the fixed effects component was 0.04, and the residual standard deviation for the model was 0.65. Further, all of the fixed effects had 95% confidence intervals that overlaped 0. This evidence is all consistent with none of the predictor variables in this model (continuous review rating, categorical review rating, distinctiveness of variables included) having any meaningful effect on how far <span class="math inline">\(Z_r\)</span> estimates fell from the meta-analytic mean for the blue tit analyses. The pattern is largely similar for the <em>Eucalyptus</em> multivariate analysis, in which <span class="math inline">\(R^{2}\)</span> for the whole model was 0.11 and for the fixed effects component was 0.03, and the residual standard deviation for the model was 1.09. There is somewhat more of a hint of a pattern when examining the paramaeter estimates from the <em>Eucalyptus</em> analysis. In the case of the fixed effect of categorical reviewer ratings, analyses that were reviewed as ‘publishable as is’ and ‘publishable with major revisions’ appeared to produce results more different from the meta-analytic mean than those that were in the reference class of ‘deeply flawed and unpublishable’. However, the estimates are very uncertain (Eucalyptus fixed effect for ‘publishable as is’ 1.17 (95% CI 0.03,2.3), and for ‘publishable with major revision’ 0.14 (95% CI -0.38,0.66). Further, the collinearity between the categorical and continuous ratings make interpretation of effects involving either of these two variables unclear, and so we recommend against interpreting the pattern observed here. We report this analysis only for the sake of transparency.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(bt_multivar_mod, euc_multivar_mod) <span class="sc">%&gt;%</span> </span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_names</span>(<span class="fu">c</span>(<span class="st">"blue tit"</span>, <span class="st">"eucalyptus"</span>)) <span class="sc">%&gt;%</span> </span>
@@ -4527,7 +4527,7 @@ Table&nbsp;C.6: Model summary metrics for multivariate models. <span class="math
 <section id="out-of-sample-predictions-y_i-2" class="level3 page-columns page-full" data-number="C.6.2">
 <h3 data-number="C.6.2" class="anchored" data-anchor-id="out-of-sample-predictions-y_i-2"><span class="header-section-number">C.6.2</span> Out of sample predictions <span class="math inline">\(y_i\)</span></h3>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>formula_study_id <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_variables</span>(<span class="at">outcomes =</span> box_cox_abs_deviation_score_estimate, </span>
@@ -5323,7 +5323,7 @@ Table&nbsp;C.7: Singularity and convergence for all random effects structure com
 </div>
 <p>For the blue tit analyses, models with Reviewer ID as the only random effect were the only models that converged, and that weren’t singular (<a href="#tbl-yi-multivar-singularity-convergence" class="quarto-xref">Table&nbsp;<span>C.7</span></a>). Conversely, of the different random effects structures we trialled for the Eucalyptus analyses, none successfully fitted, with models either failing to converge due to complete separation (<code>lme4::</code> error: <code>Downdated VtV is not positive definite</code>, see <a href="https://github.com/lme4/lme4/issues/483" class="uri">https://github.com/lme4/lme4/issues/483</a>). Consequently we did not fit multivariate models on out-of-sample predictions for the <em>Eucalyptus</em> dataset, and instead deviated from our intended plan of using random effects for both Effect ID and Reviewer ID, and instead using a single random effect for Reviewer ID (<a href="#tbl-BT-yi-multivar-summary" class="quarto-xref">Table&nbsp;<span>C.8</span></a>, <a href="#tbl-BT-yi-multivar-params" class="quarto-xref">Table&nbsp;<span>C.9</span></a>).</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>yi_multivar_singularity_convergence <span class="sc">%&gt;%</span> </span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>params) <span class="sc">%&gt;%</span> </span>
@@ -5416,7 +5416,7 @@ Table&nbsp;C.8: Model summary statistic for non-singular, converging multivariat
 </div>
 </div>
 <div class="cell column-page-right page-columns page-full">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>yi_multivar_singularity_convergence <span class="sc">%&gt;%</span> </span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(dataset <span class="sc">==</span> <span class="st">"blue tit"</span>, </span>
@@ -6260,7 +6260,7 @@ Table&nbsp;C.9: Parameter estimates for converging, non-singular multivariate mo
 <section id="sec-yi-summary" class="level2 page-columns page-full" data-number="C.7">
 <h2 data-number="C.7" class="anchored" data-anchor-id="sec-yi-summary"><span class="header-section-number">C.7</span> Model Summary Metrics for out-of-sample predictions <span class="math inline">\(y_i\)</span></h2>
 <div class="cell column-page-inset-right page-columns page-full">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>tbl_data_yi_deviation_model_params <span class="sc">%&gt;%</span> </span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(dataset <span class="sc">!=</span> <span class="st">"blue tit"</span> <span class="sc">|</span> <span class="fu">str_detect</span>(model_name, <span class="st">"random"</span>, <span class="at">negate =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
@@ -7413,7 +7413,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../supp_mat/SM2_EffectSizeAnalysis.html" class="pagination-link  aria-label=" <span="">B&nbsp; <span class="chapter-title">Effect Size Analysis</span>"&gt;
+      <a href="../supp_mat/SM2_EffectSizeAnalysis.html" class="pagination-link  aria-label=" &lt;span="" size="" analysis&lt;="" span&gt;"="">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Effect Size Analysis</span></span>
       </a>          
   </div>
