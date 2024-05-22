@@ -4388,40 +4388,40 @@ There is growing evidence that researchers in ecology and evolutionary biology o
 The bias then accumulates in meta-analyses, apparently more than doubling the rate of conclusions of "statistical significance" in published meta-analyses above what would have been found in the absence of bias [@yang2023].
 Thus, "business as usual" does not just create noisy results, it helps create systematically misleading results.
 
+If we move away from “business as usual”, where do we go? 
+Many obvious options involve multiple analyses per dataset. 
+For instance, there is the traditional robustness or sensitivity check [e.g., @pei2020; @briga2021], in which the researcher presents several alternative versions of an analysis to demonstrate that the result is ‘robust’ [@lu2014]. 
+Unfortunately, robustness checks are at risk of the same potential biases of reporting found in other studies [@silberzahn2018], especially given the relatively few models typically presented. 
+However, these risks could be minimized by running more models and doing so with a pre-registration or registered report. 
+Another option is model averaging. 
+Averages across models often perform well [e.g., @taylor2023], and in some forms this may be a relatively simple solution. 
+Model averaging, as most often practiced in ecology and evolutionary biology, involves first identifying a small suite of candidate models [see @burnham2002], then using Akaike weights, based on Akaike’s Information Criterion (AIC), to calculate weighted averages for parameter estimates from those models. 
+As with typical robustness checks, the small number of models limits the exploration of specification space, but examining a larger number of models could become the norm. 
+However, there are more concerning limitations. 
+The largest of these limitations is that averaging regression coefficients is problematic when models differ in interaction terms or collinear variables [@cade2015]. 
+Additionally, weighting by AIC may often be inconsistent with our modelling goals. AIC balances the trade-off between model complexity and predictive ability, but penalizing models for complexity may not be suited for testing hypotheses about causation. 
+So, AIC may often not offer the weight we want to use, and we may also not wish to just generate an average at all. 
+Instead, if we hope to understand an extensive universe of possible modelling outcomes, we could conduct a multiverse analysis, possibly with a specification curve [@simonsohn2015; @simonsohn2020]. 
+This could mean running hundreds or thousands of models (or more!) to examine the distribution of possible effects, and to see how different model specification choices map onto these effects. 
+However, exploring large areas of specification space may come at the cost of including biologically implausible specifications. 
+Thus, we expect a trade-off, and attempts to limit models to the most biologically plausible may become increasingly difficult in proportion to the number of variables and modeling choices. 
+To make selecting plausible models easier, one could recruit multiple analysts to design one or a few plausible specifications each as with our ‘many analyst’ study [@silberzahn2018]. 
+An alternative that may be more labor intensive for the primary analyst, but which may lead to a more plausible set of models, could involve hypothesizing about causal pathways with DAGs [directed acyclic graphs; @arif2023] to constrain the model set. 
+As with other options outlined above, generating model specifications with DAGs could be partnered with pre-registration to hinder bias from undisclosed data dredging. 
+
+Although we have reviewed a variety of potential responses to the existence of variability in analytical outcomes, we certainly do not wish to imply that this is a comprehensive set of possible responses. 
+Nor do we wish to imply that the opinions we have expressed about these options are correct. 
+Determining how the disciplines of ecology and evolutionary biology should respond to knowledge of the variability in analytical outcome will benefit from the contribution and discussion of ideas from across these disciplines. 
+We look forward to learning from these discussions and to seeing how these disciplines ultimately respond.
+
 # Conclusions
 
 Overall, our results suggest to us that, where there is a diverse set of plausible analysis options, no single analysis should be considered a complete or reliable answer to a research question.
-We contend that ecologists and evolutionary biologists typically do multiple analyses (as many of our analyst teams did) however, some of these analyses do not make it into the published manuscript.
 Further, because of the evidence that ecologists and evolutionary biologists often present a biased subset of the analyses they conduct [@deressa2023; @yang2023; @kimmel2023], we do not expect that even a collection of different effect sizes from different studies will accurately represent the true distribution of effects [@yang2023].
 Therefore, we believe that an increased level of skepticism of the outcomes of single analyses, or even single meta-analyses, is warranted going forward.
 We recognize that some researchers have long maintained a healthy level of skepticism of individual studies as part of sound and practical scientific practice, and it is possible that those researchers will be neither surprised nor concerned by our results.
 However, we doubt that many researchers are sufficiently aware of the potential problems of analytical flexibility to be appropriately skeptical.
-
-If we are skeptical of single analyses, the path forward may be multiple analyses per dataset.
-One possibility is the traditional robustness or sensitivity check [e.g., @pei2020; @briga2021], in which the researcher presents several alternative versions of an analysis to demonstrate that the result is 'robust' [@lu2014].
-Unfortunately, robustness checks are at risk of the same potential biases of reporting found in other studies [@silberzahn2018], especially given the relatively few models typically presented.
-However, these risks could be minimized by running more models and doing so with pre-registration or registered report.
-Another option is model averaging.
-Averages across models often perform well [e.g., @taylor2023], and in some forms this may be a relatively simple solution.
-As most often practiced in ecology and evolutionary biology, model averaging involves first identifying a small suite of candidate models [see @burnham2002], then using Akaike weights, based on Akaike's Information Criterion (AIC), to calculate weighted averages for parameter estimates from those models.
-Again, the small number of models limits the exploration of specification space, but we can examine a larger number of models.
-However, there are more concerning limitations.
-The largest of these limitations is that averaging regression coefficients is problematic when models differ in interaction terms or collinear variables [@cade2015].
-Additionally, weighting by AIC may often be inconsistent with our modelling goals.
-AIC balances the trade-off between model complexity and predictive ability, but penalizing models for complexity may not be suited for testing hypotheses about causation.
-So, AIC may often not offer the weight we want to use for an average, and we may also not wish to just generate an average.
-Instead, if we hope to understand an extensive universe of possible modelling outcomes, we could conduct a multiverse analysis, possibly with a specification curve [@simonsohn2015; @simonsohn2020].
-This could mean running hundreds or thousands of models (or more!) to examine the distribution of possible effects, and to see how different specification choices map onto these effects.
-However, there is a trade-off between efficiently exploring large areas of specification space and limiting the analyses to biologically plausible specifications.
-Instead of simply identifying modelling decisions and creating all possible combinations for the multiverse, a researcher could attempt to prevent implausible combinations, though the more variables in the dataset, the more difficult this becomes.
-To make the process of specifying only biologically plausible models easier, one could recruit many analysts to each designate one or a few plausible specifications, as with our 'many analyst' study [@silberzahn2018].
-An alternative that may be more labor intensive for the primary analyst, but which may lead to a more plausible set of models, could involve hypothesizing about causal pathways with DAGs [directed acyclic graphs; @arif2023] to constrain the model set.
-Devoting this effort to thoughtful multiverse specifications, possibly combined with pre-registration to hinder undisclosed data dredging, seems worthy of consideration.
-
-Although we have reviewed a variety of potential responses to the existence of variability in analytical outcomes, we certainly do not wish to imply that this is a comprehensive set of possible responses.
-Nor do we wish to imply that the opinions we have expressed about these options are correct.
-Determining how the disciplines of ecology and evolutionary biology should respond to knowledge of the variability in analytical outcome will benefit from the contribution and discussion of ideas from across these disciplines.
-We look forward to learning from these discussions and to seeing how these disciplines ultimately respond.
+We hope that our work leads to conversations in ecology, evolutionary biology, and other disciplines about how best to contend with heterogeneity in results that is attributable to analytical decisions.
 
 #Declarations
 
