@@ -1872,7 +1872,9 @@ citation:
     - name: "Cédric Zimmer"
     - name: "Gregory Mark Zimmerman"
     - name: "Rachel A. Zitomer"
-bibliography: ms/references.bib
+bibliography: 
+  - ms/references.bib
+  - ms/grateful-refs.bib
 number-sections: true
 number-depth: 2
 toc-depth: 3
