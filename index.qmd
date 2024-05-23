@@ -4475,6 +4475,11 @@ All authors read and approved the final manuscript.
 
 ## Session Info {#sec-sesion-info}
 
+```{r grateful-pkg-list}
+pkgs <- cite_packages(output = "table", out.dir = here::here("ms/"))
+knitr::kable(pkgs)
+```
+
 ```{r session-info}
 devtools::session_info()
 ```
