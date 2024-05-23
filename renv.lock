@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.3.2",
+    "Version": "4.4.0",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -148,8 +148,8 @@
       "Package": "ManyEcoEvo",
       "Version": "1.1.0",
       "Source": "GitHub",
-      "Remotes": "daniel1noble/orchaRd, NightingaleHealth/ggforestplot",
       "RemoteType": "github",
+      "Remotes": "daniel1noble/orchaRd, NightingaleHealth/ggforestplot",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "ManyEcoEvo",
       "RemoteUsername": "egouldo",
@@ -180,9 +180,9 @@
     },
     "Matrix": {
       "Package": "Matrix",
-      "Version": "1.6-5",
+      "Version": "1.7-0",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "RSPM",
       "Requirements": [
         "R",
         "grDevices",
@@ -193,7 +193,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "8c7115cd3a0e048bda2a7cd110549f7a"
+      "Hash": "1920b2f11133b12350024297d8a4ff4a"
     },
     "MatrixModels": {
       "Package": "MatrixModels",
@@ -1951,6 +1951,22 @@
         "igraph"
       ],
       "Hash": "d329345a6a37666ca3f18f3b3c1347b7"
+    },
+    "grateful": {
+      "Package": "grateful",
+      "Version": "0.2.4",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "knitr",
+        "remotes",
+        "renv",
+        "rmarkdown",
+        "rstudioapi",
+        "utils"
+      ],
+      "Hash": "f87d698662778b5bae252429742c23de"
     },
     "gridExtra": {
       "Package": "gridExtra",
