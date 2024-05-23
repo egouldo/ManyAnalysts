@@ -2071,6 +2071,12 @@ For the evolutionary ecology dataset that question was "To what extent is the gr
 They also were asked to upload their analysis files (including the dataset as they formatted it for analysis and their analysis code \[if applicable\]) and a detailed journal-ready statistical methods section.
 
 ::: {.callout-note appearance="simple"}
+**Additional explanation:** 
+
+As is common in many studies in ecology and evolutionary biology, the datasets we provided contained many variables, and the research questions we provided could be addressed by our datasets in many different ways. For instance, volunteer analysts had to choose the dependent (response) variable and the independent variable, and make numerous other decisions about which variables and data to use and how to structure their model.
+:::
+
+::: {.callout-note appearance="simple"}
 **Preregistration Deviation:**
 
 We originally planned to have analysts complete a single survey (<https://osf.io/neyc7/>), but after we evaluated the results of that survey, we realized we would need a second survey (<https://osf.io/8w3v5/>) to adequately collect the information we needed to evaluate heterogeneity of results (step 5).
