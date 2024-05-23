@@ -2172,7 +2172,7 @@ Zr=\frac{{1}{2}}ln\frac{{1+r}{1-r}}
 $$ {#eq-Zr}
 
 and its sampling variance; $1/(n – 3)$ where $n = df + 1$.
-Any analyses from which we could not derive a signed $Z_r$, for instance one with a quadratic function in which the slope changed sign, were excluded from the analyses of $Z_r$.
+Any analyses from which we could not derive a signed $Z_r$, for instance one with a quadratic function in which the slope changed sign, were considered unusable for analyses of $Z_r$ .
 We expected such analyses would be rare.
 In fact, most submitted analyses excluded from our meta-analysis of $Z_r$ were excluded because of a lack of sufficient information provided by the analyst team rather than due to the use of effects that could not be converted to $Z_r$.
 Regardless, as we describe below, we generated a second set of standardized effects (predicted values) that could (in principle) be derived from any explanatory model produced by these data.
