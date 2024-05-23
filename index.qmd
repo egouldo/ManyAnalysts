@@ -2393,12 +2393,12 @@ We planned for analysts and initiating authors to discuss the limitations, resul
 **Preregistration Deviation:** As described above, due to the large number of recruited analysts and reviewers and the anticipated challenges of receiving and integrating feedback from so many authors, we limited analyst and reviewer participation in the production of the final manuscript to an invitation to call attention to serious problems with the manuscript draft.
 :::
 
-All data cleaning and preparation for our analyses was conducted in R [@R] and is publicly archived at <https://zenodo.org/doi/10.5281/zenodo.10046152>.
-Please see @sec-sesion-info for the full list of packages and their citations used in our analysis pipeline.
+We built an R package, `ManyEcoEvo` to conduct the analyses described in this study [@gould2023], which can be downloaded from [https://github.com/egouldo/ManyEcoEvo/](https://github.com/egouldo/ManyEcoEvo) to reproduce our analyses or replicate the analyses described here using alternate datasets. Data cleaning and preparation of analysis-data, as well as the analysis, is conducted in R [@R] reproducibly using the `targets` package [@landau2021]. This data and analysis pipeline is stored in the `ManyEcoEvo` package repository and its outputs are made available to users of the package when the library is loaded. 
 
-We built an R package, *ManyEcoEvo* to conduct the analyses described in this chapter [https://github.com/egouldo/ManyEcoEvo/](https://github.com/egouldo/ManyEcoEvo).
-This same package can be used to reproduce our analyses or replicate the analyses described here using alternate datasets.
-The full suite of analyses we conducted is completely reproducible and can be reproduced and queried using (WE WILL INSERT LINK TO BINDR when coding complete).
+The full manuscript, including further analysis and presentation of results is written in Quarto [@AllaireQuarto2024]. The source code to reproduce the manuscript is hosted at [https://github.com/egouldo/ManyAnalysts/](https://github.com/egouldo/ManyAnalysts/), and the rendered version of the source code may be viewed at [https://egouldo.github.io/ManyAnalysts/](https://egouldo.github.io/ManyAnalysts/). All R packages and their versions used in the production of the manuscript are listed at @sec-sesion-info.
+
+
+
 
 # Results
 
