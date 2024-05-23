@@ -1899,6 +1899,10 @@ library(Hmisc)
 # library(equatiomatic)
 library(irr)
 library(MuMIn)
+library(broom)
+library(broom.mixed)
+library(tidymodels) #todo consider porting the extract_fit_engine into the ManyEcoEvo package
+library(grateful)
 set.seed(1234)
 ```
 
@@ -3817,8 +3821,9 @@ modelfitstats <- ManyEcoEvo_viz %>%
             publishable_subset == "All", 
             expertise_subset == "All",
             model_name %in% c("sorensen_glm", "uni_mixed_effects")) %>% 
-     mutate(perf = map(model, performance::performance),
-            mod_sum_stats = map(model, broom.mixed::glance)) %>% 
+  mutate(model = map(model, extract_fit_engine), 
+          perf = map(model, performance::performance),
+          mod_sum_stats = map(model, broom.mixed::glance)) %>% 
   select(dataset, model_name, perf, mod_sum_stats) %>% 
   hoist(mod_sum_stats, "nobs") %>% 
   hoist(perf, "R2", "RMSE", "Sigma") %>% 
@@ -3887,7 +3892,8 @@ modelfitstats <- ManyEcoEvo_viz %>% #TODO seems like there's another chunk that 
             publishable_subset == "All", 
             expertise_subset == "All",
             model_name %in% c("sorensen_glm", "uni_mixed_effects")) %>% 
-     mutate(perf = map(model, performance::performance),
+     mutate(model = map(model, extract_fit_engine),
+            perf = map(model, performance::performance),
             mod_sum_stats = map(model, broom.mixed::glance)) %>% 
   select(dataset, model_name, perf, mod_sum_stats) %>% 
   hoist(mod_sum_stats, "nobs") %>% 
