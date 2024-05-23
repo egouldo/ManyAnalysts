@@ -2165,7 +2165,13 @@ The instructions are publicly available and can be found within the following fi
 :::
 
 We then used the $t$ values and $df_S$ from the models to obtain $r$ as per the formula above.
-All $r$ and accompanying $df$ (or $df_S$) were converted to $Z_r$ and its sampling variance; $1/(n – 3)$ where $n = df + 1$.
+All $r$ and accompanying $df$ (or $df_S$) were converted to $Z_r$ 
+
+$$
+Zr=\frac{{1}{2}}ln\frac{{1+r}{1-r}}
+$$ {#eq-Zr}
+
+and its sampling variance; $1/(n – 3)$ where $n = df + 1$.
 Any analyses from which we could not derive a signed $Z_r$, for instance one with a quadratic function in which the slope changed sign, were excluded from the analyses of Fisher's $Z_r$.
 We expected such analyses would be rare.
 In fact, most submitted analyses excluded from our meta-analysis of $Z_r$ were excluded because of a lack of sufficient information provided by the analyst team rather than due to the use of effects that could not be converted to $Z_r$.
