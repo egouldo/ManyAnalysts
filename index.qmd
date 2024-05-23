@@ -4351,7 +4351,7 @@ As we saw with the *Eucalyptus* analyses, taking a radically smaller subset of t
 
 Our observation that dramatic sub-setting in the *Eucalyptus* dataset was associated with correspondingly dramatic divergence in effect sizes leads us towards another hypothesis to explain the differences in heterogeneity between the *Eucalyptus* and blue tit analysis sets.
 It may be that when analysts often divide a dataset into subsets, the result will be greater heterogeneity in analytical outcome for that dataset.
-Although we saw sub-setting associated with dramatic outliers in the *Eucalyptus* dataset, nearly all other analyses of *Eucalyptus* data used very close to the same set of 351 samples, and as we saw, these effects did not vary substantially.
+Although we saw sub-setting associated with dramatic outliers in the *Eucalyptus* dataset, nearly all other analyses of *Eucalyptus* data used close to the same set of 351 samples, and as we saw, these effects did not vary substantially.
 However, analysts often analyzed only a subset of the blue tit data, and as we observed, sample sizes were much more variable among blue tit effects, and the effects themselves were also much more variable.
 Important to note here is that subsets of data may differ from each other for biological reasons, but they may also differ due to sampling error.
 Sampling error is a function of sample size, and sub-samples are, by definition, smaller samples, and so more subject to variability in effects due to sampling error [@jennions2013].
