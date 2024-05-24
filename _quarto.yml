@@ -14,6 +14,7 @@ book:
     - supp_mat/SM2_EffectSizeAnalysis.qmd
     - supp_mat/SM3_ExplainingDeviation.qmd
     - supp_mat/SM4_case_study_datasets.qmd
+  page-navigation: true
   sidebar: false
   favicon: 'inst/hex_keys/ManyEcoEvoHex.jpg'
   google-analytics: 
@@ -39,7 +40,7 @@ format:
       hypothesis: false
     citations-hover: true
     crossrefs-hover: true
-    toc: false
+    toc: true
     html-math-method: mathjax
     include-in-header:
       - text: |
