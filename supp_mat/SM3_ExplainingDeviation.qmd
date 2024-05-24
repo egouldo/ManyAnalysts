@@ -5,8 +5,10 @@ editor: visual
 code-fold: true
 number-sections: true
 execute:
-  freeze: auto  # re-render only when source changes
-bibliography: ../ms/references.bib
+  freeze: false  # re-render only when source changes
+bibliography: 
+  - ../ms/references.bib
+  - ../ms/grateful-refs.bib
 ---
 
 ```{r}
@@ -478,7 +480,9 @@ Consequently, for both blue tit and *Euclayptus* datasets, we fitted and analyse
 ```{r}
 #| label: tbl-explore-Zr-deviation-random-effects-structure
 #| tbl-cap: 'Singularity and convergence checking outcomes for models of deviation in effect-sizes $Z_r$ explained by peer-review ratings for different random effect structures. Problematic checking outcomes are highlighted in red. '
-#| cache: true
+#| cache: false
+
+library(multilevelmod)
 
 model <- linear_reg() %>%
   set_engine("lmer")
