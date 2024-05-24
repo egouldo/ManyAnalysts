@@ -2292,7 +2292,7 @@ Each of the four responses ($Z_r$, $y_{25th}$, $y_{50th}$, $y_{75th}$) were to b
 The next set of univariate analyses sought to explain deviations from the mean effects based on a measure of the distinctiveness of the set of variables included in each analysis.
 As a 'distinctiveness' score, we used Sorensen's Similarity Index (an index typically used to compare species composition across sites), treating variables as species and individual analyses as sites.
 To generate an individual Sorensen's value for each analysis required calculating the pairwise Sorensen's value for all pairs of analyses (of the same dataset), and then taking the average across these Sorensen's values for each analysis.
-We calculated the Sorensen's index values using the *betapart* package [@baselga2023] in R:
+We calculated the Sorensen's index values using the *betapart* package [@betapart] in R:
 
 $$
 \beta_{Sorensen} = \frac{b+c}{2a+b+c}
@@ -4474,7 +4474,7 @@ All authors read and approved the final manuscript.
 
 ## Session Info {#sec-sesion-info}
 
-```{r grateful-pkg-list}
+```{r grateful-pkg-list, echo = FALSE}
 # pkgs <- cite_packages(output = "table", out.dir = here::here("ms/"))
 # knitr::kable(pkgs) #NOTE manually edited grateful-refs.bib and updated pkgs below due to bug
 
@@ -4498,7 +4498,7 @@ data.frame(
                        "1.1.0","0.2.0","2.0","0.21.7","1.2.0","0.11.0",
                        "1.0.2","2.27","1.3","1.3.0","0.8.4","0.9.7","1.0.0",
                        "1.7.0","1.1.1","0.4.2","2.0.0","3.0.0","0.44"),
-            Citation = c("@base", "@betapart", "@broommixed", "@colorspace2009b; @colorspace2009c; @colorspace2020a", "@cowplot", "@devtools", "@EnvStats-book", "@GGally", "@ggforestplot", "@ggh4x", "@ggpubr", "@ggrepel", "@ggthemes", "@glmmTMB", "@gt", "@gtsummary", "@here", "@Hmisc", "@irr", "@janitor", "@knitr2014; @knitr2015; @knitr2024", "@latex2exp", "@lme4", "@ManyEcoEvo", "@metafor", "@modelbased", "@multilevelmod", "@MuMIn", "@naniar", "@NatParksPalettes", "@orchaRd", "@parameters", "@patchwork", "@performance", "@renv", "@rmarkdown2018; @rmarkdown2020; @rmarkdown2024", "@molina-marhuenda:2015", "@scales", "@see", "@showtext", "@specr", "@targets", "@tidymodels", "@tidytext", "@tidyverse", "@withr", "@xfun")
+            Citation = c("@base", "@betapart", "@broommixed", "@colorspace2020a", "@cowplot", "@devtools", "@EnvStats-book", "@GGally", "@ggforestplot", "@ggh4x", "@ggpubr", "@ggrepel", "@ggthemes", "@glmmTMB", "@gt", "@gtsummary", "@here", "@Hmisc", "@irr", "@janitor", "@knitr2024", "@latex2exp", "@lme4", "@ManyEcoEvo", "@metafor", "@modelbased", "@multilevelmod", "@MuMIn", "@naniar", "@NatParksPalettes", "@orchaRd", "@parameters", "@patchwork", "@performance", "@renv", "@rmarkdown2024", "@molina-marhuenda:2015", "@scales", "@see", "@showtext", "@specr", "@targets", "@tidymodels", "@tidytext", "@tidyverse", "@withr", "@xfun")
 ) %>%
   knitr::kable(caption = "R packages directly used in this manuscript.")
 ```
