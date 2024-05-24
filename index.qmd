@@ -2168,7 +2168,7 @@ We then used the $t$ values and $df_S$ from the models to obtain $r$ as per the 
 All $r$ and accompanying $df$ (or $df_S$) were converted to Fisher's $Z_r$ 
 
 $$
-Zr=\frac{{1}{2}}ln\frac{{1+r}{1-r}}
+Z_r = \frac{1}{2} \ln(\dfrac{1+r}{1-r})
 $$ {#eq-Zr}
 
 and its sampling variance; $1/(n – 3)$ where $n = df + 1$.

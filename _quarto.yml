@@ -40,6 +40,19 @@ format:
     citations-hover: true
     crossrefs-hover: true
     toc: false
+    html-math-method: mathjax
+    include-in-header:
+      - text: |
+          <script>
+          window.MathJax = {
+            loader: {
+              load: ['[tex]/physics']
+            },
+            tex: {
+              packages: {'[+]': ['physics']}
+            }
+          };
+          </script>
 
   
     # toc-location: left
