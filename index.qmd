@@ -4477,7 +4477,7 @@ All authors read and approved the final manuscript.
 ```{r}
 #| label: tbl-grateful-pkg-list
 #| echo: false
-#| tbl-cap: "R packages used to generate this manuscript."
+#| tbl-cap: "R packages used to generate this manuscript. Please see the ManyEcoEvo package for a full list of packages used in the analysis pipeline."
 
 # pkgs <- cite_packages(output = "table", out.dir = here::here("ms/"))
 # knitr::kable(pkgs) #NOTE manually edited grateful-refs.bib and updated pkgs below due to bug
