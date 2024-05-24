@@ -4416,6 +4416,15 @@ To make selecting plausible models easier, one could recruit multiple analysts t
 An alternative that may be more labor intensive for the primary analyst, but which may lead to a more plausible set of models, could involve hypothesizing about causal pathways with DAGs [directed acyclic graphs; @arif2023] to constrain the model set. 
 As with other options outlined above, generating model specifications with DAGs could be partnered with pre-registration to hinder bias from undisclosed data dredging. 
 
+Responses to heterogeneity in analysis outcomes need not be limited to simply conducting more analyses, especially if it turns out that analysis quality drives some of the observed heterogeneity. 
+As we noted above, we cannot yet rule out the possibility that insufficient statistical expertise or poor-quality analyses might drive some portion of the heterogeneity we observed. 
+Improving the quality of analyses might be accomplished with a deliberate increase in investment in statistical education. 
+Many ecology and evolutionary biology students learn their statistical practice informally, with many ecology doctoral programs in the USA not requiring a statistics course [@touchon2016], and no formal courses of any kind included in doctoral degrees in most other countries. 
+In cases where formal investment in statistical education is lacking, informal resources, such as guidelines and checklists, may help researchers avoid common mistakes. 
+However, unless following guidelines or checklists are mandatory for publication, the adherence to guidelines is patchy. 
+For example, despite the publication of guidelines for conducting meta-analyses in ecology, the quality of meta-analyses did not improve substantially over time [koricheva2014]. 
+Even in medical research where adherence to guidelines such as the PRISMA standards for systematic reviews and meta-analyses is more highly valued, adherence is often poor [page2017].
+
 Although we have reviewed a variety of potential responses to the existence of variability in analytical outcomes, we certainly do not wish to imply that this is a comprehensive set of possible responses. 
 Nor do we wish to imply that the opinions we have expressed about these options are correct. 
 Determining how the disciplines of ecology and evolutionary biology should respond to knowledge of the variability in analytical outcome will benefit from the contribution and discussion of ideas from across these disciplines. 
