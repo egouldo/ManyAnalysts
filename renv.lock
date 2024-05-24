@@ -149,12 +149,12 @@
       "Version": "1.1.0",
       "Source": "GitHub",
       "RemoteType": "github",
-      "Remotes": "daniel1noble/orchaRd, NightingaleHealth/ggforestplot",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "ManyEcoEvo",
       "RemoteUsername": "egouldo",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "50bbeeb17cbf73ef40ee6cbdb16033510e034b8b",
+      "RemoteRepo": "ManyEcoEvo",
+      "RemoteRef": "main",
+      "RemoteSha": "2a00761f09c30e44b2f8fb2461dd07d326e933cf",
+      "Remotes": "daniel1noble/orchaRd, NightingaleHealth/ggforestplot",
       "Requirements": [
         "R",
         "betapart",
@@ -176,7 +176,7 @@
         "tidyr",
         "tidyselect"
       ],
-      "Hash": "95da4d57f531702f89aa1239bd9d7028"
+      "Hash": "7c6c2cb8088ceff18d1481b4be7134ff"
     },
     "Matrix": {
       "Package": "Matrix",
@@ -496,19 +496,6 @@
         "snow"
       ],
       "Hash": "62fbb4a47b6380075df5985ca5307c69"
-    },
-    "bib2df": {
-      "Package": "bib2df",
-      "Version": "1.1.2.0",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "dplyr",
-        "httr",
-        "humaniformat",
-        "stringr"
-      ],
-      "Hash": "f73a15a851cb13310bd6765c0ec97b60"
     },
     "bigD": {
       "Package": "bigD",
@@ -2247,17 +2234,6 @@
         "withr"
       ],
       "Hash": "03d741c92fda96d98c3a3f22494e3b4a"
-    },
-    "humaniformat": {
-      "Package": "humaniformat",
-      "Version": "0.6.0",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "Rcpp",
-        "methods"
-      ],
-      "Hash": "d521cf9db39ca79250a00029661fb7cd"
     },
     "ids": {
       "Package": "ids",
