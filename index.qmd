@@ -2103,28 +2103,15 @@ First, the reviewer received a description of the methods of a single analysis.
 This included the narrative methods section, the analysis team's answers to our survey questions regarding their methods, including analysis code, and the dataset.
 The reviewer was then asked, in an online survey (<https://osf.io/4t36u/>), to rate that analysis on a scale of 0-100 based on this prompt: "Rate the overall appropriateness of this analysis to answer the research question (*one of the two research questions inserted here*) with the available data. To help you calibrate your rating, please consider the following guidelines:
 
--   
-
-    100. A perfect analysis with no conceivable improvements from the reviewer
-
--   
-
-    75. An imperfect analysis but the needed changes are unlikely to dramatically alter outcomes
-
--   
-
-    50. A flawed analysis likely to produce either an unreliable estimate of the relationship or an over-precise estimate of uncertainty
-
--   
-
-    25. A flawed analysis likely to produce an unreliable estimate of the relationship and an over-precise estimate of uncertainty
-
--   
-
-    0.  A dangerously misleading analysis, certain to produce both an estimate that is wrong and a substantially over-precise estimate of uncertainty that places undue confidence in the incorrect estimate.
-
+>
+-   100. A perfect analysis with no conceivable improvements from the reviewer
+-   75. An imperfect analysis but the needed changes are unlikely to dramatically alter outcomes
+-   50. A flawed analysis likely to produce either an unreliable estimate of the relationship or an over-precise estimate of uncertainty
+-   25. A flawed analysis likely to produce an unreliable estimate of the relationship and an over-precise estimate of uncertainty
+-   0.  A dangerously misleading analysis, certain to produce both an estimate that is wrong and a substantially over-precise estimate of uncertainty that places undue confidence in the incorrect estimate.
+>
 \*Please note that these values are meant to calibrate your ratings.
-We welcome ratings of any number between 0 and 100."
+We welcome ratings of any number between 0 and 100.
 
 After providing this rating, the reviewer was presented with this prompt, in multiple-choice format: "Would the analytical methods presented produce an analysis that is (a) publishable as is, (b) publishable with minor revision, (c) publishable with major revision, (d) deeply flawed and unpublishable?" The reviewer was then provided with a series of text boxes and the following prompts: "Please explain your ratings of this analysis. Please evaluate the choice of statistical analysis type. Please evaluate the process of choosing variables for and structuring the statistical model. Please evaluate the suitability of the variables included in (or excluded from) the statistical model. Please evaluate the suitability of the structure of the statistical model. Please evaluate choices to exclude or not exclude subsets of the data. Please evaluate any choices to transform data (or, if there were no transformations, but you think there should have been, please discuss that choice)." After submitting this review, a methods section from a second analysis was then made available to the reviewer.
 This same sequence was followed until all analyses allocated to a given reviewer were provided and reviewed.
