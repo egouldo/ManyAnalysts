@@ -456,8 +456,8 @@ transformation_plot_data %>%
 
 ## Model Convergence and Singularity problems {#sec-convergence-singularity}
 
-During model fitting, especially during fitting of models with random effects using `lme4` [@bates2015], some models failed to converge while others were accompanied with console warnings of singular fit.
-However, the convergence checks from `lme4` are known to be too strict (see `?performance::check_convergence()` documentation for a discussion of this issue), consequently we checked for model warnings of convergence failure using the `check_convergence()` function from the `performance` package [@ludecke2021].
+During model fitting, especially during fitting of models with random effects using `lme4` [@lme4], some models failed to converge while others were accompanied with console warnings of singular fit.
+However, the convergence checks from `lme4` are known to be too strict (see `?performance::check_convergence()` documentation for a discussion of this issue), consequently we checked for model warnings of convergence failure using the `check_convergence()` function from the `performance` package [@performance].
 For all models we double-checked that they did not have singular fit by using `performance::check_singularity`.
 Despite passing `performance::check_singularity()`, `parameters::parameters()` was unable to properly estimate SE and confidence intervals for the random effects of some models, which suggests singular fit.
 For all models we also checked whether the SE of random effects could be calculated, and if not, marked these models as being singular.

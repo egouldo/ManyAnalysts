@@ -2142,7 +2142,7 @@ $$ {#eq-t-to-r}
 This formula can only be applied if $t$ and $df$ values originate from linear or generalized linear models [GLMs; @nakagawa2007].
 If, instead, linear mixed-effects models (LMMs) or generalized linear mixed-effects models (GLMMs) were used by a given analysis, the exact $df$ cannot be estimated.
 However, adjusted $df$ can be estimated, for example, using the Satterthwaite approximation of $df$, ${df}_S$, [note that SAS uses this approximation to obtain $df$ for LMMs and GLMMs; @luke2017].
-For analyses using either LMMs or GLMMs that do not produce ${df}_S$ we planned to obtain ${df}_S$ by rerunning the same (G)LMMs using the `lmer()` or `glmer()` function in the *lmerTest* package in R [@kuznetsova2017; @R].
+For analyses using either LMMs or GLMMs that do not produce ${df}_S$ we planned to obtain ${df}_S$ by rerunning the same (G)LMMs using the `lmer()` or `glmer()` function in the *lmerTest* package in R [@kuznetsova2017; @base].
 
 ::: {.callout-note appearance="simple"}
 **Preregistration Deviation:**
@@ -2193,7 +2193,7 @@ We did not add this step for the *Eucalyptus* data because (a) all responses wer
 :::
 
 We plotted individual effect size estimates ($Z_r$) and predicted values of the dependent variable ($y_i$) and their corresponding 95% confidence / credible intervals in forest plots to allow visualization of the range and precision of effect size and predicted values.
-Further, we included these estimates in random effects meta-analyses [@higgins2003; @borenstein2017] using the *metafor* package in R [@viechtbauer2010; @R]:
+Further, we included these estimates in random effects meta-analyses [@higgins2003; @borenstein2017] using the *metafor* package in R [@metafor; @base]:
 
 $$
 Z_r \sim 1 + \left(1 \vert \text{analysisID} \right)
@@ -2238,7 +2238,7 @@ These analyses were secondary to our estimation of variation in effect sizes des
 We wished to quantify relationships among variables, but we had no a priori expectation of effect size and made no dichotomous decisions about statistical significance.
 
 When examining the extent to which reviewer ratings (on a scale from 0 to 100) explained deviation from the average effect (or predicted value), each analysis had been rated by multiple peer reviewers, so for each reviewer score to be included, we include each deviation score in the analysis multiple times.
-To account for the non-independence of multiple ratings of the same analysis, we planned to include analysis identity as a random effect in our general linear mixed model in the *lme4* package in R [@bates2015; @R].
+To account for the non-independence of multiple ratings of the same analysis, we planned to include analysis identity as a random effect in our general linear mixed model in the *lme4* package in R [@lme4; @base].
 To account for potential differences among reviewers in their scoring of analyses, we also planned to include reviewer identity as a random effect:
 
 $$ 
@@ -2251,7 +2251,7 @@ $$
 $$ {#eq-deviation-rating}
 
 Where $DeviationFromMean_{j}$ is the deviation from the meta-analytic mean for the *j*th analysis, $ReviewerID_{i}$ is the random intercept assigned to each *i* reviewer, and $AnalysisID_{j}$ is the random intercept assigned to each *j* analysis, both of which are assumed to be normally distributed with a mean of 0 and a variance of $\sigma^{2}$.
-Absolute deviation scores were Box-Cox transformed using the `step_box_cox()` function from the *timetk* package in R [@timetk; @R].
+Absolute deviation scores were Box-Cox transformed using the `step_box_cox()` function from the *timetk* package in R [@timetk; @base].
 
 ```{r eqn-boxcox-ratings-bt, results = 'asis', eval = FALSE, echo = FALSE}
 # Ratings Continuous blue tit
@@ -2299,7 +2299,7 @@ $$
 $$ {#eq-sorensen}
 
 where $a$ is the number of variables common to both analyses, $b$ is the number of variables that occur in the first analysis but not in the second and $c$ is the number of variables that occur in the second analysis.
-We then used the per-model average Sorensen's index value as an independent variable to predict the deviation score in a general linear model, and included no random effect since each analysis is included only once, in R [@R]:
+We then used the per-model average Sorensen's index value as an independent variable to predict the deviation score in a general linear model, and included no random effect since each analysis is included only once, in R [@base]:
 
 $$ 
 \text{DeviationScore}_{j} \sim \beta \text{Sorensen}_{j}
@@ -2315,7 +2315,7 @@ This is because most models produced only one effect and so we expected that spe
 Note that this analysis contrasts with the analyses in which we used reviewer ratings as predictors because in the analyses with reviewer ratings, each effect appeared in the analysis approximately four times due to multiple reviews of each analysis, and so it was much more important to account for that variance through a random effect.
 :::
 
-Finally, we conducted a multivariate analysis with the five predictors described above (peer ratings 0-100 and peer ratings of publishability 1-4; both original and revised and Sorensen's index, plus a sixth, presence /absence of random effects) with random effects of analysis identity and reviewer identity in the *lme4* package in R [@bates2015; @R].
+Finally, we conducted a multivariate analysis with the five predictors described above (peer ratings 0-100 and peer ratings of publishability 1-4; both original and revised and Sorensen's index, plus a sixth, presence /absence of random effects) with random effects of analysis identity and reviewer identity in the *lme4* package in R [@lme4; @base].
 We had stated here in the text that we would use only the revised (final) peer ratings in this analysis, so the absence of the initial ratings is not a deviation from our plan:
 
 $$ 
@@ -2355,7 +2355,7 @@ We believed these values were incorrect and thus made the conservative decision 
 
 **1. Evaluating model fit.**
 
-We evaluated all fitted models using the `performance()` function from the *performance* package [@ludecke2021] and the `glance()` function from the *broom.mixed* package [@bolker2022].
+We evaluated all fitted models using the `performance()` function from the *performance* package [@performance] and the `glance()` function from the *broom.mixed* package [@broommixed].
 For all models, we calculated the square root of the residual variance (Sigma) and the root mean squared error (RMSE).
 For GLMMs `performance()` calculates the marginal and conditional $R^2$ values as well as the contribution of random effects (ICC), based on Nakagawa et al. [-@nakagawa2017].
 The conditional $R^2$ accounts for both the fixed and random effects, while the marginal $R^2$ considers only the variance of the fixed effects.
@@ -2392,7 +2392,7 @@ We planned for analysts and initiating authors to discuss the limitations, resul
 **Preregistration Deviation:** As described above, due to the large number of recruited analysts and reviewers and the anticipated challenges of receiving and integrating feedback from so many authors, we limited analyst and reviewer participation in the production of the final manuscript to an invitation to call attention to serious problems with the manuscript draft.
 :::
 
-We built an R package, `ManyEcoEvo` to conduct the analyses described in this study [@gould2023], which can be downloaded from [https://github.com/egouldo/ManyEcoEvo/](https://github.com/egouldo/ManyEcoEvo) to reproduce our analyses or replicate the analyses described here using alternate datasets. Data cleaning and preparation of analysis-data, as well as the analysis, is conducted in R [@R] reproducibly using the `targets` package [@landau2021]. This data and analysis pipeline is stored in the `ManyEcoEvo` package repository and its outputs are made available to users of the package when the library is loaded. 
+We built an R package, `ManyEcoEvo` to conduct the analyses described in this study [@ManyEcoEvo], which can be downloaded from [https://github.com/egouldo/ManyEcoEvo/](https://github.com/egouldo/ManyEcoEvo) to reproduce our analyses or replicate the analyses described here using alternate datasets. Data cleaning and preparation of analysis-data, as well as the analysis, is conducted in R [@base] reproducibly using the `targets` package [@targets]. This data and analysis pipeline is stored in the `ManyEcoEvo` package repository and its outputs are made available to users of the package when the library is loaded. 
 
 The full manuscript, including further analysis and presentation of results is written in Quarto [@AllaireQuarto2024]. The source code to reproduce the manuscript is hosted at [https://github.com/egouldo/ManyAnalysts/](https://github.com/egouldo/ManyAnalysts/), and the rendered version of the source code may be viewed at [https://egouldo.github.io/ManyAnalysts/](https://egouldo.github.io/ManyAnalysts/). All R packages and their versions used in the production of the manuscript are listed at @sec-sesion-info.
 
@@ -4474,7 +4474,11 @@ All authors read and approved the final manuscript.
 
 ## Session Info {#sec-sesion-info}
 
-```{r grateful-pkg-list, echo = FALSE}
+```{r}
+#| label: tbl-grateful-pkg-list
+#| echo: false
+#| tbl-cap: "R packages used to generate this manuscript."
+
 # pkgs <- cite_packages(output = "table", out.dir = here::here("ms/"))
 # knitr::kable(pkgs) #NOTE manually edited grateful-refs.bib and updated pkgs below due to bug
 
@@ -4500,7 +4504,7 @@ data.frame(
                        "1.7.0","1.1.1","0.4.2","2.0.0","3.0.0","0.44"),
             Citation = c("@base", "@betapart", "@broommixed", "@colorspace2020a", "@cowplot", "@devtools", "@EnvStats-book", "@GGally", "@ggforestplot", "@ggh4x", "@ggpubr", "@ggrepel", "@ggthemes", "@glmmTMB", "@gt", "@gtsummary", "@here", "@Hmisc", "@irr", "@janitor", "@knitr2024", "@latex2exp", "@lme4", "@ManyEcoEvo", "@metafor", "@modelbased", "@multilevelmod", "@MuMIn", "@naniar", "@NatParksPalettes", "@orchaRd", "@parameters", "@patchwork", "@performance", "@renv", "@rmarkdown2024", "@molina-marhuenda:2015", "@scales", "@see", "@showtext", "@specr", "@targets", "@tidymodels", "@tidytext", "@tidyverse", "@withr", "@xfun")
 ) %>%
-  knitr::kable(caption = "R packages directly used in this manuscript.")
+  knitr::kable()
 ```
 
 ```{r session-info}

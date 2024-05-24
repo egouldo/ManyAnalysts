@@ -22,7 +22,7 @@ set.seed(1234)
 ```
 
 Pairwise-correlation plots for the *Eucalyptus* and blue tit case-study data provided to analysts are shown in @fig-ggpairs-eucalyptus and @fig-ggpairs-bt, respectively.
-Plots were created with R package `GGally` [@barret2022].
+Plots were created with R package `GGally` [@GGally].
 
 ```{r}
 #| label: fig-ggpairs-eucalyptus
