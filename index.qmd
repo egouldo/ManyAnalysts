@@ -2315,6 +2315,8 @@ This is because most models produced only one effect and so we expected that spe
 Note that this analysis contrasts with the analyses in which we used reviewer ratings as predictors because in the analyses with reviewer ratings, each effect appeared in the analysis approximately four times due to multiple reviews of each analysis, and so it was much more important to account for that variance through a random effect.
 :::
 
+Next, we assessed the relationship between the inclusion of random effects in the analysis and the deviation from the mean effect size. We anticipated that most analysts would use random effects in a mixed model framework, but if we were wrong, we wanted to evaluate the differences in outcomes when using random effects versus not using random effects. Thus if there were at least 5 analyses that did and 5 analyses that did not include random effects, we would add a binary predictor variable “random effects included (yes/no)” to our set of univariate analyses and would add this predictor variable to our multivariate model described below. This standard was only met for the *Eucalyptus* analyses, and so we only examined inclusion of random effects as a predictor variable in meta-analysis of this set to analyses. 
+
 Finally, we conducted a multivariate analysis with the five predictors described above (peer ratings 0-100 and peer ratings of publishability 1-4; both original and revised and Sorensen's index, plus a sixth, presence /absence of random effects) with random effects of analysis identity and reviewer identity in the *lme4* package in R [@lme4; @base].
 We had stated here in the text that we would use only the revised (final) peer ratings in this analysis, so the absence of the initial ratings is not a deviation from our plan:
 
@@ -2785,7 +2787,7 @@ The average number of interaction terms was much larger for the blue tit models 
 Blue tit models also contained more random effects (mean `r round(Table2[5,4],2)` $\pm$ `r round(Table2[5,5],2)` SD) than *Eucalyptus* models (mean `r round(Table2[13,4],2)` $\pm$ `r round(Table2[13,5],2)` SD).
 The maximum possible sample size in the blue tit dataset (3720 nestlings) was an order of magnitude larger than the maximum possible in the *Eucalyptus* dataset (351 plots), and the means and standard deviations of the sample size used to derive the effects eligible for our study were also an order of magnitude greater for the blue tit dataset (mean `r round(Table2[7,4],2)` $\pm$ `r round(Table2[7,5],2)` SD) relative to the *Eucalyptus* models (mean `r round(Table2[15,4],2)` $\pm$ `r round(Table2[15,5],2)` SD).
 However, the standard deviation in sample size from the *Eucalyptus* models was heavily influenced by a few cases of dramatic sub-setting (described below).
-Approximately three quarters of Eucalyptus models used sample sizes within 3% of the maximum.
+Approximately three quarters of *Eucalyptus* models used sample sizes within 3% of the maximum.
 In contrast, fewer than 20% of blue tit models relied on sample sizes within 3% of the maximum, and approximately 50% of blue tit models relied on sample sizes 29% or more below the maximum.
 
 Analysts provided qualitative descriptions of the conclusions of their analyses.
@@ -4466,7 +4468,7 @@ FF's contributions were supported by ARC Future Fellowship FT150100297.
 ## Author's contributions
 
 HF, THP and FF conceptualized the project.
-PV provided raw data for Eucalyptus analyses and SG and THP provided raw data for blue tit analyses.
+PV provided raw data for *Eucalyptus* analyses and SG and THP provided raw data for blue tit analyses.
 DGH, HF and THP prepared surveys for collecting participating analysts and reviewer's data.
 EG, HF, THP, PV, SN and FF planned the analyses of the data provided by our analysts and reviewers, EG, HF, and THP curated the data, EG and HF wrote the software code to implement the analyses and prepare data visualisations.
 EG ensured that analyses were documented and reproducible.
