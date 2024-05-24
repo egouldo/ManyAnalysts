@@ -1876,7 +1876,7 @@ bibliography:
   - ms/references.bib
   - ms/grateful-refs.bib
 number-sections: true
-number-depth: 2
+number-depth: 3
 toc-depth: 3
 tbl-cap-location: top
 date-modified: last-modified
