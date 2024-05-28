@@ -2796,19 +2796,13 @@ These conclusions could take into account the results of any formal analyses com
 Here we summarize all qualitative responses, regardless of whether we had sufficient information to use the corresponding model results in our quantitative analyses below.
 We classified these conclusions into the categories summarized below (@tbl-Table4):
 
-Mixed: some evidence supporting a positive effect, some evidence supporting a negative effect
-
-Conclusive negative: negative relationship described without caveat
-
-Qualified negative: negative relationship but only in certain circumstances or where analysts express uncertainty in their result
-
-Conclusive none: analysts interpret the results as conclusive of no effect
-
-None qualified: analysts describe finding no evidence of a relationship but they describe the potential for an undetected effect
-
-Qualified positive: positive relationship described but only in certain circumstances or where analysts express uncertainty in their result
-
-Conclusive positive: positive relationship described without caveat
+- Mixed: some evidence supporting a positive effect, some evidence supporting a negative effect
+- Conclusive negative: negative relationship described without caveat
+- Qualified negative: negative relationship but only in certain circumstances or where analysts express uncertainty in their result
+- Conclusive none: analysts interpret the results as conclusive of no effect
+- None qualified: analysts describe finding no evidence of a relationship but they describe the potential for an undetected effect
+- Qualified positive: positive relationship described but only in certain circumstances or where analysts express uncertainty in their result
+- Conclusive positive: positive relationship described without caveat
 
 For the blue tit dataset, most analysts concluded that there was negative relationship between measures of sibling competition and nestling growth, though half the teams expressed qualifications or described effects as mixed or absent.
 No analysts concluded that there was a positive relationship even though some individual effect sizes were positive, apparently because all analysts who produced effects indicating positive relationships also produced effects indicating negative relationships and therefore described their results as qualified, mixed, or absent.
