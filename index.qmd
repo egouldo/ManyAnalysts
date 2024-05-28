@@ -2250,7 +2250,7 @@ $$
 \end{align}
 $$ {#eq-deviation-rating}
 
-Where $DeviationFromMean_{j}$ is the deviation from the meta-analytic mean for the *j*th analysis, $ReviewerID_{i}$ is the random intercept assigned to each *i* reviewer, and $AnalysisID_{j}$ is the random intercept assigned to each *j* analysis, both of which are assumed to be normally distributed with a mean of 0 and a variance of $\sigma^{2}$.
+Where $\text{DeviationFromMean}_{j}$ is the deviation from the meta-analytic mean for the *j*th analysis, $\text{ReviewerID}_{i}$ is the random intercept assigned to each *i* reviewer, and $\text{AnalysisID}_{j}$ is the random intercept assigned to each *j* analysis, both of which are assumed to be normally distributed with a mean of 0 and a variance of $\sigma^{2}$.
 Absolute deviation scores were Box-Cox transformed using the `step_box_cox()` function from the *timetk* package in R [@timetk; @base].
 
 ```{r eqn-boxcox-ratings-bt, results = 'asis', eval = FALSE, echo = FALSE}
