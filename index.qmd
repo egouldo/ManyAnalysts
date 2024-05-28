@@ -2005,7 +2005,7 @@ We have mass and tarsus length data from 3720 individual chicks divided among 16
 The full list of variables included in the dataset is publicly available (<https://osf.io/hdv8m>), along with the data (<https://osf.io/qjzby>).
 
 ::: {.callout-note appearance="simple"}
-**Additional explanation:** Shortly after beginning to recruit analysts, several analysts noted a small set of related errors in the blue tit dataset.
+**Additional Explanation:** Shortly after beginning to recruit analysts, several analysts noted a small set of related errors in the blue tit dataset.
 We corrected the errors, replaced the dataset on our OSF site, and emailed the analysts on 19 April 2020 to instruct them to use the revised data.
 The email to analysts is available here (<https://osf.io/4h53z>).
 The errors are explained in that email.
@@ -2077,7 +2077,7 @@ For the evolutionary ecology dataset that question was "To what extent is the gr
 They also were asked to upload their analysis files (including the dataset as they formatted it for analysis and their analysis code \[if applicable\]) and a detailed journal-ready statistical methods section.
 
 ::: {.callout-note appearance="simple"}
-**Additional explanation:** 
+**Additional Explanation:** 
 
 As is common in many studies in ecology and evolutionary biology, the datasets we provided contained many variables, and the research questions we provided could be addressed by our datasets in many different ways. For instance, volunteer analysts had to choose the dependent (response) variable and the independent variable, and make numerous other decisions about which variables and data to use and how to structure their model.
 :::
