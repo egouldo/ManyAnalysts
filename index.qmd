@@ -2245,8 +2245,8 @@ $$
 \begin{align}
 \text{DeviationScore}_j = \text{BoxCox}(abs(\text{DeviationFromMean}_{j})) \\
 {\text{DeviationScore}}_{ij} \sim Rating_{ij} + \text{ReviewerID}_{i} + {\text{AnalysisID}}_{j} \\
-{\text{ReviewerID}}_i \sim \mathcal{N}(0,\sigma^2) \\
-{\text{AnalysisID}}_j \sim \mathcal{N}(0,\sigma^2)
+{\text{ReviewerID}}_i \sim \mathcal{N}(0,\sigma_i^2) \\
+{\text{AnalysisID}}_j \sim \mathcal{N}(0,\sigma_j^2)
 \end{align}
 $$ {#eq-deviation-rating}
 
