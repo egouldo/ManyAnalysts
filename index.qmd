@@ -3650,7 +3650,7 @@ model_vars <-
 
 ```
 
-Surprisingly, both the largest and smallest effect sizes in the blue tit analyses (@fig-forest-plots-Zr-1) come from the same analyst (anonymous ID: `r key_vars$TeamIdentifier %>% unique()`), with identical models in terms of the explanatory variable structure, but with different response variables.
+Surprisingly, both the largest and smallest effect sizes in the blue tit analyses (@fig-forest-plots-Zr-1) come from the same analyst (anonymous ID: '`r key_vars$TeamIdentifier %>% unique()`'), with identical models in terms of the explanatory variable structure, but with different response variables.
 However, the radical change in effect was primarily due to collinearity with covariates.
 The primary predictor variable (brood count after manipulation) was accompanied by several collinear variables, including the highly collinear (correlation of approximately 0.9 (@fig-ggpairs-bt)) covariate (brood size at day 14) in both analyses.
 In the analysis of nestling weight, brood count after manipulation showed a strong positive partial correlation with weight after controlling for brood count at day 14 and treatment category (increased, decreased, unmanipulated).
@@ -4448,10 +4448,11 @@ The authors declare that they have no competing interests.
 
 ## Availability of data and materials
 
-All data cleaning and preparation for our analyses was conducted in R (R Core Team 2022) and is publicly archived at <https://zenodo.org/doi/10.5281/zenodo.10046152>.
-Please see session info for the full list of packages and their citations used in our analysis pipeline.
-We built an R package, ManyAnalysts to conduct the analyses described in this chapter.
-This same package can be used to reproduce our analyses or replicate the analyses described here using alternate datasets.
+All materials and data are archived and hosted on the OSF at [https://osf.io/mn5aj/](https://osf.io/mn5aj/), including survey instruments and analyst / reviewer consent forms. The Evolutionary Ecology Data and Ecology and Conservation Data provided to analysts are available at [https://osf.io/34fzc/](https://osf.io/34fzc/) and [https://osf.io/t76uy/](https://osf.io/t76uy/) respectively. Data has been anonymised, and the non-anonymised data is stored on the project OSF within private components accessible to the lead authors. 
+
+We built an R package, `ManyEcoEvo` to conduct the analyses described in this study [@ManyEcoEvo], which can be downloaded from [https://github.com/egouldo/ManyEcoEvo/](https://github.com/egouldo/ManyEcoEvo) to reproduce our analyses or replicate the analyses described here using alternate datasets. Data cleaning and preparation of analysis-data, as well as the analysis, is conducted in R [@base] reproducibly using the `targets` package [@targets]. This data and analysis pipeline is stored in the `ManyEcoEvo` package repository and its outputs are made available to users of the package when the library is loaded.
+
+The full manuscript, including further analysis and presentation of results is written in Quarto [@AllaireQuarto2024]. The source code to reproduce the manuscript is hosted at [https://github.com/egouldo/ManyAnalysts/](https://github.com/egouldo/ManyAnalysts/), and the rendered version of the source code may be viewed at [https://egouldo.github.io/ManyAnalysts/](https://egouldo.github.io/ManyAnalysts/). All R packages and their versions used in the production of this manuscript are listed in the session info at @sec-sesion-info.
 
 ## Competing interests
 
