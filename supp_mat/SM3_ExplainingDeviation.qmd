@@ -1191,8 +1191,7 @@ yi_singularity_convergence_sorensen_mixed_mod %>%
 
 ### Out of sample predictions $y_i$
 
-There were only three blue tit analyses that did not include random effects, which is below the pre-registered threshold for fitting a model of the Box-Cox transformed deviation from the meta-analytic mean as a function of whether the analysis included random-effects.
-However, 16 *Eucalyptus* analyses included in the out-of-sample ($y_{i}$) results included only fixed effects, which crossed our pre-registered threshold.
+Only `r ManyEcoEvo_yi$data[[1]] %>% select(id_col, mixed_model) %>%   count(mixed_model) %>% filter(mixed_model == 0) %>% pluck("n")` of the Blue tit out-of-sample analyses ($y_i$) included random effects, which was below our preregistered threshold of 5 for running the models of Box-Cox transformed deviation from the meta-analytic mean explained by the inclusion of random-effects. However, `r ManyEcoEvo_yi$data[[2]] %>% select(id_col, mixed_model) %>%   count(mixed_model) %>% filter(mixed_model == 0) %>% pluck("n")` *Eucalyptus* analyses included in the out-of-sample ($y_{i}$) results included only fixed effects, which crossed our pre-registered threshold.
 
 Consequently, we performed this analysis for the *Eucalyptus* dataset only, here we present results for the out of sample prediction $y_{i}$ results.
 There is consistent evidence of somewhat higher Box-Cox-transformed deviation values for models including a random effect, meaning the models including random effects averaged slightly higher deviation from the meta-analytic means.
