@@ -931,7 +931,7 @@ library(patchwork)
   theme(legend.position = "right")
 ```
 
-Models of deviation explained by *continuous* ratinsg all converged, however models for the `r yi_convergence_singularity %>% filter(singularity == TRUE, dataset == "blue tit") %>% pull(estimate_type)` out-of-sample predictions were singular for both *Eucalyptus* and blue tit datasets.
+Models of deviation explained by *continuous* ratings all converged, however models for the `r yi_convergence_singularity %>% filter(singularity == TRUE, dataset == "blue tit") %>% pull(estimate_type)` out-of-sample predictions were singular for both *Eucalyptus* and blue tit datasets.
 
 There was a lack of any clear relationships between quantitative review scores and $y_i$ deviation scores (@tbl-yi-deviation-parameter-estimates).
 Plots of these relationships indicated either no relationship or extremely weak positive relationships (@fig-yi-deviation-cont-rating).
