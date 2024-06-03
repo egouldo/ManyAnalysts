@@ -815,9 +815,10 @@ yi_singularity_convergence_sorensen_mixed_mod <-
   group_by(model_name) 
 ```
 
-We fitted the same deviation models on the yi dataset that we fitted for the Zr dataset.
-However, while all models converged, models of deviation explained by categorical peer-ratings suffered from singular fit for the following datasets and estimate types: `r yi_convergence_singularity %>% filter(singularity == TRUE, str_detect(model_name, "categorical")) %>% unite("singular_models", dataset, estimate_type, sep = " - ") %>% pull(singular_models) %>% paste0(collapse = ", ")` (@tbl-yi-deviation-ratings-convergence-singularity).
-Results are therefore presented only for models with non-singular fit, converging for the following datasets and estimate types: `r yi_convergence_singularity %>% filter(singularity == FALSE, str_detect(model_name, "categorical")) %>% unite("singular_models", dataset, estimate_type, sep = " - ") %>% pull(singular_models) %>% paste0(collapse = ", ")` (@tbl-yi-deviation-ratings-convergence-singularity).
+We fitted the same deviation models on the out-of-sample-predictions dataset that we fitted for the effect-size dataset. 
+However, while all models of deviation explained by categorical peer-ratings converged, the following datasets and estimate types suffered from singular fit: `r yi_convergence_singularity %>% filter(singularity == TRUE, str_detect(model_name, "categorical")) %>% unite("singular_models", dataset, estimate_type, sep = " - ") %>% pull(singular_models) %>% paste0(collapse = ", ")` (@tbl-yi-deviation-ratings-convergence-singularity).
+Models of deviation explained by *continuous* ratings all converged, however models for the `r yi_convergence_singularity %>% filter(convergence == FALSE, str_detect(model_name, "continuous")) %>% unite("non_converged", dataset, estimate_type, sep = " - ") %>% pull(non_converged) %>% paste0(collapse = ", ")` out-of-sample predictions model fit was singular.
+Results of all deviation models are therefore presented only for models with non-singular fit, and that converged (@tbl-yi-deviation-ratings-convergence-singularity).
 
 ```{r}
 #| label: tbl-yi-deviation-ratings-convergence-singularity
@@ -927,8 +928,6 @@ yi_violin_cat_plots <- yi_violin_cat_plot_data %>%
 library(patchwork)
 wrap_plots(yi_violin_cat_plots, ncol = 1, tag_levels = 'A', guides = 'collect')
 ```
-
-Models of deviation explained by *continuous* ratings all converged, however models for the `r yi_convergence_singularity %>% filter(singularity == TRUE, dataset == "blue tit") %>% pull(estimate_type)` out-of-sample predictions were singular for both *Eucalyptus* and blue tit datasets.
 
 There was a lack of any clear relationships between quantitative review scores and $y_i$ deviation scores (@tbl-yi-deviation-parameter-estimates).
 Plots of these relationships indicated either no relationship or extremely weak positive relationships (@fig-yi-deviation-cont-rating).
