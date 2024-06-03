@@ -1,7 +1,6 @@
 ---
 title: "Explaining Variation in Deviation Scores"
 format: html
-editor: visual
 code-fold: true
 number-sections: true
 execute:
