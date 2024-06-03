@@ -911,8 +911,8 @@ yi_violin_cat_plot_data <-
                            str_replace("deeply flawed and ", "") %>% 
                            capwords()))) 
 
-yi_violin_cat_plot_data %>% 
-  pwalk(.l = list(.$model_data, .$predictor_means, .$plot_name),
+yi_violin_cat_plots <- yi_violin_cat_plot_data %>% 
+  pmap(.l = list(.$model_data, .$predictor_means, .$plot_name),
        .f = ~ plot_model_means_box_cox_cat(..1, 
                                            PublishableAsIs, 
                                            ..2,
@@ -921,16 +921,11 @@ yi_violin_cat_plot_data %>%
                                                "Major Revision",
                                                "Minor Revision",
                                                "Publishable As Is"),
-                                           ..3) %>% 
-         assign(x = ..3, value = ., envir = .GlobalEnv))
+                                           ..3))
+
 
 library(patchwork)
-`blue tit_y50_violin_cat` /
-  `blue tit_y75_violin_cat` /
-     Eucalyptus_y50_violin_cat /
-  patchwork::plot_layout(guides = 'collect') +
-  patchwork::plot_annotation(tag_levels = 'A') &
-  theme(legend.position = "right")
+wrap_plots(yi_violin_cat_plots, ncol = 1, tag_levels = 'A', guides = 'collect')
 ```
 
 Models of deviation explained by *continuous* ratings all converged, however models for the `r yi_convergence_singularity %>% filter(singularity == TRUE, dataset == "blue tit") %>% pull(estimate_type)` out-of-sample predictions were singular for both *Eucalyptus* and blue tit datasets.
