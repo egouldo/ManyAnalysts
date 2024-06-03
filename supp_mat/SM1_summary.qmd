@@ -782,7 +782,7 @@ cowplot::plot_grid(curve_euc, specs_euc, samp_size_hist_euc,
 
 ### Post-hoc analysis: Exploring the effect of removing analyses with poor peer-review ratings on heterogeneity
 
-The forest plots in @fig-all-forest-plots-Zr compare the distributions of $Z_r$ effects from our full set of analyses with the distributions of $Z_r$ effects from our post-hoc analyses which removed either analyses that were reviewed at least once as being 'unpublishable' or analyses that were reviewed at least once as being 'unpublishable' or requiring 'major revisions'. Removing these analyses from the blue tit data had little impact on the overall distribution of the results. For the *Eucalytpus* analyses, removing 'unpublishable' analyses meant dropping the extreme outlier 'Brooklyn-2-2-1' which made a substantial difference to the amount of observerd deviation from the meta-analytic mean.
+The forest plots in @fig-all-forest-plots-Zr compare the distributions of $Z_r$ effects from our full set of analyses with the distributions of $Z_r$ effects from our post-hoc analyses which removed either analyses that were reviewed at least once as being 'unpublishable' or analyses that were reviewed at least once as being 'unpublishable' or requiring 'major revisions'. Removing these analyses from the blue tit data had little impact on the overall distribution of the results. For the *Eucalytpus* analyses, removing 'unpublishable' analyses meant dropping the extreme outlier 'Brooklyn-2-2-1' which made a substantial difference to the amount of observrd deviation from the meta-analytic mean.
 
 ```{r}
 #| label: fig-all-forest-plots-Zr
