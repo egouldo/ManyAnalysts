@@ -750,6 +750,7 @@ MA_yi_summary_stats <- # ALL ON logged RESPONSE SCALE for EUC, standardized resp
 #| message: false
 #| warning: false
 #| error: true
+#| echo: false
 
 euc_yi_results <- 
   ManyEcoEvo::make_viz(deviation_models_yi_euc)
@@ -758,14 +759,15 @@ yi_convergence_singularity <-
   ManyEcoEvo_yi_viz %>% 
   filter(exclusion_set == "complete", 
          dataset == "blue tit",
-         model_name %in% c("box_cox_rating_cat", 
-                           "box_cox_rating_cont")) %>% 
+         model_name %in% c("box_cox_rating_cat", "box_cox_rating_cont")) %>% 
   bind_rows({euc_yi_results %>% 
       filter(model_name %in% 
                c("box_cox_rating_cat", "box_cox_rating_cont"))}) %>% 
   mutate(singularity = map_lgl(model, possibly_check_singularity),
          convergence = map_lgl(model, possibly_check_convergence),
-         params = map(model, parameters::parameters)) %>% 
+         params = map(model, parameters::parameters),
+         convergence = ifelse(is.na(convergence), FALSE, convergence),
+         singularity = ifelse(is.na(singularity), FALSE, singularity)) %>% 
   select(dataset, estimate_type, model_name, singularity, convergence, params) %>% 
   mutate(model_name = forcats::as_factor(model_name),
          model_name = forcats::fct_relevel(model_name, 
