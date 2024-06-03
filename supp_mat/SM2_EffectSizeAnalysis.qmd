@@ -105,14 +105,14 @@ ManyEcoEvo_results$effects_analysis[[1]] %>%
 
 #### Post-hoc analysis: Exploring the effect of removing analyses with poor peer-review ratings on heterogeneity
 
-In @fig-all-forest-plots-Zr we display the results of our post-hoc analysis, examining the effect of removing analyses that were reviewed at least once as being 'unpublishable', 'unpublishable' or requiring 'major revisions', as compared with retaining the full set of analyses.
-Removing these analyses from the blue tit data had little impact on the overall amount of deviation or the distribution of the results.
-For the *Eucalytpus* analyses, removing 'unpublishable' analyses meant dropping the outlier 'Brooklyn-2-2-1' which made a substantial difference to the amount of observerd deviation from the meta-analytic mean.
+The forest plots in @fig-all-forest-plots-Zr compare the distributions of $Z_r$ effects from our full set of analyses with the distributions of $Z_r$ effects from our post-hoc analyses, which removed either analyses that were reviewed at least once as being 'unpublishable', and analyses that were reviewed at least once as being 'unpublishable' or requiring 'major revisions'. 
+Removing these analyses from the blue tit data had little impact on the overall distribution of the results. 
+When 'unpublishable' analyses of the *Eucalyptus* dataset were removed, the extreme outlier 'Brooklyn-2-2-1' was also removed, resulting in a substantial difference to the amount of observed deviation from the meta-analytic mean. 
 
 ```{r}
 #| label: fig-all-forest-plots-Zr
 #| column: body-outset-right
-#| fig-cap: "Forest plots of meta-analytic estimated standardized effect sizes ($Zr$, blue circles) and their 95% confidence intervals for each effect size included in the meta-analysis model. The meta-analytic mean effect size is denoted by a black triangle and a dashed vertical line, with error bars also representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0, indicating no relationship between the test variable and the response variable. The left side of each panel shows the analysis team names (anonymous arbitrary names assigned by us), each followed by three numbers. The first number is the submission ID (some analyst teams submitted results to us on >1 submission form), the second number is the analysis ID (some analyst teams included results of >1 analysis in a given submission), and the third number is the effect ID (some analysts submitted values for >1 effect per analysis). Thus, each row in each forest plot is uniquely identified, but it is possible to determine which effects come from which analyses and which analysis teams. The plots in the top row depict effects from analyses of blue tit data, and the bottom row plots depict effects from analyses of Eucalyptus data. The right-most plots depict all usable effect sizes. The, plots on the left side exclude effects from analysis sets that received at least one rating of “unpublishable” from peer reviewers, and the plots in the middle exclude effects from analysis sets that received at least one rating of either “unpublishable” or “major revision” from peer reviewers."
+#| fig-cap: 'Forest plots of meta-analytic estimated standardized effect sizes ($Z_r$, blue circles) and their 95% confidence intervals for each effect size included in the meta-analysis model. The meta-analytic mean effect size is denoted by a black triangle and a dashed vertical line, with error bars also representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0, indicating no relationship between the test variable and the response variable. The left side of each panel shows the analysis team names (anonymous arbitrary names assigned by us), each followed by three numbers. The first number is the submission ID (some analyst teams submitted results to us on >1 submission form), the second number is the analysis ID (some analyst teams included results of >1 analysis in a given submission), and the third number is the effect ID (some analysts submitted values for >1 effect per analysis). Thus, each row in each forest plot is uniquely identified, but it is possible to determine which effects come from which analyses and which analysis teams. The plots in the top row depict effects from analyses of blue tit data, and the bottom row plots depict effects from analyses of Eucalyptus data. The right-most plots depict all usable effect sizes. The plots on the left exclude effects from analysis sets that received at least one rating of “unpublishable” from peer reviewers, and the plots in the middle exclude effects from analysis sets that received at least one rating of either “unpublishable” or “major revision” from peer reviewers.'
 #| message: false
 #| echo: false
 #| fig-height: 14
@@ -188,10 +188,10 @@ publishable_subsets_forest_data <-
              str_detect(Parameter, "overall") ~ "mean",
              TRUE ~ "study"))  %>% 
   group_by(dataset, publishable_subset) %>%
-dplyr::mutate(point_shape = 
-                         ifelse(stringr::str_detect(term, "overall"), 
-                                "diamond", 
-                                "circle")) 
+  dplyr::mutate(point_shape = 
+                  ifelse(stringr::str_detect(term, "overall"), 
+                         "diamond", 
+                         "circle")) 
 
 # publishable_subsets_forest_data <- 
 #   publishable_subsets_forest_data %>% 
