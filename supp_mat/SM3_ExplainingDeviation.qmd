@@ -1130,7 +1130,8 @@ yi_sorensen_fig_cap <- paste0("Scatter plots examining Box-Cox transformed devia
 #| layout-nrow: 2
 #| fig-height: 8
 #| message: false
-
+#| echo: false
+ 
 yi_sorensen_plots <- 
   map2(.x = yi_sorensen_plot_data$model, 
        .y = yi_sorensen_plot_data$plot_data,
@@ -1234,6 +1235,7 @@ yi_deviation_RE_plot_figcap <-
 #| layout-nrow: 1
 #| fig-width: 8
 #| column: page-inset-right
+#| echo: false
 
 yi_deviation_RE_plots <- 
   yi_deviation_RE_plot_data %>% 
