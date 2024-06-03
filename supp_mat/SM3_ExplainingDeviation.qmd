@@ -975,6 +975,7 @@ fig_cap_yi_deviation_cont_rating <-
 #| layout-nrow: 2
 #| fig-cap: !expr fig_cap_yi_deviation_cont_rating
 #| fig-height: 8
+#| echo: false
 yi_cont_plots <- 
   yi_cont_plot_data$plot_data %>% 
   map(.f =  ~ plot_continuous_rating(.x))
