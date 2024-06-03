@@ -1194,7 +1194,7 @@ However, 16 *Eucalyptus* analyses included in the out-of-sample ($y_{i}$) result
 
 Consequently, we performed this analysis for the *Eucalyptus* dataset only, here we present results for the out of sample prediction $y_{i}$ results.
 There is consistent evidence of somewhat higher Box-Cox-transformed deviation values for models including a random effect, meaning the models including random effects averaged slightly higher deviation from the meta-analytic means.
-This is most evident for the $y_{50}$ predictions which both shows the greatest difference in Box-Cox transformed deviation values (@fig-yi-euc-deviation-RE-plots) and explains the most variation in $y_i$ deviation score (@tbl-yi-deviation-parameter-estimates, @tbl-yi-deviation-parameter-estimates).
+This is most evident for the $y_{50}$ predictions which both shows the greatest difference in Box-Cox transformed deviation values (@fig-yi-euc-deviation-RE-plots) and explains the most variation in $y_i$ deviation score (@tbl-yi-deviation-parameter-estimates).
 
 ```{r}
 #| label: calc-yi-euc-deviation-RE-plots
