@@ -466,7 +466,7 @@ Analyses of singularity and convergence are presented throughout this document u
 
 ## Deviation Scores as explained by Reviewer Ratings
 
-### Effect Sizes $Z_r$
+### Effect Sizes $Z_r$ {#sec-Zr-deviation-ratings}
 
 For models of deviation explained by categorical peer ratings, including random effects for both the effect ID and the reviewer ID resulted in models with singular fit for both blue tit and *Eucalyptus* datasets (@tbl-explore-Zr-deviation-random-effects-structure).
 For the *Eucalyptus* dataset, when a random effect was included for Reviewer ID only, the model passed the check with `performance::check_singularity()`, however, the SD and CI could not be estimated by `parameters::model_parameters()` with a warning stating this was likely due to singular fit.
@@ -818,7 +818,9 @@ yi_singularity_convergence_sorensen_mixed_mod <-
 We fitted the same deviation models on the out-of-sample-predictions dataset that we fitted for the effect-size dataset. 
 However, while all models of deviation explained by categorical peer-ratings converged, the following datasets and estimate types suffered from singular fit: `r yi_convergence_singularity %>% filter(singularity == TRUE, str_detect(model_name, "categorical")) %>% unite("singular_models", dataset, estimate_type, sep = " - ") %>% pull(singular_models) %>% paste0(collapse = ", ")` (@tbl-yi-deviation-ratings-convergence-singularity).
 Models of deviation explained by *continuous* ratings all converged, however models for the `r yi_convergence_singularity %>% filter(convergence == FALSE, str_detect(model_name, "continuous")) %>% unite("non_converged", dataset, estimate_type, sep = " - ") %>% pull(non_converged) %>% paste0(collapse = ", ")` out-of-sample predictions model fit was singular.
+Similarly to the effect-size ($Z_r$) dataset, SD and CI could not be estimated for random effects in some models (@tbl-yi-deviation-ratings-convergence-singularity), consequently we interpreted this to mean the models had singular fit (See @sec-Zr-deviation-ratings). 
 Results of all deviation models are therefore presented only for models with non-singular fit, and that converged (@tbl-yi-deviation-ratings-convergence-singularity).
+
 
 ```{r}
 #| label: tbl-yi-deviation-ratings-convergence-singularity
