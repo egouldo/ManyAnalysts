@@ -2024,8 +2024,7 @@ Researchers conducted three rounds of surveys at 18 sites across the Goulburn Br
 In each survey period, a different set of 15 x 15 m quadrats were randomly allocated across each site within 60 m of existing tree canopies.
 The number of quadrats at each site depended on the size of the site, ranging from four at smaller sites to 11 at larger sites.
 The total number of quadrats surveyed across all sites and seasons was 351.
-The number of *Eucalyptus* spp.
-seedlings was recorded in each quadrat along with information on the GPS location, aspect, tree canopy cover, distance to tree canopy, and position in the landscape.
+The number of *Eucalyptus* spp. seedlings was recorded in each quadrat along with information on the GPS location, aspect, tree canopy cover, distance to tree canopy, and position in the landscape.
 Ground layer plant species composition was recorded in three 0.5 x 0.5 m sub-quadrats within each quadrat.
 Subjective cover estimates of each species as well as bare ground, litter, rock and moss/lichen/soil crusts were recorded.
 Subsequently, this was augmented with information about the precipitation and solar radiation at each GPS location.
@@ -2776,7 +2775,7 @@ In total, `r All_teams+28` analyst teams, comprising 246 analysts, contributed `
 Analysts produced `r BTUsableEffects_no` distinct effects that met our criteria for inclusion in at least one of our meta-analyses for the blue tit dataset.
 Analysts produced `r EucUsableEffects_no` distinct effects meeting our criteria for inclusion for the *Eucalyptus* dataset.
 Excluded analyses and effects either did not answer our specified biological questions, were submitted with insufficient information for inclusion in our meta-analyses, or were incompatible with production of our effect size(s).
-We expected this final scenario (incompatible analyses), for instance we cannot extract a $Z_r$ from random forest models, which is why we analyzed two distinct types of effects, $Z_r$ and out-of-sample.
+We expected cases of this final scenario (incompatible analyses), for instance we cannot extract a $Z_r$ from random forest models, which is why we analyzed two distinct types of effects, $Z_r$ and out-of-sample.
 Effects included in only a subset of our meta-analyses provided sufficient information for inclusion in only that subset (see @tbl-Table1).
 For both datasets, most submitted analyses incorporated mixed effects.
 Submitted analyses of the blue tit dataset typically specified normal error and analyses of the *Eucalyptus* dataset typically specified a non-normal error distribution (@tbl-Table1).
