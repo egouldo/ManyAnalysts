@@ -2242,7 +2242,7 @@ In our meta-analyses based on Box-Cox transformed deviation scores, we leave the
 This is consistent with our registration, which did not mention weighting these scores. However, the fact that we did not mention weighting the scores was actually an error: we had intended to weight them as is standard in meta-analysis. 
 Unfortunately, when we did conduct the weighted analyses, they produced results in which some weighted estimates differed radically from the unweighted estimate because the weights were invalid. 
 Such invalid weights can sometimes occur when the variance (upon which the weights depend) is partly a function of the effect size, as in our Box-Cox transformed deviation scores [@nakagawa2022]. 
-In the case of the eucalyptus analyses, the most extreme outlier was weighted much more heavily (close to two orders of magnitude) than any other effect sizes because the effect size was, itself, so high. 
+In the case of the eucalyptus analyses, the most extreme outlier was weighted much more heavily (by close to two orders of magnitude) than any other effect sizes because the effect size was, itself, so high. 
 Therefore, we made the decision to avoid weighting by inverse variance in all analyses of the Box-Cox transformed deviation scores. 
 This was further justified because (a) most analyses have at least some moderately unreliable weights, and (b) the sample sizes were mostly very similar to each other across submitted analyses, and so meta-analytic weights are not particularly important here.
 :::
