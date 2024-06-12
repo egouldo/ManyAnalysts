@@ -443,7 +443,7 @@ Table2 %>%
 
 ### Choice of variables
 
-The choice of variables also differed substantially among analyses (@tbl-Table3). The blue tit dataset had a total of `r length(unique(BTVariables$rowname))` candidate variables, each of which were used in at least one analysis. These variables were included in a mean of `r round(Table3[1,3],digits=2)` $Z_r$ analyses (range `r Table3[1,5]`- `r Table3[1,6]`). The *Eucalyptus* dataset had a total of `r length(unique(EucVariables$rowname))` candidate variables, all of which were used in at least one analysis. The variables in the *Eucalyptus* included in a mean of `r round(Table3[2,3],digits=2)` $Z_r$ analyses (range `r Table3[2,5]`-`r Table3[2,6]`).
+The choice of variables also differed substantially among analyses (@tbl-Table3). The blue tit dataset had a total of `r length(unique(BTVariables$rowname))` candidate variables, each of which were used in at least one analysis. These variables were included in a mean of `r round(Table3[1,3],digits=2)` $Z_r$ analyses (range `r Table3[1,5]`- `r Table3[1,6]`). The *Eucalyptus* dataset had a total of `r length(unique(EucVariables$rowname))` candidate variables, all of which were used in at least one analysis. The variables in the *Eucalyptus* dataset were included in a mean of `r round(Table3[2,3],digits=2)` $Z_r$ analyses (range `r Table3[2,5]`-`r Table3[2,6]`).
 
 ```{r}
 #| label: tbl-Table3
