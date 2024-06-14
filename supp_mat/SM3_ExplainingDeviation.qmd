@@ -1269,7 +1269,8 @@ list(bt_multivar_mod, euc_multivar_mod) %>%
   map_dfr(parameters::parameters, .id = "dataset") %>% 
   group_by(dataset) %>% 
   select(-CI) %>% 
-  mutate(dataset = str_replace(dataset, "eucalyptus", "*Eucalyptus*")) %>% 
+  mutate(dataset = str_replace(dataset, "eucalyptus", "*Eucalyptus*"),
+         Parameter = str_replace(Parameter, "mixed_model", "random_included")) %>% 
   gt::gt() %>% 
   gt::fmt(columns = "p",
           fns = function(x) gtsummary::style_pvalue(x, prepend_p = TRUE)) %>% 
@@ -1574,7 +1575,7 @@ yi_multivar_singularity_convergence %>%
    gt::text_transform(fn = function(x) str_replace(x, "publishable_as_is", "Categorical Peer Rating") %>% 
                        str_replace(., "rate_analysis", "Continuous Peer Rating") %>% 
                         str_replace(., "mean_diversity_index", "Sorensen's Index") %>% 
-                        str_replace(., "mixed_model", "Mixed Model"),
+                        str_replace(., "mixed_model", "Random Included"),
                      locations = cells_body(columns = c("Parameter"))) %>% 
    gt::opt_stylize(style = 6, color = "gray") %>% 
    gt::sub_missing(missing_text = "") %>% 
