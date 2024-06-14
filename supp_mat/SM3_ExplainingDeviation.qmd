@@ -17,7 +17,6 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```
 
 ```{r load-libs, include=TRUE,eval=TRUE,message=FALSE}
-library(targets)
 library(withr)
 library(here)
 library(tidyverse)
@@ -33,18 +32,6 @@ library(multilevelmod)
 set.seed(1234)
 ```
 
-```{r load-targets, include=TRUE, eval=TRUE, warning=FALSE}
-# withr::with_dir(here::here(),
-#                 targets::tar_load(ManyEcoEvo_viz))
-# withr::with_dir(here::here(),
-#                 targets::tar_load(ManyEcoEvo_results))
-# withr::with_dir(here::here(),
-#                 targets::tar_load(ManyEcoEvo_yi_viz))
-# withr::with_dir(here::here(),
-#                 targets::tar_load(ManyEcoEvo_yi))
-# withr::with_dir(here::here(),
-#                 targets::tar_load(ManyEcoEvo_yi_results))
-```
 
 ```{r define-fns, eval = TRUE}
 #TODO turn into own function and pull out of nested targets function and rm here
