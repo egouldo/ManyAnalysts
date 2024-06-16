@@ -11,6 +11,8 @@ execute:
 bibliography: ../ms/references.bib
 number-sections: true
 tbl-cap-location: top
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r load-libs, include=TRUE,eval=TRUE,message=FALSE}
