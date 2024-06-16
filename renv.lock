@@ -146,15 +146,8 @@
     },
     "ManyEcoEvo": {
       "Package": "ManyEcoEvo",
-      "Version": "1.5.0",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteUsername": "egouldo",
-      "RemoteRepo": "ManyEcoEvo",
-      "RemoteRef": "main",
-      "RemoteSha": "9d24c3112d81a2d4dcee9b7b76653ad74f2e6c0c",
-      "Remotes": "daniel1noble/orchaRd, NightingaleHealth/ggforestplot",
+      "Version": "1.5.0.9000",
+      "Source": "unknown",
       "Requirements": [
         "R",
         "betapart",
@@ -176,7 +169,7 @@
         "tidyr",
         "tidyselect"
       ],
-      "Hash": "3a1ceb35eb61e5b5c17375cac662ce9c"
+      "Hash": "e90e917e4b6d64d16e9bc8c9afeced77"
     },
     "Matrix": {
       "Package": "Matrix",
@@ -1878,6 +1871,18 @@
         "methods"
       ],
       "Hash": "e0b3a53876554bd45879e596cdb10a52"
+    },
+    "gluedown": {
+      "Package": "gluedown",
+      "Version": "1.0.9",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "glue",
+        "magrittr"
+      ],
+      "Hash": "1ec0b69879e5e3669bce544fadbfc044"
     },
     "googledrive": {
       "Package": "googledrive",
