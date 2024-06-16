@@ -1957,7 +1957,7 @@ This degree of variation in peer-reviewed analyses from identical data is striki
 
 In the neuroimaging study, 70 teams evaluated each of the nine different hypotheses with the available fMRI data [@botvinik-nezer2020].
 These 70 teams followed a divergent set of workflows that produced a wide range of results.
-The rate of reporting of statistically significant support for the nine hypotheses ranged from 21% to 84%, and for each hypothesis on average, 20% of research teams observed effects that differed substantially from the majority of other teams.
+The rate of reporting of statistically significant support for the nine hypotheses ranged from 21$\%$to 84$\%$, and for each hypothesis on average, 20(correlation of 0.89 (@fig-ggpairs-bt)) of research teams observed effects that differed substantially from the majority of other teams.
 Some of the variability in results among studies could be explained by analytical decisions such as choice of software package, smoothing function, and parametric versus non-parametric corrections for multiple comparisons.
 However, substantial variability among analyses remained unexplained, and presumably emerged from the many different decisions each analyst made in their long workflows.
 Such variability in results among analyses from this dataset and from the very different red-card dataset suggests that sensitivity of analytical outcome to analytical choices may characterize many distinct fields, as several more recent many-analyst studies also suggest [@huntington-klein2021; @schweinsberg2021; @breznau2022].
@@ -2051,7 +2051,7 @@ All analysts signed \[digitally\] a consent (ethics) document (<https://osf.io/x
 Due to the large number of recruited analysts and reviewers and the anticipated challenges of receiving and integrating feedback from so many authors, we limited analyst and reviewer participation in the production of the final manuscript to an invitation to call attention to serious problems with the manuscript draft.
 :::
 
-We identified our minimum number of analysts per dataset by considering the number of effects needed in a meta-analysis to generate an estimate of heterogeneity ($\tau^{2}$) with a 95% confidence interval that does not encompass zero.
+We identified our minimum number of analysts per dataset by considering the number of effects needed in a meta-analysis to generate an estimate of heterogeneity ($\tau^{2}$) with a 95$\%$confidence interval that does not encompass zero.
 This minimum sample size is invariant regardless of $\tau^{2}$.
 This is because the same t-statistic value will be obtained by the same sample size regardless of variance ($\tau^{2}$).
 We see this by first examining the formula for the standard error, SE for variance, ($\tau^{2}$) or SE($\tau^{2}$) assuming normality in an underlying distribution of effect sizes [@knight2000]:
@@ -2191,7 +2191,7 @@ Thus, all our out-of-sample prediction values from the blue tit data are from a 
 We did not add this step for the *Eucalyptus* data because (a) all responses were on the same scale (counts of *Eucalyptus* stems) and were thus comparable and (b) these data, with many zeros and high skew, are poorly suited for z scores.
 :::
 
-We plotted individual effect size estimates ($Z_r$) and predicted values of the dependent variable ($y_i$) and their corresponding 95% confidence / credible intervals in forest plots to allow visualization of the range and precision of effect size and predicted values.
+We plotted individual effect size estimates ($Z_r$) and predicted values of the dependent variable ($y_i$) and their corresponding 95$\%$confidence / credible intervals in forest plots to allow visualization of the range and precision of effect size and predicted values.
 Further, we included these estimates in random effects meta-analyses [@higgins2003; @borenstein2017] using the *metafor* package in R [@metafor; @base]:
 
 $$
@@ -2205,7 +2205,7 @@ $$ {#eq-MA_yi}
 where $y_i$ is the predicted value for the dependent variable at the 25th percentile, median, or 75th percentile of the independent variables.
 The individual $Z_r$ effect sizes were weighted with the inverse of sampling variance for $Z_r$.
 The individual predicted values for dependent variable ($y_i$) were weighted by the inverse of the associated $SE^2$ (original registration omitted "inverse of the" in error).
-These analyses provided an average $Z_r$ score or an average $y_i$ with corresponding 95% confidence interval and allowed us to estimate two heterogeneity indices, $\tau^2$ and $I^2$.
+These analyses provided an average $Z_r$ score or an average $y_i$ with corresponding 95$\%$confidence interval and allowed us to estimate two heterogeneity indices, $\tau^2$ and $I^2$.
 The former, $\tau^2$, is the absolute measure of heterogeneity or the between-study variance (in our case, between-effect variance) whereas $I^2$ is a relative measure of heterogeneity.
 We obtained the estimate of relative heterogeneity ($I^2$) by dividing the between-effect variance by the sum of between-effect and within-effect variance (sampling error variance).
 $I^2$ is thus, in a standard meta-analysis, the proportion of variance that is due to heterogeneity as opposed to sampling error.
@@ -2798,8 +2798,8 @@ The average number of interaction terms was much larger for the blue tit models 
 Blue tit models also contained more random effects (mean `r round(Table2[5,4],2)` $\pm$ `r round(Table2[5,5],2)` SD, range: `r round(Table2[5,6],2)` to `r round(Table2[5,7],2)`) than *Eucalyptus* models (mean `r round(Table2[13,4],2)` $\pm$ `r round(Table2[13,5],2)` SD, range: `r round(Table2[13,6],2)` to `r round(Table2[13,7],2)`).
 The maximum possible sample size in the blue tit dataset (3720 nestlings) was an order of magnitude larger than the maximum possible in the *Eucalyptus* dataset (351 plots), and the means and standard deviations of the sample size used to derive the effects eligible for our study were also an order of magnitude greater for the blue tit dataset (mean `r round(Table2[7,4],2)` $\pm$ `r round(Table2[7,5],2)` SD, range: `r round(Table2[7,6],2)` to `r round(Table2[7,7],2)`) relative to the *Eucalyptus* models (mean `r round(Table2[15,4],2)` $\pm$ `r round(Table2[15,5],2)` SD, range: `r round(Table2[15,6],2)` to `r round(Table2[15,7],2)`).
 However, the standard deviation in sample size from the *Eucalyptus* models was heavily influenced by a few cases of dramatic sub-setting (described below).
-Approximately three quarters of *Eucalyptus* models used sample sizes within 3% of the maximum.
-In contrast, fewer than 20% of blue tit models relied on sample sizes within 3% of the maximum, and approximately 50% of blue tit models relied on sample sizes 29% or more below the maximum.
+Approximately three quarters of *Eucalyptus* models used sample sizes within 3$\%$of the maximum.
+In contrast, fewer than 20$\%$of blue tit models relied on sample sizes within 3$\%$of the maximum, and approximately 50$\%$of blue tit models relied on sample sizes 29$\%$or more below the maximum.
 
 Analysts provided qualitative descriptions of the conclusions of their analyses.
 Each analysis team provided one conclusion per dataset.
@@ -2873,7 +2873,7 @@ bt_complete_data <- ManyEcoEvo_viz %>%
   mutate(plot_data = map(model, 
                          .f = ~ broom::tidy(.x, 
                                              conf.int = TRUE, 
-                                             include_studies = TRUE)%>% 
+                                             include_studies = TRUE) %>% 
                            dplyr::mutate(point_shape = 
                                            ifelse(stringr::str_detect(term, "overall"), 
                                                   "diamond", 
@@ -2959,14 +2959,14 @@ sort(u, decreasing = FALSE)[2L]}
 sort(u, decreasing = TRUE)[2L]}
 ```
 
-Although the majority (`r bt_complete_data %>% filter(estimate < 0, type == "study") %>% nrow()` of `r Table1[1,3]`) of the usable $Z_r$ effects from the blue tit dataset found nestling growth decreased with sibling competition, and the meta-analytic mean $\bar{Z_r}$ (Fisher's transformation of the correlation coefficient) was convincingly negative (`r coefs_MA_mod %>% dplyr::filter(dataset == "blue tit", exclusion_set == "complete", publishable_subset == "All") %>% pluck("estimate") %>% round(2)` $\pm$ `r coefs_MA_mod %>% dplyr::filter(dataset == "blue tit", exclusion_set == "complete", publishable_subset == "All") %>% mutate(interval = estimate - conf.low) %>% pluck("interval") %>% round(2)` 95% CI), there was substantial variability in the strength and the direction of this effect.
+Although the majority (`r bt_complete_data %>% filter(estimate < 0, type == "study") %>% nrow()` of `r Table1[1,3]`) of the usable $Z_r$ effects from the blue tit dataset found nestling growth decreased with sibling competition, and the meta-analytic mean $\bar{Z_r}$ (Fisher's transformation of the correlation coefficient) was convincingly negative (`r coefs_MA_mod %>% dplyr::filter(dataset == "blue tit", exclusion_set == "complete", publishable_subset == "All") %>% pluck("estimate") %>% round(2)` $\pm$ `r coefs_MA_mod %>% dplyr::filter(dataset == "blue tit", exclusion_set == "complete", publishable_subset == "All") %>% mutate(interval = estimate - conf.low) %>% pluck("interval") %>% round(2)` 95$\%$CI), there was substantial variability in the strength and the direction of this effect.
 $Z_r$ ranged from `r bt_complete_data %>% filter(type == "study") %>% summarise(min_est = min(estimate)) %>% pull(min_est) %>% round(2)` to `r bt_complete_data %>% filter(type == "study") %>% summarise(max_est = max(estimate)) %>% pull(max_est) %>% round(2)`, and approximately continuously from `r bt_complete_data %>% filter(type == "study") %>% summarise(min2_est = small2(estimate)) %>% pull(min2_est) %>% round(2)` to `r bt_complete_data %>% filter(type == "study") %>% summarise(max2_est = large2(estimate)) %>% pull(max2_est) %>% round(2)` ( @fig-forest-plots-Zr-1 and @tbl-effects-params), and of the `r bt_complete_data %>% filter(estimate < 0, type == "study") %>% nrow()` effects with negative slopes, `r bt_complete_data %>% filter(estimate < 0, conf.high < 0, type == "study") %>% nrow()` had confidence intervals exluding 0.
 Of the `r bt_complete_data %>% filter(estimate >0, type == "study") %>% nrow()` with positive slopes indicating increased nestling growth in the presence of more siblings, `r bt_complete_data %>% filter(estimate >0, conf.low > 0, type == "study") %>% nrow()` had confidence intervals excluding zero (@fig-forest-plots-Zr A).
 
 Meta-analysis of the *Eucalyptus* dataset also showed substantial variability in the strength of effects as measured by $Z_r$, and unlike with the blue tits, a notable lack of consistency in the direction of effects (@fig-forest-plots-Zr-2, @tbl-effects-params).
 $Z_r$ ranged from `r complete_euc_data %>% filter(type == "study") %>% summarise(min_est = min(estimate)) %>% pull(min_est) %>% round(2)` (@fig-specr-euc), indicating a strong tendency for reduced *Eucalyptus* seedling success as grass cover increased, to `r complete_euc_data %>% filter(type == "study") %>% summarise(max_est = max(estimate)) %>% pull(max_est) %>% round(2)`, indicating the opposite.
 Although the range of reported effects skewed strongly negative, this was due to a small number of substantial outliers.
-Most values of $Z_r$ were relatively small with values \< \|0.2\| and the meta-analytic mean effect size was close to zero (`r coefs_MA_mod %>% dplyr::filter(dataset == "eucalyptus", exclusion_set == "complete", publishable_subset == "All", expertise_subset == "All") %>% pluck("estimate") %>% round(2)` $\pm$ `r coefs_MA_mod %>% dplyr::filter(dataset == "eucalyptus", exclusion_set == "complete", publishable_subset == "All", expertise_subset == "All") %>% mutate(interval = estimate - conf.low) %>% pluck("interval") %>% round(2)` 95% CI).
+Most values of $Z_r$ were relatively small with values \< \|0.2\| and the meta-analytic mean effect size was close to zero (`r coefs_MA_mod %>% dplyr::filter(dataset == "eucalyptus", exclusion_set == "complete", publishable_subset == "All", expertise_subset == "All") %>% pluck("estimate") %>% round(2)` $\pm$ `r coefs_MA_mod %>% dplyr::filter(dataset == "eucalyptus", exclusion_set == "complete", publishable_subset == "All", expertise_subset == "All") %>% mutate(interval = estimate - conf.low) %>% pluck("interval") %>% round(2)` 95$\%$CI).
 Of the `r Table1[3,3]` effects, `r complete_euc_data %>% filter(estimate >0 & conf.low <= 0 | estimate <0 & conf.high >= 0, type == "study") %>% nrow() %>% xfun::numbers_to_words()` had confidence intervals overlapping zero, approximately a quarter (`r complete_euc_data %>% filter(estimate < 0, conf.high < 0, type == "study") %>% nrow() %>% xfun::numbers_to_words()`) crossed the traditional threshold of statistical significance indicating a negative relationship between grass cover and seedling success, and `r complete_euc_data %>% filter(estimate  > 0 & conf.low > 0, type == "study") %>% nrow() %>% xfun::numbers_to_words()` crossed the significance threshold indicating a positive relationship between grass cover and seedling success (@fig-forest-plots-Zr-2).
 
 ```{r plot_forest_fn, echo = FALSE, message = FALSE}
@@ -3016,7 +3016,7 @@ plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
 #| label: fig-forest-plots-Zr
 #| message: false
 #| echo: false
-#| fig-cap: !expr paste0('Forest plots of meta-analytic estimated standardized effect sizes ($Z_r$, blue circles) and their 95% confidence intervals for each effect size included in the meta-analysis model. The meta-analytic mean effect size is denoted by a black triangle and a dashed vertical line, with error bars also representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0, indicating no relationship between the test variable and the response variable. Note that the *Eucalyptus* plot omits one extreme outlier with the value of ', complete_euc_data %>% filter(type == "study") %>% summarise(min_est = min(estimate)) %>% pull(min_est) %>% round(2), ' (@fig-specr-euc) in order to standardize the x-axes on these two panels.')
+#| fig-cap: !expr paste0('Forest plots of meta-analytic estimated standardized effect sizes ($Z_r$, blue circles) and their 95$\\%$confidence intervals for each effect size included in the meta-analysis model. The meta-analytic mean effect size is denoted by a black triangle and a dashed vertical line, with error bars also representing the 95$\\%$confidence interval. The solid black vertical line demarcates effect size of 0, indicating no relationship between the test variable and the response variable. Note that the *Eucalyptus* plot omits one extreme outlier with the value of ', complete_euc_data %>% filter(type == "study") %>% summarise(min_est = min(estimate)) %>% pull(min_est) %>% round(2), ' (@fig-specr-euc) in order to standardize the x-axes on these two panels.')
 #| fig-subcap: 
 #|   - "Blue tit analyses: Points where $Z_r$ are less than 0 indicate analyses that found a negative relationship between sibling number and nestling growth."
 #|   - "*Eucalyptus* analyses: Points where $Z_r$ are less than 0 indicate a negative relationship between grass cover and *Eucalyptus* seedling success."
@@ -3316,17 +3316,17 @@ As with the effect size $Z_r$, we observed substantial variability in the size o
 Blue tit predictions (@fig-forest-plot-bt-yi), which were z-score-standardised to accommodate the use of different response variables, always ranged far in excess of one standard deviation.
 In the $y_{25}$ scenario, model predictions ranged from `r round(MA_yi_summary_stats[4,7],2)` to `r round(MA_yi_summary_stats[4,6],2)` (a range of 2.68 standard deviations), in the $y_{50}$ they ranged from `r round(MA_yi_summary_stats[5,7],2)` to `r round(MA_yi_summary_stats[5,6],2)` (a range of 1.63 standard deviations), and in the $y_{75}$ scenario they ranged from `r round(MA_yi_summary_stats[6,7],2)` to `r round(MA_yi_summary_stats[6,6],2)` (a range of 1.9 standard deviations).
 As should be expected given the existence of both negative and positive $Z_r$ values, all three out-of-sample scenarios produced both negative and positive predictions, although as with the $Z_r$ values, there is a clear trend for scenarios with more siblings to be associated with smaller nestlings.
-This is supported by the meta-analytic means of these three sets of predictions which were `r round(MA_yi_summary_stats[4,3],2)` (95% CI `r round(MA_yi_summary_stats[4,4],2)`-`r round(MA_yi_summary_stats[4,5],2)`) for the $y_{25}$, `r round(MA_yi_summary_stats[5,3],2)` (95% CI `r round(MA_yi_summary_stats[5,4],2)`-`r round(MA_yi_summary_stats[5,5],2)`) for the $y_{50}$, and `r round(MA_yi_summary_stats[6,3],2)` (95% CI `r round(MA_yi_summary_stats[6,4],2)`-`r round(MA_yi_summary_stats[6,5],2)`) for the $y_{75}$.
+This is supported by the meta-analytic means of these three sets of predictions which were `r round(MA_yi_summary_stats[4,3],2)` (95$\%$CI `r round(MA_yi_summary_stats[4,4],2)`-`r round(MA_yi_summary_stats[4,5],2)`) for the $y_{25}$, `r round(MA_yi_summary_stats[5,3],2)` (95$\%$CI `r round(MA_yi_summary_stats[5,4],2)`-`r round(MA_yi_summary_stats[5,5],2)`) for the $y_{50}$, and `r round(MA_yi_summary_stats[6,3],2)` (95$\%$CI `r round(MA_yi_summary_stats[6,4],2)`-`r round(MA_yi_summary_stats[6,5],2)`) for the $y_{75}$.
 
 *Eucalyptus* out-of-sample predictions also varied substantially (@fig-euc-yi-forest-plot), but because they were not z-score-standardised and are instead on the original count scale, the types of interpretations we can make differ.
 The predicted *Eucalyptus* seedling counts per 15 x 15 m plot for the $y_{25}$ scenario ranged from `r round(MA_yi_summary_stats[1,7],2)` to `r round(MA_yi_summary_stats[1,6],2)`, for the $y_{50}$ scenario ranged from `r round(MA_yi_summary_stats[2,7],2)` to `r round(MA_yi_summary_stats[2,6],2)`, and for the $y_{75}$ scenario they ranged from `r round(MA_yi_summary_stats[3,7],2)` to `r round(MA_yi_summary_stats[3,6],2)`.
-The meta-analytic mean predictions for these three scenarios were similar; `r round(MA_yi_summary_stats[1,3],2)` (95% CI `r round(MA_yi_summary_stats[1,4],2)`-`r round(MA_yi_summary_stats[1,5],2)`) for the $y_{25}$, `r round(MA_yi_summary_stats[2,3],2)` (95% CI `r round(MA_yi_summary_stats[2,4],2)`-`r round(MA_yi_summary_stats[2,5],2)`) for the $y_{50}$, and `r round(MA_yi_summary_stats[3,3],2)` (95% CI `r round(MA_yi_summary_stats[3,4],2)`-`r round(MA_yi_summary_stats[3,5],2)`) for the $y_{75}$ scenarios respectively.
+The meta-analytic mean predictions for these three scenarios were similar; `r round(MA_yi_summary_stats[1,3],2)` (95$\%$CI `r round(MA_yi_summary_stats[1,4],2)`-`r round(MA_yi_summary_stats[1,5],2)`) for the $y_{25}$, `r round(MA_yi_summary_stats[2,3],2)` (95$\%$CI `r round(MA_yi_summary_stats[2,4],2)`-`r round(MA_yi_summary_stats[2,5],2)`) for the $y_{50}$, and `r round(MA_yi_summary_stats[3,3],2)` (95$\%$CI `r round(MA_yi_summary_stats[3,4],2)`-`r round(MA_yi_summary_stats[3,5],2)`) for the $y_{75}$ scenarios respectively.
 
 ```{r}
 #| label: fig-forest-plot-bt-yi
 #| message: false
 #| fig-height: 8
-#| fig-cap: "Forest plot of meta-analytic estimated standardized (z-score) blue tit out-of-sample  predictions, $y_i$. Circles represent individual estimates. Triangles represent the meta-analytic mean for each prediction scenario. Dark-blue points correspond to $y_{25}$ scenario, medium-blue points correspond to the $y_{50}$ scenario, while light blue points correspond to the $y_{75}$ scenario. Error bars are 95% confidence intervals." 
+#| fig-cap: "Forest plot of meta-analytic estimated standardized (z-score) blue tit out-of-sample  predictions, $y_i$. Circles represent individual estimates. Triangles represent the meta-analytic mean for each prediction scenario. Dark-blue points correspond to $y_{25}$ scenario, medium-blue points correspond to the $y_{50}$ scenario, while light blue points correspond to the $y_{75}$ scenario. Error bars are 95$\\%$confidence intervals." 
 #| echo: false
 #| fig-keep: last
 
@@ -3669,10 +3669,10 @@ In that same analysis, the most collinear covariate (the day 14 count) had a neg
 In the analysis with tarsus length as the response variable, these partial correlations were almost identical in absolute magnitude, but reversed in sign and so brood count after manipulation was now the collinear predictor with the negative relationship.
 The two models were therefore very similar, but the two collinear predictors simply switched roles, presumably because a subtle difference in the distribution of weight and tarsus length data.
 
-When we dropped the *Eucalyptus* outliers, $I^{2}$ decreased from high (`r round(zr_heterogeneity[2,7],2)`%), using Higgins' [@higgins2003] suggested benchmark, to between moderate and high (`r round(zr_heterogeneity[4,7],2)`%, @tbl-effects-heterogeneity).
+When we dropped the *Eucalyptus* outliers, $I^{2}$ decreased from high (`r round(zr_heterogeneity[2,7],2)`%), using Higgins' [@higgins2003] suggested benchmark, to between moderate and high (`r round(zr_heterogeneity[4,7],2)` $\%$, @tbl-effects-heterogeneity).
 However, more notably, $\tau^2$ dropped from `r round(zr_heterogeneity[2,6],2)` to `r round(zr_heterogeneity[4,6],2)`, indicating that, once outliers were excluded, the observed variation in effects was similar to what we would expect if sampling error were driving the differences among effects (since $\tau^2$ is the variance in addition to that driven by sampling error).
 The interpretation of this value of $\tau^2$ in the context of our many-analyst study is somewhat different than a typical meta-analysis, however, since in our study (especially for *Eucalyptus*, where most analyses used almost exactly the same data points), there is almost no role for sampling error in driving the observed differences among the estimates.
-Thus, rather than concluding that the variability we observed among estimates (after removing outliers) was due only to sampling error [because $\tau^2$ became small: 10% of the median from @yang2023], we instead conclude that the observed variability, which must be due to the divergent choices of analysts rather than sampling error, is approximately of the same magnitude as what we would have expected if, instead, sampling error, and not analytical heterogeneity, were at work.
+Thus, rather than concluding that the variability we observed among estimates (after removing outliers) was due only to sampling error [because $\tau^2$ became small: 10$\%$ of the median from @yang2023], we instead conclude that the observed variability, which must be due to the divergent choices of analysts rather than sampling error, is approximately of the same magnitude as what we would have expected if, instead, sampling error, and not analytical heterogeneity, were at work.
 Presumably, if sampling error had actually also been at work, it would have acted as an additional source of variability and would have led total variability among estimates to be higher.
 With total variability higher and thus greater than expected due to sampling error alone, $\tau^2$ would have been noticeably larger.
 Conversely, dropping outliers from the set of blue tit effects did not meaningfully reduce $I^{2}$ , and only modestly reduced $\tau^2$ (@tbl-effects-heterogeneity).
@@ -3680,7 +3680,7 @@ Thus, effects at the extremes of the distribution were much stronger contributor
 
 ```{r}
 #| label: tbl-effects-params
-#| tbl-cap: 'Estimated mean value of the standardised correlation coefficient, $Z_r$, along with its standard error and 95% confidence intervals. We re-computed the meta-analysis for different post-hoc subsets of the data: All eligible effects, removal of effects from analysis teams that received at least one peer rating of "deeply flawed and unpublishable", removal of any effects from analysis teams that received at least one peer rating of either "deeply flawed and unpublishable" or "publishable with major revisions", inclusion of only effects from analysis teams that included at least one member who rated themselves as "highly proficient" or "expert" at conducting statistical analyses in their research area.'
+#| tbl-cap: 'Estimated mean value of the standardised correlation coefficient, $Z_r$, along with its standard error and 95$\\%$confidence intervals. We re-computed the meta-analysis for different post-hoc subsets of the data: All eligible effects, removal of effects from analysis teams that received at least one peer rating of "deeply flawed and unpublishable", removal of any effects from analysis teams that received at least one peer rating of either "deeply flawed and unpublishable" or "publishable with major revisions", inclusion of only effects from analysis teams that included at least one member who rated themselves as "highly proficient" or "expert" at conducting statistical analyses in their research area.'
 #| echo: false
 effectsparams <- ManyEcoEvo_viz %>% 
     dplyr::filter(estimate_type == "Zr", 
@@ -3761,7 +3761,7 @@ However, for the *Eucalyptus* dataset, removing poorly-rated analyses led to not
 When including all analyses, the *Eucalyptus* $I^{2}_{Total}$ was `r round(zr_heterogeneity[2,7],2)`% and $\tau^{2}$ was `r round(zr_heterogeneity[2,6],2)`, but eliminating analyses with ratings of "unpublishable" reduced $I^{2}_{Total}$ to `r round(zr_heterogeneity[10,7],2)`% and $\tau^{2}$ to `r round(zr_heterogeneity[10,6],2)`, and removing also those analyses "needing major revisions" left $I^{2}_{Total}$ at `r round(zr_heterogeneity[8,7],2)`% and $\tau^{2}$ at `r round(zr_heterogeneity[8,6],2)` (@tbl-effects-heterogeneity).
 Additionally, the allocations of $I^{2}$ to the team versus individual effect were altered for both blue tit and *Eucalyptus* meta-analyses by removing poorly rated analyses, but in different ways.
 For blue tit meta-analysis, between a third and two-thirds of the total $I^{2}$ was attributable to among-team variance in most analyses until both analyses rated "unpublishable" and analyses rated in need of "major revision" were eliminated, in which case almost all remaining heterogeneity was attributable to among-effect differences.
-In contrast, for *Eucalyptus* meta-analysis, the among-team component of $I^{2}$ was less than third until both analyses rated "unpublishable" and analyses rated in need of "major revision" were eliminated, in which case almost 90% of heterogeneity was attributable to differences among teams.
+In contrast, for *Eucalyptus* meta-analysis, the among-team component of $I^{2}$ was less than third until both analyses rated "unpublishable" and analyses rated in need of "major revision" were eliminated, in which case almost 90$\%$of heterogeneity was attributable to differences among teams.
 
 ### Out-of-sample predictions $y_{i}$
 
@@ -3917,7 +3917,7 @@ modelfitstats <- ManyEcoEvo_viz %>% #TODO seems like there's another chunk that 
 
 ```{r}
 #| label: tbl-deviation-rating-estimates 
-#| tbl-cap: "Parameter estimates from models of Box-Cox transformed deviation scores as a function of continuous and categorical peer ratings, Sorensen scores, and the inclusion of random effects. Standard Errors (SE), 95% confidence intervals (95%CI) are reported for all estimates, while t values, degrees of freedom and p-values are presented for fixed-effects. Note that positive parameter estimates mean that as the predictor variable increases, so does the absolute value of the deviation from the meta-analytic mean."
+#| tbl-cap: "Parameter estimates from models of Box-Cox transformed deviation scores as a function of continuous and categorical peer ratings, Sorensen scores, and the inclusion of random effects. Standard Errors (SE), 95$\\%$ confidence intervals (95$\\%$ CI) are reported for all estimates, while t values, degrees of freedom and p-values are presented for fixed-effects. Note that positive parameter estimates mean that as the predictor variable increases, so does the absolute value of the deviation from the meta-analytic mean."
 #| echo: false
 #| message: false
 ManyEcoEvo_viz %>% 
@@ -4051,7 +4051,7 @@ We re-ran the multi-level meta-analysis with a fixed-effect for the categorical 
 #| label: fig-cat-peer-rating
 #| echo: false
 #| message: false
-#| fig-cap: "Violin plot of Box-Cox transformed deviation from meta-analytic mean $Z_r$ as a function of categorical peer rating. Grey points for each rating group denote model-estimated marginal mean deviation, and error bars denote 95% CI of the estimate. **A** Blue tit dataset, **B** *Eucalyptus* dataset."
+#| fig-cap: "Violin plot of Box-Cox transformed deviation from meta-analytic mean $Z_r$ as a function of categorical peer rating. Grey points for each rating group denote model-estimated marginal mean deviation, and error bars denote 95$\\%$CI of the estimate. **A** Blue tit dataset, **B** *Eucalyptus* dataset."
 #| fig-height: 8
 #| fig-width: 10
 
@@ -4189,7 +4189,7 @@ Some models of the influence of reviewer ratings on out-of-sample predictions ($
 We employed Sorensen's index to calculate the distinctiveness of the set of predictor variables used in each model (@fig-sorensen-plots).
 The mean Sorensen's score for blue tit analyses was `r round(SorensenSummary[1,2],digits=2)` (range `r round(SorensenSummary[1,4],2)`-`r round(SorensenSummary[1,5],2)`), and for *Eucalyptus* analyses was `r round(SorensenSummary[2,2],digits=2)` (range `r round(SorensenSummary[2,4],2)`-`r round(SorensenSummary[2,5],2)`).
 
-We found no meaningful relationship between distinctiveness of variables selected and deviation from the meta-analytic mean (@tbl-deviation-rating-estimates, @fig-sorensen-plots) for either blue tit (mean `r round(p_cat_bt_tidy[2,2],2)`, 95% CI `r round(p_cat_bt_tidy[2,6],2)`,`r round(p_cat_bt_tidy[2,7],2)`) or *Eucalyptus* effects (mean `r round(p_cat_euc_tidy[2,2],2)`, 95% CI `r round(p_cat_euc_tidy[2,6],2)`,`r round(p_cat_euc_tidy[2,7],2)`).
+We found no meaningful relationship between distinctiveness of variables selected and deviation from the meta-analytic mean (@tbl-deviation-rating-estimates, @fig-sorensen-plots) for either blue tit (mean `r round(p_cat_bt_tidy[2,2],2)`, 95$\%$CI `r round(p_cat_bt_tidy[2,6],2)`,`r round(p_cat_bt_tidy[2,7],2)`) or *Eucalyptus* effects (mean `r round(p_cat_euc_tidy[2,2],2)`, 95$\%$CI `r round(p_cat_euc_tidy[2,6],2)`,`r round(p_cat_euc_tidy[2,7],2)`).
 
 ```{r}
 #| label: fig-sorensen-plots
@@ -4197,7 +4197,7 @@ We found no meaningful relationship between distinctiveness of variables selecte
 #| message: false
 #| layout-nrow: 2
 #| warning: false
-#| fig-cap: "Fitted model of the Box-Cox-transformed deviation score (deviation in effect size from meta-analytic mean) as a function of the mean Sorensen's index showing distinctiveness of the set of predictor variables. Grey ribbons on predicted values are 95% CI's."
+#| fig-cap: "Fitted model of the Box-Cox-transformed deviation score (deviation in effect size from meta-analytic mean) as a function of the mean Sorensen's index showing distinctiveness of the set of predictor variables. Grey ribbons on predicted values are 95$\\%$CI's."
 #| fig-subcap: 
 #|   - "Blue tit"
 #|   - "*Eucalyptus*"
