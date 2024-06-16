@@ -36,26 +36,26 @@ set.seed(1234)
 ```
 
 ```{r descriptive-munging-2, eval=TRUE,include=FALSE, eval=TRUE}
-blue_tit_data<-ManyEcoEvo[[2]][[1]]
-blue_tit_diversity<-ManyEcoEvo[[3]][[1]]
-eucalypt_data<-ManyEcoEvo[[2]][[2]]
-eucalypt_diversity<-ManyEcoEvo[[3]][[2]]
-Master<-bind_rows(blue_tit_data,eucalypt_data) #Full dataset
-Diversity<-bind_rows(blue_tit_diversity,eucalypt_diversity)
-Diversity$new<-Diversity$id_col
-Diversity<-Diversity %>% 
-  separate_wider_delim(new, "-", names = c("response_id", "submission_id","analysis_id","split_id"),too_many = "merge") %>%
+
+Master <- ManyEcoEvo %>% 
+  select(data) %>% unnest(everything()) %>% 
+  mutate(across(.cols = c(num_fixed_variables,
+                                   num_random_variables,
+                                   sample_size,
+                                   num_interactions,
+                                   Bayesian, #NA's coming from CHECK values
+                                   mixed_model), 
+                         as.numeric),
+                  lm = ifelse(linear_model == "linear", 1, 0),
+                  glm = ifelse(linear_model == "generalised", 1, 0))
+
+Diversity <- ManyEcoEvo %>% 
+  select(diversity_data) %>% 
+  unnest(everything()) %>% 
+  mutate(new = id_col) %>% 
+  separate_wider_delim(new, "-", names = c("response_id", "submission_id","analysis_id","split_id"), too_many = "merge") %>%
   mutate_at(c("submission_id","analysis_id","split_id"), as.numeric)
 
-#make things numeric
-Master$num_fixed_variables<-as.numeric(Master$num_fixed_variables)
-Master$num_random_variables<-as.numeric(Master$num_random_variables)
-Master$sample_size<-as.numeric(Master$sample_size)
-Master$num_interactions<-as.numeric(Master$num_interactions)
-Master$Bayesian<-as.numeric(Master$Bayesian)
-Master$mixed_model<-as.numeric(Master$mixed_model)
-Master$lm<-ifelse(Master$linear_model=="linear",1,0)
-Master$glm<-ifelse(Master$linear_model=="generalised",1,0)
 
 #read in info about subset datasets
 #effect size analyses
