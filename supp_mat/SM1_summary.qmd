@@ -152,9 +152,15 @@ calc_summary_stats_numeric <- function(data, subset_name = character(1L)){
               min = ~ min(.x, na.rm = T),
               max = ~ max(.x, na.rm = T)),
   .names = "{.fn}_{.col}")) %>% 
-  mutate(subset = "all")
+  mutate(subset = subset_name )
+}
 
-AllBinaryDataSummary<- group_by(Master,dataset) %>% 
+AllMeanDataSummary <- 
+  Master %>% 
+  calc_summary_stats_numeric("all")
+  
+
+AllBinaryDataSummary <- group_by(Master,dataset) %>% 
   summarise(., 
             sum_linear =sum(lm,na.rm=T), 
             sum_mixed= sum(mixed_model,na.rm=T),
@@ -162,69 +168,37 @@ AllBinaryDataSummary<- group_by(Master,dataset) %>%
   mutate(subset = "all")
 
 #Effects analyses
-effectsdatasetgroup<-group_by(effects,dataset)
-EffectsMeanDataSummary<-summarise(effectsdatasetgroup, 
-                                  mean_fixed =round(mean(as.numeric(num_fixed_effects),na.rm=T),2), 
-                                  sd_fixed=round(sd(as.numeric(num_fixed_effects),na.rm=T),2),
-                                  min_fixed= min(as.numeric(num_fixed_effects),na.rm=T),
-                                  max_fixed= max(as.numeric(num_fixed_effects),na.rm=T),
-                                  mean_random =round(mean(as.numeric(num_random_effects),na.rm=T),2), 
-                                  sd_random=round(sd(as.numeric(num_random_effects),na.rm=T),2),
-                                  min_random= min(as.numeric(num_random_effects),na.rm=T),
-                                  max_random= max(as.numeric(num_random_effects),na.rm=T),
-                                  mean_samplesize =round(mean(sample_size,na.rm=T),2), 
-                                  sd_samplesize=round(sd(sample_size,na.rm=T),2),
-                                  min_samplesize= min(sample_size,na.rm=T),
-                                  max_samplesize= max(sample_size,na.rm=T),
-                                  mean_interactions =round(mean(num_interactions,na.rm=T),2), 
-                                  sd_interactions=round(sd(num_interactions,na.rm=T),2),
-                                  min_interactions= min(num_interactions,na.rm=T),
-                                  max_interactions= max(num_interactions,na.rm=T))
-EffectsMeanDataSummary$subset<-rep("effects",nrow(EffectsMeanDataSummary))
+EffectsMeanDataSummary <- effects %>% calc_summary_stats_numeric("effects")
 
 EffectsBinaryDataSummary<-summarise(effectsdatasetgroup, 
                                     sum_linear =sum(lm,na.rm=T), 
                                     sum_mixed= sum(mixed_model,na.rm=T),
-                                    sum_Bayesian= sum(Bayesian,na.rm=T))
-
-EffectsBinaryDataSummary$subset<-rep("effects",nrow(EffectsBinaryDataSummary))
-
+                                    sum_Bayesian= sum(Bayesian,na.rm=T)) %>% 
+  mutate(subset = "effects")
 
 #Predictions analyses
 
-predsdatasetgroup<-group_by(predictions,dataset)
-PredsMeanDataSummary<-summarise(predsdatasetgroup, 
-                                mean_fixed =round(mean(as.numeric(num_fixed_effects),na.rm=T),2), 
-                                sd_fixed=round(sd(as.numeric(num_fixed_effects),na.rm=T),2),
-                                min_fixed= min(as.numeric(num_fixed_effects),na.rm=T),
-                                max_fixed= max(as.numeric(num_fixed_effects),na.rm=T),
-                                mean_random =round(mean(as.numeric(num_random_effects),na.rm=T),2), 
-                                sd_random=round(sd(as.numeric(num_random_effects),na.rm=T),2),
-                                min_random= min(as.numeric(num_random_effects),na.rm=T),
-                                max_random= max(as.numeric(num_random_effects),na.rm=T),
-                                mean_samplesize =round(mean(sample_size,na.rm=T),2), 
-                                sd_samplesize=round(sd(sample_size,na.rm=T),2),
-                                min_samplesize= min(sample_size,na.rm=T),
-                                max_samplesize= max(sample_size,na.rm=T),
-                                mean_interactions =round(mean(num_interactions,na.rm=T),2), 
-                                sd_interactions=round(sd(num_interactions,na.rm=T),2),
-                                min_interactions= min(num_interactions,na.rm=T),
-                                max_interactions= max(num_interactions,na.rm=T))
-PredsMeanDataSummary$subset<-rep("predictions",nrow(PredsMeanDataSummary))
+PredsMeanDataSummary <- predictions %>% calc_summary_stats_numeric("predictions")
 
 PredsBinaryDataSummary<-summarise(predsdatasetgroup, 
                                   sum_linear =sum(lm,na.rm=T), 
                                   sum_mixed= sum(mixed_model,na.rm=T),
-                                  sum_Bayesian= sum(Bayesian,na.rm=T))
+                                  sum_Bayesian= sum(Bayesian,na.rm=T)) %>% 
+  mutate(subset = "predictions")
 
-PredsBinaryDataSummary$subset<-rep("predictions",nrow(PredsBinaryDataSummary))
 
 #Join summary data
 Total_Analyses<-bind_rows(Pred_Total_Analyses,Effect_Total_Analyses,All_Total_Analyses) #join all subsets for number of analyses 
 Teams_Per_Dataset<-bind_rows(Pred_Teams_Per_Dataset,Effect_Teams_Per_Dataset,All_Teams_Per_Dataset)#join all subsets for number of teams 
 Team_Analyses<-full_join(Total_Analyses,Teams_Per_Dataset) #join team and analysis info for all subsets
 
-SubsetsMeanSummary<-bind_rows(PredsMeanDataSummary,EffectsMeanDataSummary,AllMeanDataSummary) #join  descriptive information means, sd, range
+SubsetsMeanSummary <- tibble(data = list(Master, effects, predictions),
+     subset_name = c("all", "effects", "predictions")) %>% 
+  pmap(.f = calc_summary_stats_numeric) %>% 
+  list_rbind() #TODO create intermediate object creation e.g. 
+
+
+#join  descriptive information means, sd, range
 long<-SubsetsMeanSummary %>%pivot_longer(
     cols = mean_fixed:max_interactions,
   names_to = c("operation", "variable"),
