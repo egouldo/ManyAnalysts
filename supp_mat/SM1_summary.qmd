@@ -99,6 +99,12 @@ calc_analyses_per_team <- function(data, subset_name){ #NOTE this is calculating
 
 All_Analyses_Per_Team <- Master %>% 
   count(dataset, TeamIdentifier, sort = TRUE)
+#Predictions eval
+Pred_Analyses_Per_Team <- predictions %>% 
+  count(dataset, TeamIdentifier, sort = TRUE)
+#Effects eval
+Effect_Analyses_Per_Team <- effects %>% 
+  count(dataset, TeamIdentifier, sort = TRUE)
 
 # actually counting nunmber of analyses per team
 # Master %>% group_by(dataset) %>% 
@@ -106,28 +112,21 @@ All_Analyses_Per_Team <- Master %>%
 #   tally(n,name = "totalanalyses") %>% 
 #   mutate(subset = "all")
 
-All_Teams_Per_Dataset <- calc_teams_per_dataset(Master, "all")
-
 #How many analyst teams total
 All_teams <- n_distinct(Master$TeamIdentifier) #145
-
-#Effects eval
-Effect_Analyses_Per_Team <- effects %>% 
-  count(dataset, TeamIdentifier, sort = TRUE)
-
-Effect_Teams_Per_Dataset <- calc_teams_per_dataset(effects, "effects")
 
 #How many analyst teams in effects analyses - pretty sure we wont need this
 Effect_teams <- n_distinct(effects$TeamIdentifier) #102
 
-#Predictions eval
-Pred_Analyses_Per_Team <- predictions %>% 
-  count(dataset, TeamIdentifier, sort = TRUE)
-
-Pred_Teams_Per_Dataset <- calc_teams_per_dataset(predictions, "predictions")
-
 #How many analyst teams in predictions analyses - pretty sure we wont need this
 Pred_teams <- n_distinct(predictions$TeamIdentifier) #55 (5)
+
+
+
+Teams_Per_Dataset <- tibble(data = list(Master, effects, predictions),
+                         subset_name = c("all", "effects", "predictions")) %>% 
+  pmap(calc_teams_per_dataset) %>% 
+  list_rbind()
 
 
 #Join summary data
@@ -137,8 +136,6 @@ Total_Analyses <- tibble(data = list(Master, effects, predictions),
   list_rbind()
 
 
-
-Teams_Per_Dataset<-bind_rows(Pred_Teams_Per_Dataset,Effect_Teams_Per_Dataset,All_Teams_Per_Dataset)#join all subsets for number of teams 
 Team_Analyses<-full_join(Total_Analyses,Teams_Per_Dataset) #join team and analysis info for all subsets
 
 
