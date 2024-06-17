@@ -56,20 +56,19 @@ Diversity <- ManyEcoEvo %>%
   separate_wider_delim(new, "-", names = c("response_id", "submission_id","analysis_id","split_id"), too_many = "merge") %>%
   mutate_at(c("submission_id","analysis_id","split_id"), as.numeric)
 
-
-#read in info about subset datasets
+# ---- read in info about subset datasets -----
 #effect size analyses
 
-effect_Ids <- read_csv( here::here("ms/effect_Ids.csv"))
-effect_Ids <- distinct(effect_Ids)
-effects <- right_join(Master, effect_Ids, by = c("id_col"))
+effect_Ids <- read_csv( here::here("ms/effect_Ids.csv")) %>% #TODO ask HF how/where derived
+  distinct()
 
-
+effects <- right_join(Master, 
+                      effect_Ids, by = c("id_col"))
 
 #prediction analyses
-bothpredids <- read_csv(here::here("ms/predictions_Ids.csv"))
-bothpredids <- distinct(bothpredids)
-predictions <- left_join(bothpredids, Master, by = c("id_col"))
+predictions <- read_csv(here::here("ms/predictions_Ids.csv")) %>% #TODO ask HF source
+  distinct() %>% 
+  left_join(Master, by = c("id_col"))
 
 
 ##How many analyst teams and analyses per dataset
