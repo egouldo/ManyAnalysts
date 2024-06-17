@@ -94,6 +94,13 @@ prepare_df_for_summarising <- function(data){
                   lm = ifelse(linear_model == "linear", 1, 0),
                   glm = ifelse(linear_model == "generalised", 1, 0))
 }
+
+calculate_variable_counts <- function(data, subset_name){
+  colSums(!is.na(data)) %>% 
+    enframe(name = "variable", value = "count") %>% 
+    mutate( subset = subset_name )
+}
+
 ```
 
 
@@ -183,27 +190,19 @@ Table1_all <- full_join(Team_Analyses,SubsetsBinarySummary) %>%
 Table1 <- Table1_all %>% relocate(dataset, subset, totalanalyses, everything()) %>% 
   filter(subset != "all")
 
-#Number of analyses variables were used in
+
+# Coding variable inclusion across analyses
+
 diveffects<-right_join(Diversity,effect_Ids,by=c("id_col") ) #effect analysis subset of diversity data
 divpredictions<-right_join(Diversity,predictions,by=c("id_col")) #prediction analyses subset of diversity data
 
-AllColsums<-as.data.frame(colSums(!is.na(Diversity))) #calculate how many instances there are of each variable (column) for all data
-AllColsums<-rownames_to_column(AllColsums, var = "rowname")
-colnames(AllColsums)[2]<-"count"
-AllColsums$subset<-rep("all",nrow(AllColsums))
-EffectsColsums<-as.data.frame(colSums(!is.na(diveffects))) #as above, effects analyses
-EffectsColsums<-rownames_to_column(EffectsColsums, var = "rowname")
-colnames(EffectsColsums)[2]<-"count"
-EffectsColsums$subset<-rep("effects",nrow(EffectsColsums))
-PredsColsums<-as.data.frame(colSums(!is.na(divpredictions))) #as above, for predictions analyses
-PredsColsums<-rownames_to_column(PredsColsums, var = "rowname")
-colnames(PredsColsums)[2]<-"count"
-PredsColsums$subset<-rep("predictions",nrow(PredsColsums))
+WholeColsums_wider <- 
+  pmap(subsets_tibble_variables, calculate_variable_counts) %>% 
+  list_rbind() %>% 
+  pivot_wider(names_from = subset, values_from = count)
 
-WholeColsums<-bind_rows(AllColsums,EffectsColsums,PredsColsums)
-WholeColsums_wider<-pivot_wider(WholeColsums,names_from = subset, values_from = count)
 
-EucVariables<-WholeColsums_wider[c(55:112),] %>%
+EucVariables<- WholeColsums_wider[c(55:112),] %>%
   pivot_longer(
     cols = all:predictions,
   names_to = "subset",
