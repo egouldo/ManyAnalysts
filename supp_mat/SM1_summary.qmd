@@ -112,16 +112,16 @@ Effect_Analyses_Per_Team <- effects %>%
 #   tally(n,name = "totalanalyses") %>% 
 #   mutate(subset = "all")
 
-#How many analyst teams total
-All_teams <- n_distinct(Master$TeamIdentifier) #145
+Total_Teams_Per_Analysis <- 
+  pmap(tibble(data = list(Master, effects, predictions),
+              subset_name = c("all", "effects", "predictions")), 
+       ~ pluck(.x, "TeamIdentifier", n_distinct) %>% 
+         set_names(.y) %>% 
+         enframe("subset_name", "n_teams")) %>% 
+  list_rbind()
 
-#How many analyst teams in effects analyses - pretty sure we wont need this
-Effect_teams <- n_distinct(effects$TeamIdentifier) #102
 
-#How many analyst teams in predictions analyses - pretty sure we wont need this
-Pred_teams <- n_distinct(predictions$TeamIdentifier) #55 (5)
-
-
+Team_Analyses<-full_join(Total_Analyses,Teams_Per_Dataset) #join team and analysis info for all subsets
 
 Teams_Per_Dataset <- tibble(data = list(Master, effects, predictions),
                          subset_name = c("all", "effects", "predictions")) %>% 
@@ -135,8 +135,6 @@ Total_Analyses <- tibble(data = list(Master, effects, predictions),
   pmap(calc_analyses_per_team) %>% 
   list_rbind()
 
-
-Team_Analyses<-full_join(Total_Analyses,Teams_Per_Dataset) #join team and analysis info for all subsets
 
 
 ##mean, sd, min, max number of different things##
