@@ -40,14 +40,16 @@ set.seed(1234)
 Master <- ManyEcoEvo %>% 
   select(data) %>% unnest(everything()) %>% 
   mutate(across(.cols = c(num_fixed_variables,
-                                   num_random_variables,
-                                   sample_size,
-                                   num_interactions,
-                                   Bayesian, #NA's coming from CHECK values
-                                   mixed_model), 
-                         as.numeric),
-                  lm = ifelse(linear_model == "linear", 1, 0),
-                  glm = ifelse(linear_model == "generalised", 1, 0))
+                          num_random_variables,
+                          sample_size,
+                          num_interactions,
+                          Bayesian, #NA's coming from CHECK values
+                          mixed_model,
+                          num_fixed_effects,
+                          num_random_effects), 
+                as.numeric),
+         lm = ifelse(linear_model == "linear", 1, 0),
+         glm = ifelse(linear_model == "generalised", 1, 0))
 
 Diversity <- ManyEcoEvo %>% 
   select(diversity_data) %>% 
@@ -116,30 +118,26 @@ Pred_teams<-n_distinct(predictions$TeamIdentifier) #55
 
 ##mean, sd, min, max number of different things##
 #All analyses
-masterdatasetgroup<-group_by(Master,dataset)
-AllMeanDataSummary<-summarise(masterdatasetgroup, 
-                          mean_fixed =round(mean(as.numeric(num_fixed_effects),na.rm=T),2), 
-                          sd_fixed=round(sd(as.numeric(num_fixed_effects),na.rm=T),2),
-                          min_fixed= min(as.numeric(num_fixed_effects),na.rm=T),
-                          max_fixed= max(as.numeric(num_fixed_effects),na.rm=T),
-                          mean_random =round(mean(as.numeric(num_random_effects),na.rm=T),2), 
-                          sd_random=round(sd(as.numeric(num_random_effects),na.rm=T),2),
-                          min_random= min(as.numeric(num_random_effects),na.rm=T),
-                          max_random= max(as.numeric(num_random_effects),na.rm=T),
-                          mean_samplesize =round(mean(sample_size,na.rm=T),2), 
-                          sd_samplesize=round(sd(sample_size,na.rm=T),2),
-                          min_samplesize= min(sample_size,na.rm=T),
-                          max_samplesize= max(sample_size,na.rm=T),
-                          mean_interactions =round(mean(num_interactions,na.rm=T),2), 
-                          sd_interactions=round(sd(num_interactions,na.rm=T),2),
-                          min_interactions= min(num_interactions,na.rm=T),
-                          max_interactions= max(num_interactions,na.rm=T))
-AllMeanDataSummary$subset<-rep("all",nrow(AllMeanDataSummary))
+AllMeanDataSummary <- 
+  Master %>% 
+  group_by(dataset) %>% 
+  summarise(across(.cols = c(fixed = num_fixed_effects,
+                             random = num_random_effects,
+                             samplesize = sample_size,
+                             interactions = num_interactions,
+  ),
+  .fns = list(mean = ~ mean(.x, na.rm = T) %>% round(2),
+              sd = ~ sd(.x, na.rm = T) %>% round(2),
+              min = ~ min(.x, na.rm = T),
+              max = ~ max(.x, na.rm = T)),
+  .names = "{.fn}_{.col}")) %>% 
+  mutate(subset = "all")
 
-AllBinaryDataSummary<-summarise(masterdatasetgroup, 
-                          sum_linear =sum(lm,na.rm=T), 
-                          sum_mixed= sum(mixed_model,na.rm=T),
-                          sum_Bayesian= sum(Bayesian,na.rm=T))
+AllBinaryDataSummary<-group_by(Master,dataset) %>% 
+  summarise(., 
+            sum_linear =sum(lm,na.rm=T), 
+            sum_mixed= sum(mixed_model,na.rm=T),
+            sum_Bayesian= sum(Bayesian,na.rm=T))
 AllBinaryDataSummary$subset<-rep("all",nrow(AllBinaryDataSummary))
 
 #Effects analyses
