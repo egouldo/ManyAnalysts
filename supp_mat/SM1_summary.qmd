@@ -37,19 +37,23 @@ set.seed(1234)
 
 ```{r descriptive-munging-2, eval=TRUE,include=FALSE, eval=TRUE}
 
+prepare_df_for_summarising <- function(data){
+  data %>% mutate(across(.cols = c(num_fixed_variables,
+                                   num_random_variables,
+                                   sample_size,
+                                   num_interactions,
+                                   Bayesian, #NA's coming from CHECK values
+                                   mixed_model,
+                                   num_fixed_effects,
+                                   num_random_effects), 
+                         as.numeric),
+                  lm = ifelse(linear_model == "linear", 1, 0),
+                  glm = ifelse(linear_model == "generalised", 1, 0))
+}
+
 Master <- ManyEcoEvo %>% 
   select(data) %>% unnest(everything()) %>% 
-  mutate(across(.cols = c(num_fixed_variables,
-                          num_random_variables,
-                          sample_size,
-                          num_interactions,
-                          Bayesian, #NA's coming from CHECK values
-                          mixed_model,
-                          num_fixed_effects,
-                          num_random_effects), 
-                as.numeric),
-         lm = ifelse(linear_model == "linear", 1, 0),
-         glm = ifelse(linear_model == "generalised", 1, 0))
+  prepare_df_for_summarising()
 
 Diversity <- ManyEcoEvo %>% 
   select(diversity_data) %>% 
@@ -65,56 +69,72 @@ effect_Ids <- read_csv( here::here("ms/effect_Ids.csv")) %>% #TODO ask HF how/wh
   distinct()
 
 effects <- right_join(Master, 
-                      effect_Ids, by = c("id_col"))
+                      effect_Ids, by = c("id_col")) %>% 
+  prepare_df_for_summarising()
 
 #prediction analyses
 predictions <- read_csv(here::here("ms/predictions_Ids.csv")) %>% #TODO ask HF source
   distinct() %>% 
-  left_join(Master, by = c("id_col"))
+  left_join(Master, by = c("id_col")) %>% 
+  prepare_df_for_summarising()
 
+# funs
+
+calc_teams_per_dataset <- function(data, subset_name){
+  data %>% 
+    group_by(dataset) %>% 
+    count(TeamIdentifier) %>% 
+    tally(name = "teams") %>% 
+    mutate(subset = subset_name)
+}
+
+calc_analyses_per_team <- function(data, subset_name){ #NOTE this is calculating number of analyses per dataset not number of analyses per team per dataset ... 
+  data %>% 
+  count(dataset, name = "totalanalyses") %>% 
+  mutate(subset = subset_name)
+}
 
 ##How many analyst teams and analyses per dataset
 #All analyses
+
 All_Analyses_Per_Team <- Master %>% 
   count(dataset, TeamIdentifier, sort = TRUE)
-allgrouped <- group_by(All_Analyses_Per_Team,dataset)
-All_Total_Analyses <- summarise(allgrouped,
-                                totalanalyses=sum(n))
-All_Total_Analyses$subset <- rep("all",
-                                 nrow(All_Total_Analyses))
 
-All_Teams_Per_Dataset <-All_Analyses_Per_Team %>%  
-  count(dataset, sort = TRUE)
-All_Teams_Per_Dataset$subset <- rep("all",nrow(All_Teams_Per_Dataset))
-colnames(All_Teams_Per_Dataset)[2]<-"teams"
+# actually counting nunmber of analyses per team
+# Master %>% group_by(dataset) %>% 
+#     count(TeamIdentifier, sort = TRUE) %>% 
+#   tally(n,name = "totalanalyses") %>% 
+#   mutate(subset = "all")
+
+All_Total_Analyses <-  calc_analyses_per_team(Master, "all")
+
+All_Teams_Per_Dataset <- calc_teams_per_dataset(Master, "all")
+
 #How many analyst teams total
-All_teams<-n_distinct(Master$TeamIdentifier) #146 
+All_teams <- n_distinct(Master$TeamIdentifier) #145
 
 #Effects eval
-Effect_Analyses_Per_Team<-effects %>% 
+Effect_Analyses_Per_Team <- effects %>% 
   count(dataset, TeamIdentifier, sort = TRUE)
-effectgrouped <- group_by(Effect_Analyses_Per_Team,dataset)
-Effect_Total_Analyses <- summarise(effectgrouped,totalanalyses=sum(n))
-Effect_Total_Analyses$subset<-rep("effects",nrow(Effect_Total_Analyses))
-Effect_Teams_Per_Dataset <- Effect_Analyses_Per_Team%>%  count(dataset, sort = TRUE)
-colnames(Effect_Teams_Per_Dataset)[2] <- "teams"
-Effect_Teams_Per_Dataset$subset <- rep("effects",nrow(Effect_Teams_Per_Dataset))
+
+Effect_Total_Analyses <- calc_analyses_per_team(effects, "effects")
+
+Effect_Teams_Per_Dataset <- calc_teams_per_dataset(effects, "effects")
 
 #How many analyst teams in effects analyses - pretty sure we wont need this
-Effect_teams<-n_distinct(effects$TeamIdentifier) #102
+Effect_teams <- n_distinct(effects$TeamIdentifier) #102
 
 #Predictions eval
-Pred_Analyses_Per_Team<-predictions%>%count(dataset, TeamIdentifier, sort = TRUE)
-predgrouped<-group_by(Pred_Analyses_Per_Team,dataset)
-Pred_Total_Analyses<-summarise(predgrouped,totalanalyses=sum(n))
-Pred_Total_Analyses$subset<-rep("predictions",nrow(Pred_Total_Analyses))
-Pred_Teams_Per_Dataset <-Pred_Analyses_Per_Team%>%  count(dataset, sort = TRUE)
-colnames(Pred_Teams_Per_Dataset)[2]<-"teams"
-Pred_Teams_Per_Dataset$subset<-rep("predictions",nrow(Pred_Teams_Per_Dataset))
+Pred_Analyses_Per_Team <- predictions %>% 
+  count(dataset, TeamIdentifier, sort = TRUE)
 
+Pred_Total_Analyses <- calc_analyses_per_team(predictions, "predictions")
+
+Pred_Teams_Per_Dataset <- calc_teams_per_dataset(predictions, "predictions")
 
 #How many analyst teams in predictions analyses - pretty sure we wont need this
-Pred_teams<-n_distinct(predictions$TeamIdentifier) #55
+Pred_teams <- n_distinct(predictions$TeamIdentifier) #55 (5)
+
 
 ##mean, sd, min, max number of different things##
 #All analyses
@@ -133,38 +153,38 @@ AllMeanDataSummary <-
   .names = "{.fn}_{.col}")) %>% 
   mutate(subset = "all")
 
-AllBinaryDataSummary<-group_by(Master,dataset) %>% 
+AllBinaryDataSummary<- group_by(Master,dataset) %>% 
   summarise(., 
             sum_linear =sum(lm,na.rm=T), 
             sum_mixed= sum(mixed_model,na.rm=T),
-            sum_Bayesian= sum(Bayesian,na.rm=T))
-AllBinaryDataSummary$subset<-rep("all",nrow(AllBinaryDataSummary))
+            sum_Bayesian= sum(Bayesian,na.rm=T)) %>% 
+  mutate(subset = "all")
 
 #Effects analyses
 effectsdatasetgroup<-group_by(effects,dataset)
 EffectsMeanDataSummary<-summarise(effectsdatasetgroup, 
-                          mean_fixed =round(mean(as.numeric(num_fixed_effects),na.rm=T),2), 
-                          sd_fixed=round(sd(as.numeric(num_fixed_effects),na.rm=T),2),
-                          min_fixed= min(as.numeric(num_fixed_effects),na.rm=T),
-                          max_fixed= max(as.numeric(num_fixed_effects),na.rm=T),
-                          mean_random =round(mean(as.numeric(num_random_effects),na.rm=T),2), 
-                          sd_random=round(sd(as.numeric(num_random_effects),na.rm=T),2),
-                          min_random= min(as.numeric(num_random_effects),na.rm=T),
-                          max_random= max(as.numeric(num_random_effects),na.rm=T),
-                          mean_samplesize =round(mean(sample_size,na.rm=T),2), 
-                          sd_samplesize=round(sd(sample_size,na.rm=T),2),
-                          min_samplesize= min(sample_size,na.rm=T),
-                          max_samplesize= max(sample_size,na.rm=T),
-                          mean_interactions =round(mean(num_interactions,na.rm=T),2), 
-                          sd_interactions=round(sd(num_interactions,na.rm=T),2),
-                          min_interactions= min(num_interactions,na.rm=T),
-                          max_interactions= max(num_interactions,na.rm=T))
+                                  mean_fixed =round(mean(as.numeric(num_fixed_effects),na.rm=T),2), 
+                                  sd_fixed=round(sd(as.numeric(num_fixed_effects),na.rm=T),2),
+                                  min_fixed= min(as.numeric(num_fixed_effects),na.rm=T),
+                                  max_fixed= max(as.numeric(num_fixed_effects),na.rm=T),
+                                  mean_random =round(mean(as.numeric(num_random_effects),na.rm=T),2), 
+                                  sd_random=round(sd(as.numeric(num_random_effects),na.rm=T),2),
+                                  min_random= min(as.numeric(num_random_effects),na.rm=T),
+                                  max_random= max(as.numeric(num_random_effects),na.rm=T),
+                                  mean_samplesize =round(mean(sample_size,na.rm=T),2), 
+                                  sd_samplesize=round(sd(sample_size,na.rm=T),2),
+                                  min_samplesize= min(sample_size,na.rm=T),
+                                  max_samplesize= max(sample_size,na.rm=T),
+                                  mean_interactions =round(mean(num_interactions,na.rm=T),2), 
+                                  sd_interactions=round(sd(num_interactions,na.rm=T),2),
+                                  min_interactions= min(num_interactions,na.rm=T),
+                                  max_interactions= max(num_interactions,na.rm=T))
 EffectsMeanDataSummary$subset<-rep("effects",nrow(EffectsMeanDataSummary))
 
 EffectsBinaryDataSummary<-summarise(effectsdatasetgroup, 
-                          sum_linear =sum(lm,na.rm=T), 
-                          sum_mixed= sum(mixed_model,na.rm=T),
-                          sum_Bayesian= sum(Bayesian,na.rm=T))
+                                    sum_linear =sum(lm,na.rm=T), 
+                                    sum_mixed= sum(mixed_model,na.rm=T),
+                                    sum_Bayesian= sum(Bayesian,na.rm=T))
 
 EffectsBinaryDataSummary$subset<-rep("effects",nrow(EffectsBinaryDataSummary))
 
@@ -173,28 +193,28 @@ EffectsBinaryDataSummary$subset<-rep("effects",nrow(EffectsBinaryDataSummary))
 
 predsdatasetgroup<-group_by(predictions,dataset)
 PredsMeanDataSummary<-summarise(predsdatasetgroup, 
-                          mean_fixed =round(mean(as.numeric(num_fixed_effects),na.rm=T),2), 
-                          sd_fixed=round(sd(as.numeric(num_fixed_effects),na.rm=T),2),
-                          min_fixed= min(as.numeric(num_fixed_effects),na.rm=T),
-                          max_fixed= max(as.numeric(num_fixed_effects),na.rm=T),
-                          mean_random =round(mean(as.numeric(num_random_effects),na.rm=T),2), 
-                          sd_random=round(sd(as.numeric(num_random_effects),na.rm=T),2),
-                          min_random= min(as.numeric(num_random_effects),na.rm=T),
-                          max_random= max(as.numeric(num_random_effects),na.rm=T),
-                          mean_samplesize =round(mean(sample_size,na.rm=T),2), 
-                          sd_samplesize=round(sd(sample_size,na.rm=T),2),
-                          min_samplesize= min(sample_size,na.rm=T),
-                          max_samplesize= max(sample_size,na.rm=T),
-                          mean_interactions =round(mean(num_interactions,na.rm=T),2), 
-                          sd_interactions=round(sd(num_interactions,na.rm=T),2),
-                          min_interactions= min(num_interactions,na.rm=T),
-                          max_interactions= max(num_interactions,na.rm=T))
+                                mean_fixed =round(mean(as.numeric(num_fixed_effects),na.rm=T),2), 
+                                sd_fixed=round(sd(as.numeric(num_fixed_effects),na.rm=T),2),
+                                min_fixed= min(as.numeric(num_fixed_effects),na.rm=T),
+                                max_fixed= max(as.numeric(num_fixed_effects),na.rm=T),
+                                mean_random =round(mean(as.numeric(num_random_effects),na.rm=T),2), 
+                                sd_random=round(sd(as.numeric(num_random_effects),na.rm=T),2),
+                                min_random= min(as.numeric(num_random_effects),na.rm=T),
+                                max_random= max(as.numeric(num_random_effects),na.rm=T),
+                                mean_samplesize =round(mean(sample_size,na.rm=T),2), 
+                                sd_samplesize=round(sd(sample_size,na.rm=T),2),
+                                min_samplesize= min(sample_size,na.rm=T),
+                                max_samplesize= max(sample_size,na.rm=T),
+                                mean_interactions =round(mean(num_interactions,na.rm=T),2), 
+                                sd_interactions=round(sd(num_interactions,na.rm=T),2),
+                                min_interactions= min(num_interactions,na.rm=T),
+                                max_interactions= max(num_interactions,na.rm=T))
 PredsMeanDataSummary$subset<-rep("predictions",nrow(PredsMeanDataSummary))
 
 PredsBinaryDataSummary<-summarise(predsdatasetgroup, 
-                          sum_linear =sum(lm,na.rm=T), 
-                          sum_mixed= sum(mixed_model,na.rm=T),
-                          sum_Bayesian= sum(Bayesian,na.rm=T))
+                                  sum_linear =sum(lm,na.rm=T), 
+                                  sum_mixed= sum(mixed_model,na.rm=T),
+                                  sum_Bayesian= sum(Bayesian,na.rm=T))
 
 PredsBinaryDataSummary$subset<-rep("predictions",nrow(PredsBinaryDataSummary))
 
