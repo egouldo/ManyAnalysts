@@ -155,10 +155,6 @@ calc_summary_stats_numeric <- function(data, subset_name = character(1L)){
   mutate(subset = subset_name )
 }
 
-AllMeanDataSummary <- 
-  Master %>% 
-  calc_summary_stats_numeric("all")
-  
 
 AllBinaryDataSummary <- group_by(Master,dataset) %>% 
   summarise(., 
@@ -168,7 +164,6 @@ AllBinaryDataSummary <- group_by(Master,dataset) %>%
   mutate(subset = "all")
 
 #Effects analyses
-EffectsMeanDataSummary <- effects %>% calc_summary_stats_numeric("effects")
 
 EffectsBinaryDataSummary<-summarise(effectsdatasetgroup, 
                                     sum_linear =sum(lm,na.rm=T), 
@@ -177,8 +172,6 @@ EffectsBinaryDataSummary<-summarise(effectsdatasetgroup,
   mutate(subset = "effects")
 
 #Predictions analyses
-
-PredsMeanDataSummary <- predictions %>% calc_summary_stats_numeric("predictions")
 
 PredsBinaryDataSummary<-summarise(predsdatasetgroup, 
                                   sum_linear =sum(lm,na.rm=T), 
