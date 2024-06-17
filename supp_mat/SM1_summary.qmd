@@ -138,8 +138,9 @@ Pred_teams <- n_distinct(predictions$TeamIdentifier) #55 (5)
 
 ##mean, sd, min, max number of different things##
 #All analyses
-AllMeanDataSummary <- 
-  Master %>% 
+
+calc_summary_stats_numeric <- function(data, subset_name = character(1L)){
+  data %>% 
   group_by(dataset) %>% 
   summarise(across(.cols = c(fixed = num_fixed_effects,
                              random = num_random_effects,
