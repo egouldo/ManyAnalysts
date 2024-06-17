@@ -35,50 +35,12 @@ set.seed(1234)
 # extrafont::font_install("Lato")
 ```
 
-```{r descriptive-munging-2, eval=TRUE,include=FALSE, eval=TRUE}
 
-prepare_df_for_summarising <- function(data){
-  data %>% mutate(across(.cols = c(num_fixed_variables,
-                                   num_random_variables,
-                                   sample_size,
-                                   num_interactions,
-                                   Bayesian, #NA's coming from CHECK values
-                                   mixed_model,
-                                   num_fixed_effects,
-                                   num_random_effects), 
-                         as.numeric),
-                  lm = ifelse(linear_model == "linear", 1, 0),
-                  glm = ifelse(linear_model == "generalised", 1, 0))
-}
+```{r}
+#| label: define-summary-helper-functions
 
-Master <- ManyEcoEvo %>% 
-  select(data) %>% unnest(everything()) %>% 
-  prepare_df_for_summarising()
 
-Diversity <- ManyEcoEvo %>% 
-  select(diversity_data) %>% 
-  unnest(everything()) %>% 
-  mutate(new = id_col) %>% 
-  separate_wider_delim(new, "-", names = c("response_id", "submission_id","analysis_id","split_id"), too_many = "merge") %>%
-  mutate_at(c("submission_id","analysis_id","split_id"), as.numeric)
-
-# ---- read in info about subset datasets -----
-#effect size analyses
-
-effect_Ids <- read_csv( here::here("ms/effect_Ids.csv")) %>% #TODO ask HF how/where derived
-  distinct()
-
-effects <- right_join(Master, 
-                      effect_Ids, by = c("id_col")) %>% 
-  prepare_df_for_summarising()
-
-#prediction analyses
-predictions <- read_csv(here::here("ms/predictions_Ids.csv")) %>% #TODO ask HF source
-  distinct() %>% 
-  left_join(Master, by = c("id_col")) %>% 
-  prepare_df_for_summarising()
-
-# funs
+# Define Helper Functions for Calculating Summary Statistics
 
 calc_teams_per_dataset <- function(data, subset_name){
   data %>% 
@@ -93,51 +55,6 @@ calc_analyses_per_team <- function(data, subset_name){ #NOTE this is calculating
   count(dataset, name = "totalanalyses") %>% 
   mutate(subset = subset_name)
 }
-
-##How many analyst teams and analyses per dataset
-#All analyses
-
-All_Analyses_Per_Team <- Master %>% 
-  count(dataset, TeamIdentifier, sort = TRUE)
-#Predictions eval
-Pred_Analyses_Per_Team <- predictions %>% 
-  count(dataset, TeamIdentifier, sort = TRUE)
-#Effects eval
-Effect_Analyses_Per_Team <- effects %>% 
-  count(dataset, TeamIdentifier, sort = TRUE)
-
-# actually counting nunmber of analyses per team
-# Master %>% group_by(dataset) %>% 
-#     count(TeamIdentifier, sort = TRUE) %>% 
-#   tally(n,name = "totalanalyses") %>% 
-#   mutate(subset = "all")
-
-Total_Teams_Per_Analysis <- 
-  pmap(tibble(data = list(Master, effects, predictions),
-              subset_name = c("all", "effects", "predictions")), 
-       ~ pluck(.x, "TeamIdentifier", n_distinct) %>% 
-         set_names(.y) %>% 
-         enframe("subset_name", "n_teams")) %>% 
-  list_rbind()
-
-
-Team_Analyses<-full_join(Total_Analyses,Teams_Per_Dataset) #join team and analysis info for all subsets
-
-Teams_Per_Dataset <- tibble(data = list(Master, effects, predictions),
-                         subset_name = c("all", "effects", "predictions")) %>% 
-  pmap(calc_teams_per_dataset) %>% 
-  list_rbind()
-
-
-#Join summary data
-Total_Analyses <- tibble(data = list(Master, effects, predictions),
-                         subset_name = c("all", "effects", "predictions")) %>% 
-  pmap(calc_analyses_per_team) %>% 
-  list_rbind()
-
-
-
-##mean, sd, min, max number of different things##
 
 calc_summary_stats_numeric <- function(data, subset_name = character(1L)){
   data %>% 
@@ -164,21 +81,98 @@ calc_summary_stats_binary <- function(data, subset_name = character(1L)) {
               sum_Bayesian= sum(Bayesian,na.rm=T), subset_name)
 }
 
-SubsetsBinarySummary <- tibble(data = list(Master, effects, predictions),
-     subset_name = c("all", "effects", "predictions")) %>% 
+prepare_df_for_summarising <- function(data){
+  data %>% mutate(across(.cols = c(num_fixed_variables,
+                                   num_random_variables,
+                                   sample_size,
+                                   num_interactions,
+                                   Bayesian, #NA's coming from CHECK values
+                                   mixed_model,
+                                   num_fixed_effects,
+                                   num_random_effects), 
+                         as.numeric),
+                  lm = ifelse(linear_model == "linear", 1, 0),
+                  glm = ifelse(linear_model == "generalised", 1, 0))
+}
+```
+
+
+```{r descriptive-munging-2, eval=TRUE,include=FALSE, eval=TRUE}
+
+# ---- read in info about subset datasets -----
+Master <- ManyEcoEvo %>% 
+  select(data) %>% unnest(everything()) %>% 
+  prepare_df_for_summarising()
+
+Diversity <- ManyEcoEvo %>% 
+  select(diversity_data) %>% 
+  unnest(everything()) %>% 
+  mutate(new = id_col) %>% 
+  separate_wider_delim(new, "-", names = c("response_id", "submission_id","analysis_id","split_id"), too_many = "merge") %>%
+  mutate_at(c("submission_id","analysis_id","split_id"), as.numeric)
+
+effect_Ids <- read_csv( here::here("ms/effect_Ids.csv")) %>% #TODO ask HF how/where derived
+  distinct()
+
+effects <- right_join(Master, 
+                      effect_Ids, by = c("id_col")) %>% 
+  prepare_df_for_summarising()
+
+predictions <- read_csv(here::here("ms/predictions_Ids.csv")) %>% #TODO ask HF source
+  distinct() %>% 
+  left_join(Master, by = c("id_col")) %>% 
+  prepare_df_for_summarising()
+
+## How many analyst teams and analyses per dataset?
+
+All_Analyses_Per_Team <- Master %>% 
+  count(dataset, TeamIdentifier, sort = TRUE)
+#Predictions eval
+Pred_Analyses_Per_Team <- predictions %>% 
+  count(dataset, TeamIdentifier, sort = TRUE)
+#Effects eval
+Effect_Analyses_Per_Team <- effects %>% 
+  count(dataset, TeamIdentifier, sort = TRUE)
+
+# actually counting nunmber of analyses per team
+# Master %>% group_by(dataset) %>% 
+#     count(TeamIdentifier, sort = TRUE) %>% 
+#   tally(n,name = "totalanalyses") %>% 
+#   mutate(subset = "all")
+
+subsets_tibble <- tibble(data = list(Master, effects, predictions),
+                         subset_name = c("all", "effects", "predictions"))
+
+Total_Teams_Per_Analysis <- 
+  pmap(subsets_tibble, 
+       ~ pluck(.x, "TeamIdentifier", n_distinct) %>% 
+         set_names(.y) %>% 
+         enframe("subset_name", "n_teams")) %>% 
+  list_rbind()
+
+# Number of Teams and Total Analyses per dataset for each subset
+Team_Analyses <- map(
+  list(calc_teams_per_dataset, 
+       calc_analyses_per_team), 
+  ~ pmap(subsets_tibble, .x) %>% 
+    list_rbind) %>% 
+  reduce(full_join)
+
+# Calculate Summary Statistics for Binary and Numeric Variables
+
+SubsetsBinarySummary <- subsets_tibble %>% 
   pmap(.f = calc_summary_stats_binary) %>% 
   list_rbind() #TODO create intermediate object creation e.g. 
 
-SubsetsMeanSummary <- tibble(data = list(Master, effects, predictions),
-     subset_name = c("all", "effects", "predictions")) %>% 
+SubsetsMeanSummary <- subsets_tibble %>% 
   pmap(.f = calc_summary_stats_numeric) %>% 
   list_rbind()
 
-
-
 #join  descriptive information means, sd, range
 rewide <- SubsetsMeanSummary %>%  group_by(dataset, subset) %>% 
-    pivot_longer(cols =  where(is.numeric), names_to = c(".value", "variable"), names_pattern = "(.*)_(.*)") %>%
+    pivot_longer(cols =  where(is.numeric), 
+                 names_to = c(".value", "variable"), 
+                 names_pattern = "(.*)_(.*)") %>%
   group_by(dataset, variable, subset)
 
 Table2 <- rewide %>% filter(subset != "all")
