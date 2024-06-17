@@ -193,28 +193,47 @@ Table1 <- Table1_all %>% relocate(dataset, subset, totalanalyses, everything()) 
 
 # Coding variable inclusion across analyses
 
-diveffects<-right_join(Diversity,effect_Ids,by=c("id_col") ) #effect analysis subset of diversity data
-divpredictions<-right_join(Diversity,predictions,by=c("id_col")) #prediction analyses subset of diversity data
+diveffects<- right_join(Diversity, 
+                        effect_Ids, 
+                        by=c("id_col") ) #effect analysis subset of diversity data
+divpredictions <- right_join(Diversity, 
+                           predictions, 
+                           by=c("id_col")) #prediction analyses subset of diversity data
 
 WholeColsums_wider <- 
   pmap(subsets_tibble_variables, calculate_variable_counts) %>% 
   list_rbind() %>% 
   pivot_wider(names_from = subset, values_from = count)
 
+var_names <- 
+  ManyEcoEvo %>% 
+  pull(diversity_data) %>% 
+  map(~ .x %>% select(-id_col, -dataset) %>% colnames) %>% 
+  enframe("dataset", "variables")
+
+WholeColsums_wider 
+
+# EucVariables <-
+
+WholeColsums_wider 
 
 EucVariables<- WholeColsums_wider[c(55:112),] %>%
   pivot_longer(
     cols = all:predictions,
-  names_to = "subset",
-  values_to = "value"
-)
+    names_to = "subset",
+    values_to = "value"
+  )
+
+
+
 EucVariables$dataset<-rep("eucalyptus",nrow(EucVariables))
 
-BTVariables<-WholeColsums_wider[c(3:54),] %>%pivot_longer(
+BTVariables<-WholeColsums_wider[c(3:54),] %>% 
+  pivot_longer(
     cols = all:predictions,
-  names_to = "subset",
-  values_to = "value"
-)
+    names_to = "subset",
+    values_to = "value"
+  )
 BTVariables$dataset<-rep("blue tit",nrow(BTVariables))
 
 
