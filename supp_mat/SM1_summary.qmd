@@ -136,8 +136,13 @@ Pred_Teams_Per_Dataset <- calc_teams_per_dataset(predictions, "predictions")
 Pred_teams <- n_distinct(predictions$TeamIdentifier) #55 (5)
 
 
+#Join summary data
+Total_Analyses<-bind_rows(Pred_Total_Analyses,Effect_Total_Analyses,All_Total_Analyses) #join all subsets for number of analyses 
+Teams_Per_Dataset<-bind_rows(Pred_Teams_Per_Dataset,Effect_Teams_Per_Dataset,All_Teams_Per_Dataset)#join all subsets for number of teams 
+Team_Analyses<-full_join(Total_Analyses,Teams_Per_Dataset) #join team and analysis info for all subsets
+
+
 ##mean, sd, min, max number of different things##
-#All analyses
 
 calc_summary_stats_numeric <- function(data, subset_name = character(1L)){
   data %>% 
@@ -151,63 +156,37 @@ calc_summary_stats_numeric <- function(data, subset_name = character(1L)){
               sd = ~ sd(.x, na.rm = T) %>% round(2),
               min = ~ min(.x, na.rm = T),
               max = ~ max(.x, na.rm = T)),
-  .names = "{.fn}_{.col}")) %>% 
-  mutate(subset = subset_name )
+  .names = "{.fn}_{.col}"),
+  subset = subset_name)
 }
 
+calc_summary_stats_binary <- function(data, subset_name = character(1L)) {
+   data %>% 
+    group_by(dataset) %>% 
+    summarise(., 
+              sum_linear =sum(lm,na.rm=T), 
+              sum_mixed= sum(mixed_model,na.rm=T),
+              sum_Bayesian= sum(Bayesian,na.rm=T), subset_name)
+}
 
-AllBinaryDataSummary <- group_by(Master,dataset) %>% 
-  summarise(., 
-            sum_linear =sum(lm,na.rm=T), 
-            sum_mixed= sum(mixed_model,na.rm=T),
-            sum_Bayesian= sum(Bayesian,na.rm=T)) %>% 
-  mutate(subset = "all")
-
-#Effects analyses
-
-EffectsBinaryDataSummary<-summarise(effectsdatasetgroup, 
-                                    sum_linear =sum(lm,na.rm=T), 
-                                    sum_mixed= sum(mixed_model,na.rm=T),
-                                    sum_Bayesian= sum(Bayesian,na.rm=T)) %>% 
-  mutate(subset = "effects")
-
-#Predictions analyses
-
-PredsBinaryDataSummary<-summarise(predsdatasetgroup, 
-                                  sum_linear =sum(lm,na.rm=T), 
-                                  sum_mixed= sum(mixed_model,na.rm=T),
-                                  sum_Bayesian= sum(Bayesian,na.rm=T)) %>% 
-  mutate(subset = "predictions")
-
-
-#Join summary data
-Total_Analyses<-bind_rows(Pred_Total_Analyses,Effect_Total_Analyses,All_Total_Analyses) #join all subsets for number of analyses 
-Teams_Per_Dataset<-bind_rows(Pred_Teams_Per_Dataset,Effect_Teams_Per_Dataset,All_Teams_Per_Dataset)#join all subsets for number of teams 
-Team_Analyses<-full_join(Total_Analyses,Teams_Per_Dataset) #join team and analysis info for all subsets
+SubsetsBinarySummary <- tibble(data = list(Master, effects, predictions),
+     subset_name = c("all", "effects", "predictions")) %>% 
+  pmap(.f = calc_summary_stats_binary) %>% 
+  list_rbind() #TODO create intermediate object creation e.g. 
 
 SubsetsMeanSummary <- tibble(data = list(Master, effects, predictions),
      subset_name = c("all", "effects", "predictions")) %>% 
   pmap(.f = calc_summary_stats_numeric) %>% 
-  list_rbind() #TODO create intermediate object creation e.g. 
+  list_rbind()
+
 
 
 #join  descriptive information means, sd, range
-long<-SubsetsMeanSummary %>%pivot_longer(
-    cols = mean_fixed:max_interactions,
-  names_to = c("operation", "variable"),
-  names_pattern = "(.*)_(.*)",
-  values_to = "value"
-)
+rewide <- SubsetsMeanSummary %>%  group_by(dataset, subset) %>% 
+    pivot_longer(cols =  where(is.numeric), names_to = c(".value", "variable"), names_pattern = "(.*)_(.*)") %>%
+  group_by(dataset, variable, subset)
 
-rewide<-long%>%pivot_wider(
-  names_from = operation, values_from = value)
-Table2<-rewide[order(rewide$dataset,rewide$variable,rewide$subset), ]
-Table2<-filter(Table2,subset!="all")
-
-
-
-
-SubsetsBinarySummary<-bind_rows(PredsBinaryDataSummary,EffectsBinaryDataSummary,AllBinaryDataSummary)#join  descriptive information from binary factors
+Table2 <- rewide %>% filter(subset != "all")
 
 Table1<-full_join(Team_Analyses,SubsetsBinarySummary)
 Table1<-Table1[c(1,3,2,4,5,6,7)]
