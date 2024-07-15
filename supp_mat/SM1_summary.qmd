@@ -164,7 +164,8 @@ Team_Analyses <- map(
        calc_analyses_per_team), 
   ~ pmap(subsets_tibble, .x) %>% 
     list_rbind) %>% 
-  reduce(full_join, by = join_by(dataset, subset))
+  reduce(full_join, 
+         by = join_by(dataset, subset))
 
 # Calculate Summary Statistics for Binary and Numeric Variables
 
@@ -177,34 +178,34 @@ SubsetsMeanSummary <- subsets_tibble %>%
   list_rbind()
 
 #join  descriptive information means, sd, range
+
 rewide <- SubsetsMeanSummary %>%  group_by(dataset, subset) %>% 
     pivot_longer(cols =  where(is.numeric), 
                  names_to = c(".value", "variable"), 
                  names_pattern = "(.*)_(.*)") %>%
   group_by(dataset, variable, subset)
 
-Table2 <- rewide %>% filter(subset != "all")
+Table2 <- rewide %>% 
+  filter(subset != "all")
 
-Table1_all <- full_join(Team_Analyses,
+Table1 <- full_join(Team_Analyses,
                         SubsetsBinarySummary,
                         by = join_by(dataset, subset)) %>% 
-  arrange(dataset, subset) 
-
-Table1 <- Table1_all %>% 
+  arrange(dataset, subset) %>% 
   relocate(dataset, 
            subset, 
            totalanalyses, 
            everything()) %>% 
   filter(subset != "all")
 
-
 # Coding variable inclusion across analyses
 
-diveffects<- right_join(Diversity, 
+diveffects <- right_join(Diversity, 
                         effect_Ids, 
                         by=c("id_col") ) #effect analysis subset of diversity data
+
 divpredictions <- right_join(Diversity, 
-                           predictions, 
+                           predictions, #TODO duplicate entry for 1-8-1 Byrock
                            by=c("id_col")) #prediction analyses subset of diversity data
 
 WholeColsums_wider <- 
