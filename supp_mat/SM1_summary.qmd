@@ -447,7 +447,7 @@ We observed few clear trends in the blue tit specification curve (@fig-specr-bt)
 
 ```{r calc_MA_mod_coefs-2, eval=TRUE, cache = FALSE, eval = TRUE, warning=FALSE, message = FALSE}
 # knitr::read_chunk(here::here("index.qmd"), labels = "calc_MA_mod_coefs")
-
+#TODO why is here??
 coefs_MA_mod <- bind_rows( ManyEcoEvo_viz %>%
                              filter(model_name == "MA_mod",
                                     exclusion_set == "complete",
@@ -455,7 +455,7 @@ coefs_MA_mod <- bind_rows( ManyEcoEvo_viz %>%
                            ManyEcoEvo_viz %>%
                              filter(model_name == "MA_mod",
                                     exclusion_set == "complete-rm_outliers",
-                                    expertise_subset == "All")
+                                    expertise_subset == "All") #TODO may need to recalculate
                            ) %>%
   hoist(tidy_mod_summary) %>%
   select(-starts_with("mod"), -ends_with("plot"), -estimate_type) %>%
