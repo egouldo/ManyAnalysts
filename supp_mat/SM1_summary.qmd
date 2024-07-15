@@ -419,19 +419,19 @@ Table3 %>%
   ) %>% 
   ungroup %>% 
   gt::gt(rowname_col = "subset") %>% 
-    gt::tab_spanner_delim(delim = ".") %>% 
-    gt::fmt_scientific(columns = c(contains("mean"), contains("SD")),
+  gt::tab_spanner_delim(delim = ".") %>% 
+  gt::fmt_scientific(columns = c(contains("mean"), contains("SD")),
                      decimals = 2) %>% 
-   gt::cols_label_with(fn = Hmisc::capitalize) %>% 
-   gt::cols_label_with(c(contains("Eucalyptus")), fn = ~ gt::md(paste0("*",.x, "*"))) %>% 
-    gt::sub_values(columns = subset, values = c("effects"), 
+  gt::cols_label_with(fn = Hmisc::capitalize) %>% 
+  gt::cols_label_with(c(contains("Eucalyptus")), fn = ~ gt::md(paste0("*",.x, "*"))) %>% 
+  gt::sub_values(columns = subset, values = c("effects"), 
                  replacement = gt::md("$$Z_r$$")) %>% 
-   gt::sub_values(columns = subset, values = c("predictions"), 
-                  replacement = gt::md("$$y_i$$")) %>% 
-     gt::sub_values(columns = subset, values = c("all"), 
-                  replacement = gt::md("All analyses")) %>% 
+  gt::sub_values(columns = subset, values = c("predictions"), 
+                 replacement = gt::md("$$y_i$$")) %>% 
+  gt::sub_values(columns = subset, values = c("all"), 
+                 replacement = gt::md("All analyses")) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
-      tab_style(
+  tab_style(
     style = cell_text(transform = "capitalize"),
     locations = cells_column_spanners()
   )
