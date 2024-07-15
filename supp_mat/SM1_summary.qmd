@@ -101,6 +101,16 @@ calculate_variable_counts <- function(data, subset_name){
     mutate( subset = subset_name )
 }
 
+count_conclusions <- function(data, subset_name = character(1L)){
+  data %>% 
+    filter(split_id==1 & analysis_id==1) %>% 
+    group_by(dataset, pick(contains("Conclusion"))) %>% 
+    summarise(count = n(), .groups = "drop") %>% 
+    filter(if_any(contains("Conclusion"), ~ !is.na(.x)),
+           if_any(contains("Conclusion"), ~ .x != "CHECK")) %>% 
+    mutate(subset = subset_name)
+}
+
 ```
 
 ```{r descriptive-munging-2, eval=TRUE,include=FALSE, eval=TRUE}
@@ -244,28 +254,11 @@ Table3 <- var_names %>%
 #Conclusions analysis
 #All data
 #only want 1 per analyst team per dataset - not for each analysis they did. Filter to only include things with split_id_new = 1 and analysis_id_new=1
-ConclusionsAll<-filter(Master,split_id==1 & analysis_id==1)
-Allgroupconc<-group_by(ConclusionsAll,dataset,Conclusion)
-AllConcSummary<-summarise(Allgroupconc,  count =n())
-AllConcSummary<-filter(AllConcSummary,!is.na(Conclusion)&Conclusion!="CHECK") #remove instances where conclusions could not be ascertained 
-AllConcSummary$subset<-rep("all",nrow(AllConcSummary)) #identify the subset
 
-#Effects
-ConclusionEffects<-filter(effects,split_id==1 & analysis_id==1)
-Effectsgroupconc<-group_by(ConclusionEffects,dataset,Conclusion)
-EffectsConcSummary<-summarise(Effectsgroupconc,  count =n())
-EffectsConcSummary$subset<-rep("effects",nrow(EffectsConcSummary))
-
-#Predictions
-ConclusionPredictions<-filter(predictions,split_id==1 & analysis_id==1)
-Predictionsgroupconc<-group_by(ConclusionPredictions,dataset,Conclusion)
-PredictionsConcSummary<-summarise(Predictionsgroupconc,  count =n())
-PredictionsConcSummary$subset<-rep("predictions",nrow(PredictionsConcSummary))
-
-#Join all the conclusions together and make them presentable
-WholeConclusions<-bind_rows(AllConcSummary,EffectsConcSummary,PredictionsConcSummary)
-WholeConclusionsWide<-spread(WholeConclusions,Conclusion,count,fill=0)
-Table4<-WholeConclusionsWide[c(1,2,3,4,5,6,7,9,8)]
+Table4 <- subsets_tibble %>% 
+  pmap(.f = count_conclusions) %>% 
+  list_rbind() %>% 
+  spread(Conclusion, count, fill = 0)
 
 
 
