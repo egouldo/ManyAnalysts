@@ -205,8 +205,12 @@ diveffects <- right_join(Diversity,
                         by=c("id_col") ) #effect analysis subset of diversity data
 
 divpredictions <- right_join(Diversity, 
-                           predictions, #TODO duplicate entry for 1-8-1 Byrock
+                           predictions, #TODO duplicate entry for 1-8-1 Byrock 
                            by=c("id_col")) #prediction analyses subset of diversity data
+
+subsets_tibble_variables <-
+  tibble(data = list(Diversity, diveffects, divpredictions),
+         subset_name = c("all", "effects", "predictions"))
 
 WholeColsums_wider <- 
   pmap(subsets_tibble_variables, calculate_variable_counts) %>% 
@@ -216,44 +220,24 @@ WholeColsums_wider <-
 var_names <- 
   ManyEcoEvo %>% 
   pull(diversity_data) %>% 
-  map(~ .x %>% select(-id_col, -dataset) %>% colnames) %>% 
-  enframe("dataset", "variables")
+  map(~ .x %>% select(-id_col, -dataset) 
+      %>% colnames) %>% 
+  enframe("dataset", "variable")
 
-WholeColsums_wider 
-
-# EucVariables <-
-
-WholeColsums_wider 
-
-EucVariables<- WholeColsums_wider[c(55:112),] %>%
-  pivot_longer(
-    cols = all:predictions,
-    names_to = "subset",
-    values_to = "value"
-  )
-
-
-
-EucVariables$dataset<-rep("eucalyptus",nrow(EucVariables))
-
-BTVariables<-WholeColsums_wider[c(3:54),] %>% 
-  pivot_longer(
-    cols = all:predictions,
-    names_to = "subset",
-    values_to = "value"
-  )
-BTVariables$dataset<-rep("blue tit",nrow(BTVariables))
-
-
-AllVariables<-bind_rows(EucVariables,BTVariables)
-
-AllVariablesGrouped<-group_by(AllVariables,subset,dataset)
-Table3<-summarise(AllVariablesGrouped,
-                               mean=mean(value,na.rm=T),
-                               sd=sd(value,na.rm=T),
-                               min=min(value,na.rm=T),
-                               max=max(value,na.rm=T))
-Table3<-filter(Table3,subset!="all")
+Table3 <- var_names %>% 
+    unnest(variable) %>% 
+    left_join(WholeColsums_wider, 
+              by = join_by(variable)) %>% 
+    pivot_longer(cols = all:predictions,
+                 names_to = "subset",
+                 values_to = "value") %>% 
+    group_by(subset, dataset) %>% 
+    summarise(mean=mean(value,na.rm=T),
+              sd=sd(value,na.rm=T),
+              min=min(value,na.rm=T),
+              max=max(value,na.rm=T), 
+              .groups = "keep") %>% 
+  filter(.,subset!="all")
 
 #Conclusions analysis
 #All data
