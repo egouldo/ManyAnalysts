@@ -169,7 +169,7 @@
         "tidyr",
         "tidyselect"
       ],
-      "Hash": "e90e917e4b6d64d16e9bc8c9afeced77"
+      "Hash": "d2eeba7ca1ce1fc62d5be4346ff0a285"
     },
     "Matrix": {
       "Package": "Matrix",
@@ -3659,13 +3659,8 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.0.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "utils"
-      ],
-      "Hash": "4b22ac016fe54028b88d0c68badbd061"
+      "Version": "1.0.7",
+      "Source": "Repository"
     },
     "reprex": {
       "Package": "reprex",
