@@ -81,17 +81,18 @@ calc_summary_stats_binary <- function(data, subset_name = character(1L)) {
 }
 
 prepare_df_for_summarising <- function(data){
-  data %>% mutate(across(.cols = c(num_fixed_variables,
-                                   num_random_variables,
-                                   sample_size,
-                                   num_interactions,
-                                   Bayesian, #NA's coming from CHECK values
-                                   mixed_model,
-                                   num_fixed_effects,
-                                   num_random_effects), 
-                         as.numeric),
-                  lm = ifelse(linear_model == "linear", 1, 0),
-                  glm = ifelse(linear_model == "generalised", 1, 0))
+  data %>% 
+    mutate(across(.cols = c(num_fixed_variables,
+                            num_random_variables,
+                            sample_size,
+                            num_interactions,
+                            Bayesian, #NA's coming from CHECK values
+                            mixed_model,
+                            num_fixed_effects,
+                            num_random_effects), 
+                  as.numeric),
+           lm = ifelse(linear_model == "linear", 1, 0),
+           glm = ifelse(linear_model == "generalised", 1, 0))
 }
 
 calculate_variable_counts <- function(data, subset_name){
@@ -179,18 +180,19 @@ SubsetsMeanSummary <- subsets_tibble %>%
 
 #join  descriptive information means, sd, range
 
-rewide <- SubsetsMeanSummary %>%  group_by(dataset, subset) %>% 
-    pivot_longer(cols =  where(is.numeric), 
-                 names_to = c(".value", "variable"), 
-                 names_pattern = "(.*)_(.*)") %>%
+rewide <- SubsetsMeanSummary %>%  
+  group_by(dataset, subset) %>% 
+  pivot_longer(cols =  where(is.numeric), 
+               names_to = c(".value", "variable"), 
+               names_pattern = "(.*)_(.*)") %>%
   group_by(dataset, variable, subset)
 
 Table2 <- rewide %>% 
   filter(subset != "all")
 
 Table1 <- full_join(Team_Analyses,
-                        SubsetsBinarySummary,
-                        by = join_by(dataset, subset)) %>% 
+                    SubsetsBinarySummary,
+                    by = join_by(dataset, subset)) %>% 
   arrange(dataset, subset) %>% 
   relocate(dataset, 
            subset, 
