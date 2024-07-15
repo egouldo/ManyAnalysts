@@ -398,6 +398,8 @@ N_outliers_Zr_euc <- sample_size_euc_Zr %>%
 
 #### Post-hoc analysis: Exploring the effect of including only analyses conducted by analysis teams with at least one member self-rated as "highly proficient" or "expert" in conducting statitistical analyses in their research area
 
+The anonymous `TeamIdentifier`s in the reduced subset of "expert" or "highly proficient" analysts are exported internally in the `ManyEcoEvo` package and include the Teams: `r ManyEcoEvo:::expert_subset %>% distinct(TeamIdentifier)  %>% gluedown::md_text()`.
+
 ```{r}
 #| label: fig-forest-plot-expertise
 #| fig-cap: 'Estimated meta-analytic mean effect size ($Z_r$), standard error, and 95% confidence intervals, from analyses of the primary data set with at least one member self-rated as "highly proficient" or "expert" in conducting statistical analyses in their research area.'
