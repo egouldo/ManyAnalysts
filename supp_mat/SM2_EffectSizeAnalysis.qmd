@@ -1,5 +1,6 @@
 ---
 title: "Effect Size Analysis"
+# lib-dir: "renv/library/R-4.4/aarch64-apple-darwin20/"
 format: html
 editor: visual
 number-sections: true
@@ -9,7 +10,6 @@ execute:
 ---
 
 ```{r load-libs, include=TRUE,eval=TRUE,message=FALSE}
-library(targets)
 library(withr)
 library(here)
 library(tidyverse)
@@ -20,6 +20,8 @@ library(lme4)
 library(MuMIn)
 library(ManyEcoEvo)
 library(ggrepel)
+library(glue)
+library(gluedown)
 set.seed(1234)
 ```
 
