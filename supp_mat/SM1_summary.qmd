@@ -343,7 +343,6 @@ As described in the summary statistics section of the manuscript, `r Table1[1,4]
 #| label: tbl-Table1
 #| tbl-cap: "Summary of the number of anaysis teams, total analyses, models with normal error distributions, mixed effects models, and models developed with Bayesian statistical methods for effect size analyses only ($Z_r$) and out-of-sample prediction only ($y_i$)."
 
-
 Table1 %>% 
   rename_with(~ str_remove(., "sum_")) %>% 
   group_by(dataset) %>% 
@@ -357,13 +356,13 @@ Table1 %>%
   gt::sub_values(columns = subset, values = c("effects"), 
                  replacement = gt::md("$$Z_r$$")) %>% 
   gt::sub_values(columns = subset, values = c("predictions"), 
-                  replacement = gt::md("$$y_i$$")) %>% 
-     gt::sub_values(columns = subset, values = c("all"), 
-                  replacement = gt::md("All analyses")) %>% 
+                 replacement = gt::md("$$y_i$$")) %>% 
+  gt::sub_values(columns = subset, values = c("all"), 
+                 replacement = gt::md("All analyses")) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::text_transform(fn = function(x) ifelse(x == "eucalyptus", 
                                              gt::md(paste("*Eucalyptus*")), x),
-                 locations = gt::cells_row_groups()) %>% 
+                     locations = gt::cells_row_groups()) %>% 
   gt::text_transform(fn = function(x) map(x, gt::md), 
                      locations = gt::cells_row_groups()) %>% 
   gt::as_raw_html()
@@ -386,22 +385,22 @@ Table2 %>%
     values_from = c(mean, SD, min, max)
   ) %>% 
   gt::gt(rowname_col = "subset") %>% 
- gt::tab_spanner_delim(delim = ".") %>% 
-    gt::fmt_scientific(columns = c(contains("mean"), contains("SD")),
+  gt::tab_spanner_delim(delim = ".") %>% 
+  gt::fmt_scientific(columns = c(contains("mean"), contains("SD")),
                      decimals = 2) %>% 
-   gt::cols_label_with(fn = Hmisc::capitalize) %>% 
-    gt::tab_style(
+  gt::cols_label_with(fn = Hmisc::capitalize) %>% 
+  gt::tab_style(
     style = gt::cell_text(transform = "capitalize"),
     locations = gt::cells_column_spanners()
   ) %>% 
-   gt::cols_label_with(c(contains("Eucalyptus")), 
-                       fn = ~ gt::md(paste0("*",.x, "*"))) %>% 
-    gt::sub_values(columns = subset, values = c("effects"), 
+  gt::cols_label_with(c(contains("Eucalyptus")), 
+                      fn = ~ gt::md(paste0("*",.x, "*"))) %>% 
+  gt::sub_values(columns = subset, values = c("effects"), 
                  replacement = gt::md("$$Z_r$$")) %>% 
-   gt::sub_values(columns = subset, values = c("predictions"), 
-                  replacement = gt::md("$$y_i$$")) %>% 
-     gt::sub_values(columns = subset, values = c("all"), 
-                  replacement = gt::md("All analyses")) %>% 
+  gt::sub_values(columns = subset, values = c("predictions"), 
+                 replacement = gt::md("$$y_i$$")) %>% 
+  gt::sub_values(columns = subset, values = c("all"), 
+                 replacement = gt::md("All analyses")) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::as_raw_html()
 ```
