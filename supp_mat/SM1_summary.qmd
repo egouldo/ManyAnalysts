@@ -105,8 +105,9 @@ calculate_variable_counts <- function(data, subset_name){
 ```{r descriptive-munging-2, eval=TRUE,include=FALSE, eval=TRUE}
 
 # ---- read in info about subset datasets -----
-Master <- ManyEcoEvo %>% 
-  select(data) %>% unnest(everything()) %>% 
+Master <- ManyEcoEvo::ManyEcoEvo %>% 
+  select(data) %>% 
+  unnest(everything()) %>% 
   prepare_df_for_summarising()
 #TODO check if drop_na results in some analyses being excluded
 #TODO check whether we need to exclude analyses here or whether 'effects' is supposed to include excluded analyses or not. 
