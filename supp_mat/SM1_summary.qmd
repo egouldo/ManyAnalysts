@@ -261,72 +261,76 @@ Table4 <- subsets_tibble %>%
   spread(Conclusion, count, fill = 0)
 
 
-
 #Sorensen Diversity Index Data
-BTSorensen<-ManyEcoEvo_results[[8]][[1]] #source blue tit sorensen data
-BTSorenseneffect<-inner_join(BTSorensen,effect_Ids) #subset to only include analyses included in the effects evaluation
-BTSorenseneffect$dataset<-rep("blue tit",nrow(BTSorenseneffect)) #add a column for dataset
 
+filter_vars <- rlang::exprs(exclusion_set == "complete", 
+         estimate_type == "Zr", 
+         publishable_subset == "All", 
+         expertise_subset == "All", 
+         collinearity_subset == "All" )
 
-BTSorensenpreds<-inner_join(BTSorensen,predictions)#subset to only include analyses included in the predictions  evaluation
-BTSorensenpreds$dataset<-rep("blue tit",nrow(BTSorensenpreds))#add a column for subset
-Sorensenpred<-BTSorensenpreds #add dataframes to allow easy updating once euc pred data is available
-Sorensenpredgrouped<-group_by(Sorensenpred,dataset) #prepare to summarise
+sorensen <- 
+  ManyEcoEvo_results %>% 
+  ungroup %>% 
+  filter(!!!filter_vars) %>% 
+  select(dataset, diversity_indices) %>% 
+  unnest(diversity_indices)
 
+sorensen_effects <- right_join(sorensen, 
+                        effect_Ids, 
+                        by = c("id_col")) 
 
+sorensen_predictions <- right_join(sorensen, 
+                                   predictions %>% 
+                                     distinct(id_col), #TODO duplicate entry for 1-8-1 Byrock
+                                     by=c("id_col")) #prediction analyses subset of diversity data
 
-EucSorensen<-ManyEcoEvo_results[[8]][[2]] #source eucalypt sorensen data
-EucSorenseneffect<-inner_join(EucSorensen,effect_Ids) #subset to only include analyses included in the effects evaluation
-EucSorenseneffect$dataset<-rep("eucalyptus",nrow(EucSorenseneffect))#add a column for dataset
+subsets_tibble_sorensen <-
+  tibble(data = list(sorensen, sorensen_effects, sorensen_predictions),
+         subset_name = c("all", "effects", "predictions"))
 
-Sorenseneffect<-bind_rows(BTSorenseneffect,EucSorenseneffect) #join info from both datasets together
-Sorenseneffectgrouped<-group_by(Sorenseneffect,dataset) #group by dataset
-
-#summarise sorensen of effects data to find mean, sd, min, max
-SorenseneffectSummary<-summarise(Sorenseneffectgrouped,
-                                 mean=mean(mean_diversity_index,na.rm=T),
-                                 sd=sd(mean_diversity_index,na.rm=T),
-                                 min=min(mean_diversity_index,na.rm=T),
-                                 max=max(mean_diversity_index,na.rm=T)) 
-SorenseneffectSummary$subset<-rep("effects",nrow(SorenseneffectSummary)) #add a column identifying subset
-
-#summarise sorensen of predictions data to find mean, sd, min, max
-SorensenPredsSummary<-summarise(Sorensenpredgrouped,
-                                 mean=mean(mean_diversity_index,na.rm=T),
-                                 sd=sd(mean_diversity_index,na.rm=T),
-                                 min=min(mean_diversity_index,na.rm=T),
-                                 max=max(mean_diversity_index,na.rm=T))
-SorensenPredsSummary$subset<-rep("predictions",nrow(SorensenPredsSummary))
-
-SorensenSummary<-bind_rows(SorenseneffectSummary,SorensenPredsSummary)
-
+SorensenSummary <- 
+  subsets_tibble_sorensen %>% 
+  unnest(data) %>% 
+  drop_na(dataset) %>% 
+  group_by(dataset, subset_name) %>% 
+  summarise(mean=mean(mean_diversity_index,na.rm=T),
+            sd=sd(mean_diversity_index,na.rm=T),
+            min=min(mean_diversity_index,na.rm=T),
+            max=max(mean_diversity_index,na.rm=T), .groups = "keep")
 
 #Review descriptives
-ReviewData<-ManyEcoEvo_results %>% filter(exclusion_set == "complete", publishable_subset == "All") %>% ungroup %>% select(data, -dataset) %>% unnest(data) %>% select(ends_with("_id"), id_col, dataset, review_data) %>% unnest(review_data)
+ReviewData <- ManyEcoEvo_results %>% 
+  ungroup %>% 
+  filter(!!!filter_vars) %>% 
+  select(data, -dataset) %>% 
+  unnest(data) %>% 
+  select(ends_with("_id"), id_col, dataset, review_data) %>% 
+  unnest(review_data)
 
 #how many reviewers
-reviewers<-n_distinct(ReviewData$ReviewerId)
+reviewers <- ReviewData %>% n_distinct("ReviewerId")
 
 #How many reviews per reviewer
-reviewer_grouped_reviews<-group_by(ReviewData,ReviewerId)
-ReviewerSummary<-summarise(reviewer_grouped_reviews,
-                         articles=n_distinct(response_id))
+ReviewerSummary <- ReviewData %>% 
+  group_by(ReviewerId) %>% 
+  summarise(articles = n_distinct(response_id))
 
-meanreviewsbyreviewer<-round(mean(ReviewerSummary$articles),digits=2)
+meanreviewsbyreviewer<-round(mean(ReviewerSummary$articles), digits=2)
 minreviewsbyreviewer<-min(ReviewerSummary$articles)
 maxreviewsbyreviewer<-max(ReviewerSummary$articles)
 
 #How many reviews per article
-article_grouped_reviews<-group_by(ReviewData,dataset,response_id)
-ArticleReviewSummary1<-summarise(article_grouped_reviews,
-                         reviews=n_distinct(ReviewerId))
-article_grouped_reviews2<-group_by(ArticleReviewSummary1,dataset)
-ArticleReviewSummary2<-summarise(article_grouped_reviews2,
-                         mean=mean(reviews),
-                         sd=sd(reviews),
-                         min=min(reviews),
-                         max=max(reviews),
-                         sum=sum(reviews))
+ArticleReviewSummary2 <- ReviewData %>% 
+  group_by(dataset,response_id) %>% 
+  summarise(reviews=n_distinct(ReviewerId)) %>% 
+  group_by(dataset) %>% summarise(
+    mean=mean(reviews),
+    sd=sd(reviews),
+    min=min(reviews),
+    max=max(reviews),
+    sum=sum(reviews),
+    .groups = "drop")
 ```
 
 ## Summary Statistics
