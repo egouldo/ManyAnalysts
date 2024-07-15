@@ -28,6 +28,7 @@ library(MuMIn)
 library(ManyEcoEvo)
 library(tidymodels)
 library(multilevelmod)
+library(rlang)
 
 set.seed(1234)
 ```
@@ -1241,7 +1242,7 @@ patchwork::wrap_plots(yi_deviation_RE_plots, byrow = TRUE) +
 ```{r}
 #| label: multivariate-models-mod-summary
 
-fit_multivar_wrap <- function(data_tbl, ..., env = caller_env()){
+fit_multivar_wrap <- function(data_tbl, ..., env = rlang::caller_env()){
   f1 <- rlang::new_formula(expr(box_cox_abs_deviation_score_estimate), 
                            expr(RateAnalysis + 
                                   PublishableAsIs + 
@@ -1274,7 +1275,7 @@ fit_multivar_wrap <- function(data_tbl, ..., env = caller_env()){
   
 }
 
-filter_vars <- exprs(exclusion_set == "complete",
+filter_vars <- rlang::exprs(exclusion_set == "complete",
                     expertise_subset == "All",
                     publishable_subset == "All",
                     collinearity_subset == "All")
@@ -1292,7 +1293,8 @@ multivar_mods <-
   hoist(model_perf, "R2_conditional", "R2_marginal", "Sigma")
 
 bt_multivar_mod_R <- 
-  multivar_mods %>% ungroup %>%  
+  multivar_mods %>% 
+  ungroup %>%  
   filter(dataset == "blue tit") %>% 
   select(R2_marginal, R2_conditional) %>%  
   transpose() %>% 
@@ -1323,7 +1325,10 @@ euc_multivar_mod_sigma <- multivar_mods %>%
 #| tbl-cap: "Parameter estimates from models explaining Box-Cox transformed deviation scores from the mean $Z_r$ as a function of continuous and categorical peer-review ratings in multivariate analyses. Standard Errors (SE), 95% Confidence Intervals (95%CI) are reported for all estimates, while t values, degrees of freedom and p-values are presented for fixed-effects."
 
 
-multivar_mods %>% select(dataset, model_params) %>% unnest(model_params) %>% select(-CI) %>% 
+multivar_mods %>% 
+  select(dataset, model_params) %>% 
+  unnest(model_params) %>% 
+  select(-CI) %>% 
   mutate(
     dataset = str_replace(dataset, "eucalyptus", "*Eucalyptus*"),             
     Parameter = str_replace(Parameter, "mixed_model", "random_included"))  %>% 
@@ -1350,17 +1355,21 @@ multivar_mods %>% select(dataset, model_params) %>% unnest(model_params) %>% sel
                      locations = gt::cells_row_groups()) %>% 
   gt::sub_missing(missing_text = "")
 
-multivar_mod_tidy <- list(bt_multivar_mod, euc_multivar_mod) %>% 
-  set_names(c("blue tit", "eucalyptus")) %>% 
-  map_dfr(broom.mixed::tidy, conf.int = TRUE, .id = "dataset") 
+multivar_mod_tidy <- multivar_mods %>% 
+  pull(model, name = "dataset") %>% 
+  map_dfr(broom.mixed::tidy, conf.int = TRUE, .id = "dataset")
+
+multivar_performance_tidy <- multivar_mods %>% 
+  pull(model, name = "dataset") %>% 
+   map_dfr(performance::performance, .id = "dataset")
 ```
 
 The multivariate models did a poor job of explaining how different from the meta-analytic mean each analysis would be.
-For the blue tit analyses the $R^{2}$ value for the whole model was `r round(bt_multivar_mod_R[1,2],2)` and for the fixed effects component was `r round (bt_multivar_mod_R[1,1],2)`, and the residual standard deviation for the model was `r round(bt_multivar_mod_sigma,2)`.
+For the blue tit analyses the $R^{2}$ value for the whole model was `r round(bt_multivar_mod_R[2],2)` and for the fixed effects component was `r round (bt_multivar_mod_R[1],2)`, and the residual standard deviation for the model was `r round(bt_multivar_mod_sigma,2)`.
 Further, all of the fixed effects had 95% confidence intervals that overlaped 0.
 This evidence is all consistent with none of the predictor variables in this model (continuous review rating, categorical review rating, distinctiveness of variables included) having any meaningful effect on how far $Z_r$ estimates fell from the meta-analytic mean for the blue tit analyses.
-The pattern is largely similar for the *Eucalyptus* multivariate analysis, in which $R^{2}$ for the whole model was `r round(euc_multivar_mod_R[1,2],2)` and for the fixed effects component was `r round (euc_multivar_mod_R[1,1],2)`, and the residual standard deviation for the model was `r round(euc_multivar_mod_sigma,2)`.
-There is somewhat more of a hint of a pattern when examining the paramaeter estimates from the *Eucalyptus* analysis.
+The pattern is largely similar for the *Eucalyptus* multivariate analysis, in which $R^{2}$ for the whole model was `r round(euc_multivar_mod_R[2],2)` and for the fixed effects component was `r round (euc_multivar_mod_R[1],2)`, and the residual standard deviation for the model was `r round(euc_multivar_mod_sigma,2)`.
+There is somewhat more of a hint of a pattern when examining the parameter estimates from the *Eucalyptus* analysis.
 In the case of the fixed effect of categorical reviewer ratings, analyses that were reviewed as 'publishable as is' and 'publishable with major revisions' appeared to produce results more different from the meta-analytic mean than those that were in the reference class of 'deeply flawed and unpublishable'.
 However, the estimates are very uncertain (*Eucalyptus* fixed effect for 'publishable as is' `r round(multivar_mod_tidy %>%  filter(str_detect(term, "as is"), dataset == "eucalyptus") %>% pull("estimate") ,2)` (95% CI `r round(multivar_mod_tidy %>%  filter(str_detect(term, "as is"), dataset == "eucalyptus") %>% pull(conf.low) ,2)`,`r round(multivar_mod_tidy %>%  filter(str_detect(term, "as is"), dataset == "eucalyptus") %>% pull(conf.high) ,2)`), and for 'publishable with major revision' `r round(multivar_mod_tidy %>%  filter(str_detect(term, "as is"), dataset == "blue tit") %>% pull(estimate) ,2)` (95% CI `r round(multivar_mod_tidy %>%  filter(str_detect(term, "as is"), dataset == "blue tit") %>% pull(conf.low) ,2)`,`r round(multivar_mod_tidy %>%  filter(str_detect(term, "as is"), dataset == "blue tit") %>% pull(conf.high) ,2)`)).
 Further, the collinearity between the categorical and continuous ratings make interpretation of effects involving either of these two variables unclear, and so we recommend against interpreting the pattern observed here.
@@ -1372,12 +1381,7 @@ We report this analysis only for the sake of transparency.
 #| warning: false
 #| tbl-cap: "Model summary metrics for multivariate models. $\\sigma$ is the residual standard deviation, ICC is the intra-class correlation coefficient, and ${R}_{M}^2$ and ${R}_{C}^2$ are the marginal and conditional $R^2$, respectively."
 
-list(bt_multivar_mod, euc_multivar_mod) %>% 
-  set_names(c("blue tit", "eucalyptus")) %>% 
-  map_dfr(broom.mixed::glance, .id = "dataset") %>% 
-  left_join(list(bt_multivar_mod, euc_multivar_mod) %>% 
-              set_names(c("blue tit", "eucalyptus")) %>% 
-              map_dfr(performance::performance, .id = "dataset")) %>% 
+multivar_performance_tidy %>% 
   select(dataset, starts_with("R2_"),  ICC, RMSE, Sigma) %>% 
   mutate(dataset = case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
                              TRUE ~ dataset)) %>% 
