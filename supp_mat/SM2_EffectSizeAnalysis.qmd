@@ -443,14 +443,18 @@ plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
   return(p)
 }
 
+filter_experts <- 
+  rlang::exprs(
+    exclusion_set == "complete", 
+    estimate_type == "Zr", 
+    model_name == "MA_mod",
+    publishable_subset == "All", 
+    expertise_subset == "expert")
+
 bt_experts_only <- 
   ManyEcoEvo_viz %>% 
-  filter(exclusion_set == "complete", 
-         estimate_type == "Zr", 
-         model_name == "MA_mod",
-         dataset == "blue tit",
-         publishable_subset == "All", 
-         expertise_subset == "expert") %>% 
+  filter(!!!filter_experts, 
+         dataset == "blue tit") %>% 
   select(model) %>% 
   mutate(plot_data = map(model, 
                          .f = ~ broom::tidy(.x, 
@@ -503,12 +507,8 @@ bt_forest_experts <- bt_experts_only %>%
 
 euc_experts_only <- 
   ManyEcoEvo_viz %>% 
-  filter(exclusion_set == "complete", 
-         estimate_type == "Zr", 
-         model_name == "MA_mod",
-         dataset == "eucalyptus",
-         publishable_subset == "All",
-         expertise_subset == "expert") %>% 
+  filter(!!!filter_experts, 
+         dataset == "eucalyptus") %>% 
   select(model) %>% 
   mutate(plot_data = map(model, 
                          .f = ~ broom::tidy(.x, 
