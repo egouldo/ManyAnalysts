@@ -3905,10 +3905,9 @@ modelfitstats %>%
 #| tbl-cap: "Parameter estimates from models of Box-Cox transformed deviation scores as a function of continuous and categorical peer ratings, Sorensen scores, and the inclusion of random effects. Standard Errors (SE), 95$\\%$ confidence intervals (95$\\%$ CI) are reported for all estimates, while t values, degrees of freedom and p-values are presented for fixed-effects. Note that positive parameter estimates mean that as the predictor variable increases, so does the absolute value of the deviation from the meta-analytic mean."
 #| echo: false
 #| message: false
+
 ManyEcoEvo_viz %>% 
-  filter(exclusion_set == "complete", 
-         publishable_subset == "All", 
-         expertise_subset == "All",
+  filter(!!!filter_vars_main_analysis,
          model_name %in% c("box_cox_rating_cat", 
                            "box_cox_rating_cont",
                            "sorensen_glm",
