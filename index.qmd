@@ -3790,7 +3790,7 @@ Excluding effects from blue tit models that contained the two highly collinear p
 
 ### Out-of-sample predictions $y_{i}$
 
-Inclusion of collinear predicors does not harm model prediction, and so we did not conduct these *post hoc* analyses.
+Inclusion of collinear predictors does not harm model prediction, and so we did not conduct these *post-hoc* analyses.
 
 ## Explaining Variation in Deviation Scores
 
