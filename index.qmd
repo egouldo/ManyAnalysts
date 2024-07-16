@@ -3387,57 +3387,63 @@ zr_heterogeneity <- ManyEcoEvo_viz %>%
                             publishable_subset == "All",
                             expertise_subset == "All"))  %>% 
   bind_rows(ManyEcoEvo_viz %>% 
-    dplyr::filter(estimate_type == "Zr", 
-                  model_name == "MA_mod", 
-                  exclusion_set == "complete",
-                  expertise_subset == "expert")) %>% 
-   mutate(Nobs = map_int(model, ~pluck(.x, "yi") %>% length)) %>% 
+              dplyr::filter(estimate_type == "Zr", 
+                            model_name == "MA_mod", 
+                            exclusion_set == "complete",
+                            expertise_subset == "expert")) %>% 
+  mutate(Nobs = map_int(model, ~pluck(.x, "yi") %>% length)) %>% 
   ungroup() %>% 
   select(dataset, 
          publishable_subset, 
          exclusion_set,
          expertise_subset,
+         collinearity_subset,
          estimate_type,
          mod_fit_stats,
          MA_fit_stats,
          Nobs) %>% 
   unnest(cols = c(mod_fit_stats,
-         MA_fit_stats)) %>% 
+                  MA_fit_stats)) %>% 
+  pointblank::rows_distinct() %>% 
   group_by(dataset, 
            estimate_type, 
            exclusion_set,
            publishable_subset,
-           expertise_subset) %>% 
+           expertise_subset,
+           collinearity_subset) %>% 
   pivot_longer(cols = -c(dataset, 
                          estimate_type, 
                          exclusion_set,
                          publishable_subset,
-                         expertise_subset)) %>% 
-  mutate(publishable_subset = 
+                         expertise_subset,
+                         collinearity_subset)) %>% 
+    mutate(publishable_subset = 
            case_when(publishable_subset == "All" & expertise_subset == "All" ~ 
                        "All analyses",
-                     publishable_subset == "data_flawed" & expertise_subset == "All"  ~ 
+                     publishable_subset == "data_flawed" & expertise_subset == "All" ~ 
                        "Analyses receiving at least one 'Unpublishable' rating removed",
-                     publishable_subset == "data_flawed_major" & expertise_subset == "All"  ~ 
+                     publishable_subset == "data_flawed_major" & expertise_subset == "All" ~ 
                        "Analyses receiving at least one 'Unpublishable' and or 'Major Revisions' rating removed",
-                     expertise_subset == "expert" ~ "Analyses from teams that include highly proficient or expert data analysts",
+                     expertise_subset == "expert" ~ "Analyses from teams with highly proficient or expert data analysts",
+                     collinearity_subset == "collinearity_removed" ~ "Blue tit analyses containing highly collinear predictors removed",
                      TRUE ~ ""),
          exclusion_set = 
-           case_when(exclusion_set == "complete" ~ "No",
-                     TRUE ~ "Yes")) %>% 
+           case_when(exclusion_set == "complete" ~ "",
+                     TRUE ~ ", Outliers removed"),
+         dataset = case_when(str_detect(dataset, "euc") ~ "Eucalyptus",
+                             TRUE ~ dataset),
+         collinearity_subset = dplyr::na_if(collinearity_subset, "All")) %>% 
+  ungroup %>% 
+  select(-expertise_subset) %>% 
+  unite("data_subset", publishable_subset, exclusion_set, sep = "", remove = TRUE) %>% 
+  group_by(data_subset) %>% 
+  arrange(data_subset, dataset) %>% 
   pivot_wider(names_from = name) %>% 
   ungroup %>% 
   select(-estimate_type, -AIC, -BIC, -TAU2, -contains("Omnibus"), -c(CochransQ, p_CochransQ, df_error)) %>% 
-  mutate(exclusion_set = case_when(exclusion_set == "Yes" ~ ", Outliers Removed",
-                                   exclusion_set == "No" ~ "",
-                                   TRUE ~ exclusion_set)) %>%
   rowwise() %>% 
   mutate(tau_total = sum(sigma2_1, sigma2_2)) %>% 
-  relocate(tau_total, .after = starts_with("sigma")) %>% 
-  unite("data_subset", publishable_subset, exclusion_set, sep = "", remove = TRUE) %>% 
-  group_by(data_subset) %>% 
-  arrange(data_subset) 
-
+  relocate(tau_total, .after = starts_with("sigma"))
 ```
 
 We quantified both absolute ($\tau^{2}$) and relative ($I^{2}$) heterogeneity resulting from analytical variation.
