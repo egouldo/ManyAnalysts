@@ -3831,6 +3831,7 @@ These high values of the $R^{2}_{\text{Conditional}}$ result from the fact that 
 #| message: false
 #| tbl-cap: "Summary metrics for registered models seeking to explain deviation (Box-Cox transformed absolute deviation scores) from the mean $Z_r$ as a function of Sorensen's Index, categorical peer ratings, and continuous peer ratings for blue tit and *Eucalyptus* analyses, and as a function of the presence or absence of random effects (in the analyst's models) for *Eucalyptus* analyses. We report coefficient of determination, $R^2$, for our models including only fixed effects as predictors of deviation, and we report $R^{2}_{Conditional}$, $R^{2}_{Marginal}$ and the intra-class correlation (ICC) from our models that included both fixed and random effects. For all our models, we calculated the residual standard deviation $\\sigma$ and root mean squared error (RMSE)."
 #| column: page-right
+
 modelfitstats <- ManyEcoEvo_viz %>% 
   filter(!!!filter_vars_main_analysis,
          model_name %in% c("box_cox_rating_cont", "box_cox_rating_cat")) %>% 
@@ -3849,18 +3850,19 @@ modelfitstats <- ManyEcoEvo_viz %>%
          -estimate_type, 
          -publishable_subset, 
          -exclusion_set,
-         -expertise_subset) %>% 
+         -expertise_subset,
+         -collinearity_subset) %>% 
   bind_rows({
     ManyEcoEvo_viz %>% 
-     filter(!!!filter_vars_main_analysis,
-            model_name %in% c("sorensen_glm", "uni_mixed_effects")) %>% 
-  mutate(model = map(model, extract_fit_engine), 
-          perf = map(model, performance::performance),
-          mod_sum_stats = map(model, broom.mixed::glance)) %>% 
-  select(dataset, model_name, perf, mod_sum_stats) %>% 
-  hoist(mod_sum_stats, "nobs") %>% 
-  hoist(perf, "R2", "RMSE", "Sigma") %>% 
-  select(-perf, -mod_sum_stats)
+      filter(!!!filter_vars_main_analysis,
+             model_name %in% c("sorensen_glm", "uni_mixed_effects")) %>% 
+      mutate(model = map(model, extract_fit_engine), 
+             perf = map(model, performance::performance),
+             mod_sum_stats = map(model, broom.mixed::glance)) %>% 
+      select(dataset, model_name, perf, mod_sum_stats) %>% 
+      hoist(mod_sum_stats, "nobs") %>% 
+      hoist(perf, "R2", "RMSE", "Sigma") %>% 
+      select(-perf, -mod_sum_stats)
   }) %>% 
   group_by(model_name) %>% 
   relocate("R2", .before = starts_with("R2_")) 
@@ -3874,13 +3876,13 @@ modelfitstats %>%
                                              "sorensen_glm", 
                                              "uni_mixed_effects")),
          model_name = forcats::fct_recode(model_name,
-                                         `Deviation explained by categorical ratings` = "box_cox_rating_cat",
-                                         `Deviation explained by continuous ratings` = "box_cox_rating_cont",
-                                         `Deviation explained by Sorensen's index` =  "sorensen_glm",
-                                         `Deviation explained by inclusion of random effects` =  "uni_mixed_effects"),
+                                          `Deviation explained by categorical ratings` = "box_cox_rating_cat",
+                                          `Deviation explained by continuous ratings` = "box_cox_rating_cont",
+                                          `Deviation explained by Sorensen's index` =  "sorensen_glm",
+                                          `Deviation explained by inclusion of random effects` =  "uni_mixed_effects"),
          dataset = case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
                              TRUE ~ dataset)) %>% 
-  arrange(model_name) %>% 
+  arrange(model_name, dataset) %>% 
   gt::gt() %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::sub_missing(missing_text = "") %>% 
@@ -3888,13 +3890,13 @@ modelfitstats %>%
           fns = function(x) format(x, digits = 3)) %>% 
   gt::cols_label(dataset = "Dataset",
                  R2 = "$$R^2$$",
-                 R2_conditional = "$$R^{2}_{Conditional}$$",
-                 R2_marginal = "$$R^{2}_{Marginal}$$",
+                 R2_conditional = "$$R^{2}_\\text{Conditional}$$",
+                 R2_marginal = "$$R^{2}_\\text{Marginal}$$",
                  Sigma = "$$\\sigma$$",
                  nobs = "$$N_{Obs.}$$") %>% 
   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
                                        columns = dataset),
-                                      style = cell_text(style = "italic"))
+                style = cell_text(style = "italic"))
 ```
 
 ```{r model-summary-stats-ratings-cont, echo = FALSE, message = FALSE}
