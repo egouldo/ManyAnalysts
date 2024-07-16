@@ -3899,46 +3899,6 @@ modelfitstats %>%
                 style = cell_text(style = "italic"))
 ```
 
-```{r model-summary-stats-ratings-cont, echo = FALSE, message = FALSE}
-modelfitstats <- ManyEcoEvo_viz %>% #TODO seems like there's another chunk that creates an object modelfitstats further up... not ideal
-  filter(exclusion_set == "complete", 
-         publishable_subset == "All", 
-         expertise_subset == "All",
-         model_name %in% c("box_cox_rating_cont", "box_cox_rating_cat")) %>% 
-  mutate(perf = map(model, performance::performance),
-         mod_sum_stats = map(model, broom.mixed::glance)) %>% 
-  hoist(perf, "R2_conditional", "R2_marginal", "ICC", "Sigma", "RMSE") %>% 
-  hoist(mod_sum_stats, "nobs") %>% 
-  select(-model, 
-         -mod_summary, 
-         -tidy_mod_summary, 
-         -MA_fit_stats, 
-         -mod_fit_stats, 
-         -ends_with("plot"), 
-         -perf, 
-         -mod_sum_stats, 
-         -estimate_type, 
-         -publishable_subset, 
-         -exclusion_set,
-         -expertise_subset) %>% 
-  bind_rows({
-    ManyEcoEvo_viz %>% 
-     filter(exclusion_set == "complete", 
-            publishable_subset == "All", 
-            expertise_subset == "All",
-            model_name %in% c("sorensen_glm", "uni_mixed_effects")) %>% 
-     mutate(model = map(model, extract_fit_engine),
-            perf = map(model, performance::performance),
-            mod_sum_stats = map(model, broom.mixed::glance)) %>% 
-  select(dataset, model_name, perf, mod_sum_stats) %>% 
-  hoist(mod_sum_stats, "nobs") %>% 
-  hoist(perf, "R2", "RMSE", "Sigma") %>% 
-  select(-perf, -mod_sum_stats)
-  }) %>% 
-  group_by(model_name) %>% 
-  relocate("R2", .before = starts_with("R2_")) 
-
-```
 
 ```{r}
 #| label: tbl-deviation-rating-estimates 
