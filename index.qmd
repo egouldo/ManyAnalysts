@@ -3786,7 +3786,7 @@ Excluding these effects in which we had lower confidence had minimal impact on t
 
 ### Effect Sizes ($Z_r$)
 
-Excluding effects from blue tit models that contained the two highly collinear predictors (brood count after manipulation and brood count at day 14) had negligible impacts on the meta-analytic means (@tbl-effects-params), the distribution of $Z_r$ effects (@fig-forest-plot-?????), or heterogeneity estimates (@tbl-effects-heterogeneity), which remained high.
+Excluding effects from blue tit models that contained the two highly collinear predictors (brood count after manipulation and brood count at day 14) had negligible impacts on the meta-analytic means (@tbl-effects-params), the distribution of $Z_r$ effects (@fig-forest-plot-Zr-collinear-rm-subset), or heterogeneity estimates (@tbl-effects-heterogeneity), which remained high.
 
 ### Out-of-sample predictions $y_{i}$
 

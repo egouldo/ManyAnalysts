@@ -565,7 +565,7 @@ euc_forest_experts <- euc_experts_only %>%
   scale_y_continuous(limits = c(-5, 1), 
                      breaks = c(-5, -4, -3, -2, -1, 0, 1) )
 
-# ---- Extract Viz & Summary Stats
+# ---- Extract Viz ----
 
 bt_forest_experts
 
@@ -574,7 +574,63 @@ euc_forest_experts
 
 #### Post-hoc analysis: Exploring the effect of excluding analyses of the blue tit dataset containing highly collinear predictor variables
 
-For the blue tit dataset, we created a subset of analyses that excluded effects based on analyses containing highly correlated predictor variables. The list of analyses to exclude is exported internally in the package `ManyEcoEvo` and includes the following analysis ID's: `r ManyEcoEvo:::collinearity_subset %>% select(id_col) %>% gluedown::md_text()`.
+For the blue tit dataset, we created a subset of analyses that excluded effects based on analyses containing highly correlated predictor variables.
+Excluded analyses are exported internally in the `ManyEcoEvo` package as `ManyEcoEvo::collinearity_subset`. Analyses with the following identifiers are excluded in the reduced subset: `r ManyEcoEvo:::collinearity_subset %>% pull(id_col) %>% gluedown::md_italic()`.
+
+```{r}
+#| label: fig-forest-plot-Zr-collinear-rm-subset
+#| fig-cap: "Forest plot of meta-analytic estimated effect-sizes $Z_{r}$, standard error and 95% confidence intervals of Blue tit analyses with highly collinear analyses removed. The meta-analytic mean for the reduced subset is denoted by the black triangle, and a dashed vertical line, with error bars representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0."
+#| fig-height: 6
+#| echo: true
+
+filter_collinear <- rlang::exprs(exclusion_set == "complete", 
+                              publishable_subset == "All", 
+                              expertise_subset == "All", 
+                              collinearity_subset == "collinearity_removed",
+                              model_name == "MA_mod",
+                              dataset == "blue tit")
+
+# summary_output_params <- rlang::exprs(tidy_mod_summary, MA_fit_stats, mod_fit_stats)
+
+ManyEcoEvo_viz %>% 
+  filter(!!!filter_collinear) %>% 
+  mutate(plot_data = map(model, 
+                         .f = ~ broom::tidy(.x, 
+                                            conf.int = TRUE, 
+                                            include_studies = TRUE)%>% 
+                           dplyr::mutate(point_shape = 
+                                           ifelse(stringr::str_detect(term, "overall"), 
+                                                  "diamond", 
+                                                  "circle"),
+                                         Parameter = 
+                                           forcats::fct_reorder(term, 
+                                                                estimate) %>% 
+                                           forcats::fct_reorder(., 
+                                                                point_shape,
+                                                                .desc = TRUE))
+  ),
+  meta_analytic_mean = map_dbl(plot_data, 
+                               ~ filter(.x, Parameter == "overall") %>% 
+                                 pull(estimate))) %>% 
+  select(plot_data, meta_analytic_mean) %>% 
+  unnest(cols = c("plot_data")) %>% 
+  mutate(parameter_type = case_when(str_detect(Parameter, "overall") ~ "mean",
+                                    TRUE ~ "study")) %>% 
+  arrange(desc(type)) %>% 
+  mutate(type = forcats::as_factor(type)) %>% 
+  group_by(type) %>% 
+  arrange(desc(estimate),.by_group = TRUE) %>% 
+  mutate(term = forcats::as_factor(term),
+         point_shape = case_when(str_detect(type, "summary") ~ "mean",
+                                 TRUE ~ "study")) %>% 
+  plot_forest(intercept = TRUE, MA_mean = TRUE) +
+  theme(axis.text.x = element_text(size = 15), 
+        axis.title.x = element_text(size = 15),
+        axis.text.y = element_blank()
+  ) +
+    scale_y_continuous(limits = c(-1.5, 0.5), 
+                     breaks = c(-1.5, -1, -0.5, 0, 0.5) )
+```
 
 ### Out of sample predictions $y_i$
 
