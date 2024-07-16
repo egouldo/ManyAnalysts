@@ -2415,6 +2415,13 @@ The full manuscript, including further analysis and presentation of results is w
 # Results
 
 ```{r descriptive-munging, eval=TRUE,include=TRUE, echo = FALSE, message=FALSE, warning=FALSE}
+
+filter_vars_main_analysis <- rlang::exprs(estimate_type == "Zr", 
+                                          exclusion_set == "complete", 
+                                          publishable_subset == "All", 
+                                          expertise_subset == "All",
+                                          collinearity_subset == "All")
+
 blue_tit_data<-ManyEcoEvo[[2]][[1]]
 blue_tit_diversity<-ManyEcoEvo[[3]][[1]]
 eucalypt_data<-ManyEcoEvo[[2]][[2]]
@@ -3504,10 +3511,10 @@ zr_heterogeneity %>%
 
 In our analyses, $I^{2}$ is a plausible index of how much more variability among effect sizes we have observed, as a proportion, than we would have observed if sampling error were driving variability.
 We discuss our interpretation of $I^{2}$ further in the methods, but in short, it is a useful metric for comparison to values from published meta-analyses and provides a plausible value for how much heterogeneity could arise in a normal meta-analysis with similar sample sizes due to analytical variability alone.
-In our study, total $I^{2}$ for the blue tit $Z_r$ estimates was extremely large, at `r ManyEcoEvo_viz %>% dplyr::filter(estimate_type == "Zr", model_name == "MA_mod", exclusion_set == "complete", publishable_subset == "All", dataset == "blue tit", expertise_subset == "All") %>% pluck("MA_fit_stats") %>% flatten_df() %>% pluck("I2_Total") %>% round(2)`%, as was the *Eucalyptus* estimate (`r ManyEcoEvo_viz %>% dplyr::filter(estimate_type == "Zr", model_name == "MA_mod", exclusion_set == "complete", publishable_subset == "All", dataset == "eucalyptus", expertise_subset == "All") %>% pluck("MA_fit_stats") %>% flatten_df() %>% pluck("I2_Total") %>% round(2)`% @tbl-effects-heterogeneity).
+In our study, total $I^{2}$ for the blue tit $Z_r$ estimates was extremely large, at `r ManyEcoEvo_viz %>%  dplyr::filter(model_name == "MA_mod", dataset == "blue tit", !!!filter_vars_main_analysis) %>% pluck("MA_fit_stats") %>% flatten_df() %>% pluck("I2_Total") %>% round(2)`%, as was the *Eucalyptus* estimate (`r ManyEcoEvo_viz %>% dplyr::filter(model_name == "MA_mod", dataset == "eucalyptus", !!!filter_vars_main_analysis) %>% pluck("MA_fit_stats") %>% flatten_df() %>% pluck("I2_Total") %>% round(2)`% @tbl-effects-heterogeneity).
 
 Although the overall $I^{2}$ values were similar for both *Eucalyptus* and blue tit analyses, the relative composition of that heterogeneity differed.
-For both datasets, the majority of heterogeneity in $Z_r$ was driven by differences among effects as opposed to differences among teams, though this was more prominent for the *Eucalyptus* dataset, where nearly all of the total heterogeneity was driven by differences among effects (`r ManyEcoEvo_viz %>% dplyr::filter(estimate_type == "Zr", model_name == "MA_mod", exclusion_set == "complete", publishable_subset == "All", dataset == "eucalyptus", expertise_subset == "All") %>% pluck("MA_fit_stats") %>% flatten_df() %>% pluck("I2_TeamIdentifier/study_id") %>% round(2)`%) as opposed to differences among teams (`r ManyEcoEvo_viz %>% dplyr::filter(estimate_type == "Zr", model_name == "MA_mod", exclusion_set == "complete", publishable_subset == "All", dataset == "eucalyptus", expertise_subset == "All") %>% pluck("MA_fit_stats") %>% flatten_df() %>% pluck("I2_TeamIdentifier") %>% round(2)`%) (@tbl-effects-heterogeneity).
+For both datasets, the majority of heterogeneity in $Z_r$ was driven by differences among effects as opposed to differences among teams, though this was more prominent for the *Eucalyptus* dataset, where nearly all of the total heterogeneity was driven by differences among effects (`r ManyEcoEvo_viz %>% dplyr::filter(model_name == "MA_mod", dataset == "eucalyptus", !!!filter_vars_main_analysis) %>% pluck("MA_fit_stats") %>% flatten_df() %>% pluck("I2_TeamIdentifier/study_id") %>% round(2)`%) as opposed to differences among teams (`r ManyEcoEvo_viz %>% dplyr::filter(model_name == "MA_mod", dataset == "eucalyptus", !!!filter_vars_main_analysis) %>% pluck("MA_fit_stats") %>% flatten_df() %>% pluck("I2_TeamIdentifier") %>% round(2)`%) (@tbl-effects-heterogeneity).
 
 ### Out-of-sample predictions ($y_{i}$)
 
