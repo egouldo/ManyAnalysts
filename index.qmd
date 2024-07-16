@@ -3457,15 +3457,19 @@ For further discussion of interpretation of $\tau^{2}$ in our study, please cons
 
 ```{r}
 #| label: tbl-effects-heterogeneity
-#| tbl-cap: 'Heterogeneity in the estimated effects $Z_r$ for meta-analyses of the full dataset, as well as from post hoc analyses including the dataset with outliers removed, the dataset excluding effects from analysis teams with at least one "unpublishable" rating, the dataset excluding effects from analysis teams with at least one "major revisions" rating or worse, the dataset including only analyses from teams in which at least one analyst rated themselves as "highly proficient" or "expert" in statistical analysis, or (blue tit only) the dataset excluding effects from analyses that included the pair of highly collinear predictors. ${\\tau}_{Team}^{2}$ is the absolute heterogeneity for the random effect `Team`. ${\\tau}_{effectID}^{2}$ is the absolute heterogeneity for the random effect `EffectID` nested under `Team`. `EffectID` is the unique identifier assigned to each individual statistical effect submitted by an analysis team. We nested `EffectID` within analysis team identity (`Team`) because analysis teams often submitted >1 statistical effect, either because they considered >1 model or because they derived >1 effect per model, especially when a model contained a factor with multiple levels that produced >1 contrast. ${\\tau}_{total}^{2}$ is the total absolute heterogeneity. ${I^2}_{Total}$ is the proportional heterogeneity; the proportion of the variance among effects not attributable to sampling error, ${I^2}_{Team}$ is the subset of the proportional heterogeneity due to differences among `Teams` and ${I^2}_{Team,effectID}$ is subset of the proportional heterogeneity attributable to among-`EffectID` differences.'
+#| tbl-cap: 'Heterogeneity in the estimated effects $Z_r$ for meta-analyses of: the full dataset, as well as from post hoc analyses wherein analyses with outliers are removed, analyses with effects from analysis teams with at least one "unpublishable" rating are excluded, analyses receiving at least one "major revisions" rating or worse excluded, analyses from teams with at least one analyst self-rated as "highly proficient" or "expert" in statistical analysis are included, and (blue tit only) the dataset excluding effects from analyses that included the pair of highly collinear predictors. ${\\tau}_{Team}^{2}$ is the absolute heterogeneity for the random effect `Team`. ${\\tau}_{effectID}^{2}$ is the absolute heterogeneity for the random effect `EffectID` nested under `Team`. `EffectID` is the unique identifier assigned to each individual statistical effect submitted by an analysis team. We nested `EffectID` within analysis team identity (`Team`) because analysis teams often submitted >1 statistical effect, either because they considered >1 model or because they derived >1 effect per model, especially when a model contained a factor with multiple levels that produced >1 contrast. ${\\tau}_{total}^{2}$ is the total absolute heterogeneity. ${I^2}_{Total}$ is the proportional heterogeneity; the proportion of the variance among effects not attributable to sampling error, ${I^2}_{Team}$ is the subset of the proportional heterogeneity due to differences among `Teams` and ${I^2}_{Team,effectID}$ is subset of the proportional heterogeneity attributable to among-`EffectID` differences.'
 #| echo: false
 
 zr_heterogeneity %>% 
-  select(-expertise_subset) %>% 
   mutate(dataset = case_when(str_detect(dataset, "euc") ~ "Eucalyptus",
                              TRUE ~ dataset)) %>% 
+  group_by(	data_subset) %>% 
+  arrange(dataset) %>% 
   dplyr::relocate(tau_total, .after = data_subset) %>% 
   gt::gt() %>% 
+  gt::fmt_missing(columns = "collinearity_subset", rows = everything(), "") %>% 
+  gt::fmt("collinearity_subset", fns = function(x) str_replace(x, "_", " ") %>%
+            str_c(", ", .)) %>% 
   gt::fmt_number(columns = 
                    c(-"dataset", 
                      -"dataset",
@@ -3484,15 +3488,18 @@ zr_heterogeneity %>%
                   tau_total = "$${\\tau}_{total}^{2}$$",
                  Nobs = "N.Obs"
                  ) %>% 
+   gt::cols_merge(columns = c(dataset, collinearity_subset),
+                 hide_columns =c(collinearity_subset)) %>% 
   gt::row_group_order(groups = c("All analyses",
-                                 "All analyses, Outliers Removed",
+                                 "All analyses, Outliers removed",
                                  "Analyses receiving at least one 'Unpublishable' rating removed",
                                  "Analyses receiving at least one 'Unpublishable' and or 'Major Revisions' rating removed",
-                                 "Analyses from teams that include highly proficient or expert data analysts")) %>% 
+                                 "Analyses from teams with highly proficient or expert data analysts")) %>%
    gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
                                        columns = dataset),
                                       style = cell_text(style = "italic")) %>% 
   gt::as_raw_html()
+
 ```
 
 In our analyses, $I^{2}$ is a plausible index of how much more variability among effect sizes we have observed, as a proportion, than we would have observed if sampling error were driving variability.
