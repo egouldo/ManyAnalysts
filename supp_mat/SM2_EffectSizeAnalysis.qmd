@@ -398,7 +398,7 @@ N_outliers_Zr_euc <- sample_size_euc_Zr %>%
 
 #### Post-hoc analysis: Exploring the effect of including only analyses conducted by analysis teams with at least one member self-rated as "highly proficient" or "expert" in conducting statitistical analyses in their research area
 
-The anonymous `TeamIdentifier`s in the reduced subset of "expert" or "highly proficient" analysts are exported internally in the `ManyEcoEvo` package and include the Teams: `r ManyEcoEvo:::expert_subset %>% distinct(TeamIdentifier)  %>% gluedown::md_text()`.
+The anonymous Team Identifiers in the reduced subset of "expert" or "highly proficient" analysts are exported internally in the `ManyEcoEvo` package as `ManyEcoEvo:::expert_subset`. Analyses from the following teams are retained in the reduced subset: `r ManyEcoEvo:::expert_subset %>% pluck("TeamIdentifier", unique)  %>% gluedown::md_italic()`.
 
 ```{r}
 #| label: fig-forest-plot-expertise
@@ -536,7 +536,6 @@ euc_experts_only <-
   unnest(cols = c("plot_data")) %>% 
   mutate(parameter_type = case_when(str_detect(Parameter, "overall") ~ "mean",
                                     TRUE ~ "study"))
-
 
 # euc_experts_only <- 
 #   euc_experts_only %>% 
