@@ -4145,9 +4145,7 @@ plot_model_means_box_cox_cat <- function(dat,
 
 ManyEcoEvo_results %>% 
   ungroup %>% 
-  filter(exclusion_set == "complete", 
-         publishable_subset == "All",
-         expertise_subset == "All") %>% 
+  filter(!!!filter_vars_main_analysis) %>% 
   hoist(.col = effects_analysis,
         "lambda",
         .simplify = TRUE,
@@ -4223,24 +4221,36 @@ We found no meaningful relationship between distinctiveness of variables selecte
 #|   - "Blue tit"
 #|   - "*Eucalyptus*"
 
-p_cat_bt <- plot_effects_diversity(mod = ManyEcoEvo_results$sorensen_glm[[1]], 
-                       df = ManyEcoEvo_results$effects_analysis[[1]] %>% #dat
-                         # rename(study_id = id_col) %>% 
-                         select(mean_diversity_index, study_id, 
-                                starts_with("box_cox"), 
-                                starts_with("abs_dev"),
-                                lambda), 
-                       back_transform = TRUE) +
+p_cat_bt <- plot_effects_diversity(mod = ManyEcoEvo_results %>% 
+                                     dplyr::filter(!!!filter_vars_main_analysis, 
+                                                   dataset == "blue tit") %>% 
+                                     pluck("sorensen_glm", 1), 
+                                   df = ManyEcoEvo_results %>% 
+                                     dplyr::filter(!!!filter_vars_main_analysis, 
+                                                   dataset == "blue tit") %>% 
+                                     pluck("effects_analysis", 1) %>% #dat
+                                     # rename(study_id = id_col) %>% 
+                                     select(mean_diversity_index, study_id, 
+                                            starts_with("box_cox"), 
+                                            starts_with("abs_dev"),
+                                            lambda), 
+                                   back_transform = TRUE) +
   ggpubr::theme_pubclean()
 
-p_cat_euc <- plot_effects_diversity(mod = ManyEcoEvo_results$sorensen_glm[[2]], 
-                       df = ManyEcoEvo_results$effects_analysis[[2]] %>% #dat
-                         # rename(study_id = id_col) %>% 
-                         select(mean_diversity_index, study_id, 
-                                starts_with("box_cox"), 
-                                starts_with("abs_dev"),
-                                lambda), 
-                       back_transform = TRUE) +
+p_cat_euc <- plot_effects_diversity(mod = ManyEcoEvo_results %>% 
+                                      dplyr::filter(!!!filter_vars_main_analysis, 
+                                                    dataset == "eucalyptus") %>% 
+                                      pluck("sorensen_glm", 1), 
+                                    df = ManyEcoEvo_results %>% 
+                                      dplyr::filter(!!!filter_vars_main_analysis, 
+                                                    dataset == "eucalyptus") %>% 
+                                      pluck("effects_analysis", 1) %>% #dat
+                                      # rename(study_id = id_col) %>% 
+                                      select(mean_diversity_index, study_id, 
+                                             starts_with("box_cox"), 
+                                             starts_with("abs_dev"),
+                                             lambda), 
+                                    back_transform = TRUE) +
   ggpubr::theme_pubclean()
 
 p_cat_bt
@@ -4300,9 +4310,7 @@ plot_model_means_RE <- function(data, variable, predictor_means) {
 ManyEcoEvo_viz %>% 
   filter(model_name == "uni_mixed_effects", 
          dataset == "eucalyptus", 
-         publishable_subset == "All", 
-         exclusion_set == "complete",
-         expertise_subset == "All") %>%
+        !!!filter_vars_main_analysis) %>%
   left_join(ManyEcoEvo_results %>% 
               select(effects_analysis)) %>% 
   ungroup() %>% 
