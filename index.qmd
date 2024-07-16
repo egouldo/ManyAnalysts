@@ -3832,9 +3832,7 @@ These high values of the $R^{2}_{\text{Conditional}}$ result from the fact that 
 #| tbl-cap: "Summary metrics for registered models seeking to explain deviation (Box-Cox transformed absolute deviation scores) from the mean $Z_r$ as a function of Sorensen's Index, categorical peer ratings, and continuous peer ratings for blue tit and *Eucalyptus* analyses, and as a function of the presence or absence of random effects (in the analyst's models) for *Eucalyptus* analyses. We report coefficient of determination, $R^2$, for our models including only fixed effects as predictors of deviation, and we report $R^{2}_{Conditional}$, $R^{2}_{Marginal}$ and the intra-class correlation (ICC) from our models that included both fixed and random effects. For all our models, we calculated the residual standard deviation $\\sigma$ and root mean squared error (RMSE)."
 #| column: page-right
 modelfitstats <- ManyEcoEvo_viz %>% 
-  filter(exclusion_set == "complete", 
-         publishable_subset == "All", 
-         expertise_subset == "All",
+  filter(!!!filter_vars_main_analysis,
          model_name %in% c("box_cox_rating_cont", "box_cox_rating_cat")) %>% 
   mutate(perf = map(model, performance::performance),
          mod_sum_stats = map(model, broom.mixed::glance)) %>% 
@@ -3854,9 +3852,7 @@ modelfitstats <- ManyEcoEvo_viz %>%
          -expertise_subset) %>% 
   bind_rows({
     ManyEcoEvo_viz %>% 
-     filter(exclusion_set == "complete", 
-            publishable_subset == "All", 
-            expertise_subset == "All",
+     filter(!!!filter_vars_main_analysis,
             model_name %in% c("sorensen_glm", "uni_mixed_effects")) %>% 
   mutate(model = map(model, extract_fit_engine), 
           perf = map(model, performance::performance),
@@ -4021,10 +4017,8 @@ p_cat_euc_tidy<-broom.mixed::tidy(ManyEcoEvo_results$sorensen_glm[[2]],conf.int=
 ### Effect Sizes ($Z_r$)
 
 ```{r interrater, echo = FALSE, warning = FALSE, message = FALSE}
-ReviewData2 <- ManyEcoEvo_results %>% 
-  filter(exclusion_set == "complete", 
-         publishable_subset == "All",
-         expertise_subset == "All") %>% 
+review_data <- ManyEcoEvo_results %>% 
+  filter(!!!filter_vars_main_analysis) %>% 
   ungroup %>% 
   select(data, -dataset) %>% 
   unnest(data) %>% 
@@ -4033,34 +4027,34 @@ ReviewData2 <- ManyEcoEvo_results %>%
   distinct(ReviewerId , id_col,.keep_all = T) %>% 
 #by unfortunate chance two reviewer reviewed the same analyses twice Rev100 for R_2TFbZCxFIz91BGC and Rev133 for R_1hSZf5af3tKfwLI. Fortunately, their ratings were similar so we will just use distinct to remove one above
 #reviewers reviewed all analyses per team for each dataset - need to deduplicate to avoid inflating inter-rater reliability
-distinct(response_id, ReviewerId , dataset,.keep_all = T) 
+  distinct(response_id, ReviewerId , dataset,.keep_all = T) %>% 
+  mutate(PublishableAsIs = case_when(PublishableAsIs == "publishable as is" ~ 4,
+                                      PublishableAsIs == "publishable with minor revision" ~ 3,
+                                      PublishableAsIs == "publishable with major revision" ~ 2,
+                                      PublishableAsIs == "deeply flawed and unpublishable" ~ 1,
+                                      TRUE ~ NA))
 
-ReviewData2$PublishableAsIs2<-ifelse(ReviewData2$PublishableAsIs=="publishable as is",4,ifelse(ReviewData2$PublishableAsIs=="publishable with minor revision",3,ifelse(ReviewData2$PublishableAsIs=="publishable with major revision",2,ifelse(ReviewData2$PublishableAsIs=="deeply flawed and unpublishable",1,NA))))
+alpha_result_continuous <- review_data %>% 
+  select(id_col, ReviewerId, RateAnalysis) %>%
+  pivot_wider(names_from = id_col, 
+              values_from = RateAnalysis) %>% 
+  as.matrix() %>% 
+  t() %>% 
+  irr::kripp.alpha(method = "nominal")
 
-ContinuousRating2<-ReviewData2 %>% select(c("id_col","ReviewerId","RateAnalysis")) %>%
-  pivot_wider(
-  names_from = id_col, values_from = RateAnalysis)
-
-ContinuousRating2m<-as.matrix(ContinuousRating2)
-
-alpha_result_continuous2 <- irr::kripp.alpha(x = t(ContinuousRating2m),
-                                     method = "nominal")
-
-OrdinalRating2<-ReviewData2 %>% select(c("id_col","ReviewerId","PublishableAsIs2")) %>%
-  pivot_wider(
-  names_from = id_col, values_from = PublishableAsIs2)
-
-OrdinalRating2m<-as.matrix(OrdinalRating2)
-
-alpha_result_ordinal2 <- irr::kripp.alpha(x = t(OrdinalRating2m),
-                                            method = "ordinal")
+alpha_result_ordinal <- review_data %>% 
+  select(id_col, ReviewerId, PublishableAsIs) %>%
+  pivot_wider(names_from = id_col, values_from = PublishableAsIs) %>% 
+  as.matrix() %>% 
+  t() %>% 
+  irr::kripp.alpha(method = "ordinal")
 ```
 
 We obtained reviews from `r reviewers` reviewers who reviewed analyses for a mean of `r round(meanreviewsbyreviewer,2)` (range `r minreviewsbyreviewer` - `r maxreviewsbyreviewer`) analysis teams.
 Analyses of the blue tit dataset received a total of `r ArticleReviewSummary2[1,6]` reviews, each was reviewed by a mean of `r round(ArticleReviewSummary2[1,2],2)` (SD `r round(ArticleReviewSummary2[1,3],2)`, range `r ArticleReviewSummary2[1,4]`-`r ArticleReviewSummary2[1,5]`) reviewers.
 Analyses of the *Eucalyptus* dataset received a total of `r ArticleReviewSummary2[2,6]` reviews, each was reviewed by a mean of `r round(ArticleReviewSummary2[2,2],2)` (SD `r round(ArticleReviewSummary2[2,3],2)`, range `r ArticleReviewSummary2[2,4]`-`r ArticleReviewSummary2[2,5]`) reviewers.
 We tested for inter-rater-reliability to examine how similarly reviewers reviewed each analysis and found approximately no agreement among reviewers.
-When considering continuous ratings, IRR was `r round(alpha_result_continuous2$value,2)`, and for categorical ratings, IRR was `r round(alpha_result_ordinal2$value,2)`.
+When considering continuous ratings, IRR was `r round(alpha_result_continuous$value,2)`, and for categorical ratings, IRR was `r round(alpha_result_ordinal$value,2)`.
 
 Many of the models of deviance as a function of peer ratings faced issues of failure to converge or singularity due to sparse design matrices with our pre-registered random effects (`Effect_Id` and `Reviewer_ID`) ([see supplementary material -@tbl-explore-Zr-deviation-random-effects-structure]).
 These issues persisted after increasing the tolerance and changing the optimizer.
