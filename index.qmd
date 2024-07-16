@@ -3430,8 +3430,6 @@ zr_heterogeneity <- ManyEcoEvo_viz %>%
          exclusion_set = 
            case_when(exclusion_set == "complete" ~ "",
                      TRUE ~ ", Outliers removed"),
-         dataset = case_when(str_detect(dataset, "euc") ~ "Eucalyptus",
-                             TRUE ~ dataset),
          collinearity_subset = dplyr::na_if(collinearity_subset, "All")) %>% 
   ungroup %>% 
   select(-expertise_subset) %>% 
@@ -3444,12 +3442,15 @@ zr_heterogeneity <- ManyEcoEvo_viz %>%
   rowwise() %>% 
   mutate(tau_total = sum(sigma2_1, sigma2_2)) %>% 
   relocate(tau_total, .after = starts_with("sigma"))
+
+bt_MA_summ_stats <- zr_heterogeneity %>% filter(dataset == "blue tit", data_subset == "All analyses", is.na(collinearity_subset))
+euc_MA_summ_stats <- zr_heterogeneity %>% filter(dataset == "eucalyptus", data_subset == "All analyses", is.na(collinearity_subset))
 ```
 
 We quantified both absolute ($\tau^{2}$) and relative ($I^{2}$) heterogeneity resulting from analytical variation.
 Both measures suggest that substantial variability among effect sizes was attributable to the analytical decisions of analysts.
 
-The total absolute level of variance beyond what would typically be expected due to sampling error, $\tau^{2}$ (@tbl-effects-heterogeneity), among all usable blue tit effects was `r round(zr_heterogeneity[1,6],3)` and for *Eucalyptus* effects was `r round(zr_heterogeneity[2,6],3)`.
+The total absolute level of variance beyond what would typically be expected due to sampling error, $\tau^{2}$ (@tbl-effects-heterogeneity), among all usable blue tit effects was `r round(bt_MA_summ_stats$I2_Total,3)` and for *Eucalyptus* effects was `r round(euc_MA_summ_stats$I2_Total,2)`.
 This is similar to or exceeding the median value (0.105) of $\tau^{2}$ found across 31 recent meta-analyses [calculated from the data in @yang2023].
 The similarity of our observed values to values from meta-analyses of different studies based on different data suggest the potential for a large portion of heterogeneity to arise from analytical decisions.
 For further discussion of interpretation of $\tau^{2}$ in our study, please consult discussion of *post hoc* analyses below.
@@ -3458,7 +3459,6 @@ For further discussion of interpretation of $\tau^{2}$ in our study, please cons
 #| label: tbl-effects-heterogeneity
 #| tbl-cap: 'Heterogeneity in the estimated effects $Z_r$ for meta-analyses of the full dataset, as well as from post hoc analyses including the dataset with outliers removed, the dataset excluding effects from analysis teams with at least one "unpublishable" rating, the dataset excluding effects from analysis teams with at least one "major revisions" rating or worse, the dataset including only analyses from teams in which at least one analyst rated themselves as "highly proficient" or "expert" in statistical analysis, or (blue tit only) the dataset excluding effects from analyses that included the pair of highly collinear predictors. ${\\tau}_{Team}^{2}$ is the absolute heterogeneity for the random effect `Team`. ${\\tau}_{effectID}^{2}$ is the absolute heterogeneity for the random effect `EffectID` nested under `Team`. `EffectID` is the unique identifier assigned to each individual statistical effect submitted by an analysis team. We nested `EffectID` within analysis team identity (`Team`) because analysis teams often submitted >1 statistical effect, either because they considered >1 model or because they derived >1 effect per model, especially when a model contained a factor with multiple levels that produced >1 contrast. ${\\tau}_{total}^{2}$ is the total absolute heterogeneity. ${I^2}_{Total}$ is the proportional heterogeneity; the proportion of the variance among effects not attributable to sampling error, ${I^2}_{Team}$ is the subset of the proportional heterogeneity due to differences among `Teams` and ${I^2}_{Team,effectID}$ is subset of the proportional heterogeneity attributable to among-`EffectID` differences.'
 #| echo: false
-
 
 zr_heterogeneity %>% 
   select(-expertise_subset) %>% 
