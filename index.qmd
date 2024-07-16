@@ -3680,7 +3680,7 @@ Thus, effects at the extremes of the distribution were much stronger contributor
 
 ```{r}
 #| label: tbl-effects-params
-#| tbl-cap: 'Estimated mean value of the standardised correlation coefficient, $Z_r$, along with its standard error and 95$\\%$confidence intervals. We re-computed the meta-analysis for different post-hoc subsets of the data: All eligible effects, removal of effects from analysis teams that received at least one peer rating of "deeply flawed and unpublishable", removal of any effects from analysis teams that received at least one peer rating of either "deeply flawed and unpublishable" or "publishable with major revisions", inclusion of only effects from analysis teams that included at least one member who rated themselves as "highly proficient" or "expert" at conducting statistical analyses in their research area.'
+#| tbl-cap: 'Estimated mean value of the standardised correlation coefficient, $Z_r$, along with its standard error and 95$\\%$confidence intervals. We re-computed the meta-analysis for different post-hoc subsets of the data: All eligible effects, removal of effects from blue tit analyses that contained highly collinear predictor variables, removal of effects from analysis teams that received at least one peer rating of "deeply flawed and unpublishable", removal of any effects from analysis teams that received at least one peer rating of either "deeply flawed and unpublishable" or "publishable with major revisions", inclusion of only effects from analysis teams that included at least one member who rated themselves as "highly proficient" or "expert" at conducting statistical analyses in their research area.'
 #| echo: false
 effectsparams <- ManyEcoEvo_viz %>% 
     dplyr::filter(estimate_type == "Zr", 
@@ -3699,6 +3699,7 @@ effectsparams %>%
          exclusion_set,
          publishable_subset,
          expertise_subset,
+         collinearity_subset,
          estimate, 
          std.error, 
          statistic, 
@@ -3712,28 +3713,34 @@ effectsparams %>%
                      publishable_subset == "data_flawed_major" & expertise_subset == "All" ~ 
                        "Analyses receiving at least one 'Unpublishable' and or 'Major Revisions' rating removed",
                      expertise_subset == "expert" ~ "Analyses from teams with highly proficient or expert data analysts",
+                     collinearity_subset == "collinearity_removed" ~ "Blue tit analyses containing highly collinear predictors removed",
                      TRUE ~ ""),
          exclusion_set = 
            case_when(exclusion_set == "complete" ~ "",
                      TRUE ~ ", outliers removed"),
          dataset = case_when(str_detect(dataset, "euc") ~ "Eucalyptus",
-                             TRUE ~ dataset)) %>% 
+                             TRUE ~ dataset),
+         collinearity_subset = dplyr::na_if(collinearity_subset, "All")) %>% 
   select(-expertise_subset) %>% 
-    unite("data_subset", publishable_subset, exclusion_set, sep = "", remove = TRUE) %>% 
+  unite("data_subset", publishable_subset, exclusion_set, sep = "", remove = TRUE) %>% 
   group_by(data_subset) %>% 
-  arrange(data_subset)  %>% 
+  arrange(data_subset, dataset)  %>% 
   gt::gt() %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::fmt(columns = "p.value",
           fns = function(x) gtsummary::style_pvalue(x)) %>% 
   gt::fmt_number(columns = c(-p.value, -dataset)) %>% 
+  gt::fmt_missing(columns = "collinearity_subset", rows = everything(), "") %>% 
+  gt::fmt("collinearity_subset", fns = function(x) str_replace(x, "_", " ") %>%
+            str_c(", ", .)) %>% 
   gt::cols_label(dataset = "Dataset",
                  estimate = "$$\\hat\\mu$$", 
                  std.error = gt::md("$$SE[\\hat\\mu]$$"),
                  conf.low = gt::md("95\\%CI"),
-          #       exclusion_set = "Outlier Exclusion",
                  p.value = "p-value") %>% 
-  gt::cols_merge(columns = starts_with("conf"), 
+  gt::cols_merge(columns = c(dataset, collinearity_subset),
+                 hide_columns =c(collinearity_subset)) %>% 
+  gt::cols_merge(columns = starts_with("conf"),
                  pattern = "[{1},{2}]") %>% 
   gt::cols_move(columns = conf.low, after = std.error) %>% 
   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
