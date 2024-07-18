@@ -2459,9 +2459,23 @@ predictions<-left_join(bothpredids, Master, by=c("id_col"))
 
 #How many unique team identifier, submission_id and analysis_id combinations are there?
 effects_predictions<-bind_rows(effects,predictions)
-True_Total_Analyses<-effects_predictions%>%
-  group_by(TeamIdentifier,submission_id,analysis_id)%>%
-  summarise(count=n())
+total_usable_analyses <- ManyEcoEvo_study_summary %>% 
+  filter(subset_name != "all") %>% 
+  unnest(data) %>% 
+  select(dataset, TeamIdentifier, submission_id, analysis_id) %>% 
+  group_by(dataset) %>% 
+  distinct() %>% 
+  count() %>% 
+  janitor::adorn_totals()
+
+total_usable_effects <- ManyEcoEvo_study_summary %>% 
+  filter(subset_name != "all") %>% 
+  unnest(data) %>% 
+  select(dataset, TeamIdentifier, submission_id, analysis_id, split_id) %>% 
+  group_by(dataset) %>% 
+  distinct() %>% 
+  count() %>% 
+  janitor::adorn_totals()
 
 True_Total_Analysesa<-left_join(True_Total_Analyses,Master)
 BTUsableAnalyses<-filter(True_Total_Analysesa,dataset=="blue tit")
@@ -2790,9 +2804,9 @@ ArticleReviewSummary2<-summarise(article_grouped_reviews2,
 
 ## Summary Statistics
 
-In total, `r All_teams+28` analyst teams, comprising 246 analysts, contributed `r TotalUsableAnalyses_no` usable analyses (compatible with our meta-analyses and provided with all information needed for inclusion) of the two datasets examined in this study which yielded `r TotalUsableEffects_no` effects.
-Analysts produced `r BTUsableEffects_no` distinct effects that met our criteria for inclusion in at least one of our meta-analyses for the blue tit dataset.
-Analysts produced `r EucUsableEffects_no` distinct effects meeting our criteria for inclusion for the *Eucalyptus* dataset.
+In total, `r All_teams+28` analyst teams, comprising 246 analysts, contributed `r total_usable_analyses %>% filter(dataset == "Total") %>% pluck("n")` usable analyses (compatible with our meta-analyses and provided with all information needed for inclusion) of the two datasets examined in this study which yielded `r total_usable_effects filter(dataset == "Total") %>% pluck("n")` effects.
+Analysts produced `r filter(total_usable_effects, dataset == "blue tit") %>% pluck("n")` distinct effects that met our criteria for inclusion in at least one of our meta-analyses for the blue tit dataset.
+Analysts produced `r filter(total_usable_effects, dataset == "eucalyptus") %>% pluck("n")` distinct effects meeting our criteria for inclusion for the *Eucalyptus* dataset.
 Excluded analyses and effects either did not answer our specified biological questions, were submitted with insufficient information for inclusion in our meta-analyses, or were incompatible with production of our effect size(s).
 We expected cases of this final scenario (incompatible analyses), for instance we cannot extract a $Z_r$ from random forest models, which is why we analyzed two distinct types of effects, $Z_r$ and out-of-sample.
 Effects included in only a subset of our meta-analyses provided sufficient information for inclusion in only that subset (see @tbl-Table1).
