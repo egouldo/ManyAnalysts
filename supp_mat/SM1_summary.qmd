@@ -61,13 +61,14 @@ Table3 <-  # choice of variables
 
 ### Number of analyses of different types
 
-As described in the summary statistics section of the manuscript, `r Table1[1,4]` teams submitted `r Table1[1,3]` $Z_r$ model estimates and `r Table1[2,4]` teams submitted `r Table1[2,3]` $y_i$ predictions for the blue tit dataset. Similarly, `r Table1[3,4]` submitted `r Table1[3,3]` $Z_r$ model estimates and `r Table1[4,4]` teams submitted `r Table1[4,3]`$y_i$ predictions for the *Eucalytpus* dataset. The majority of the blue tit analyses specified normal error distributions and were non-Bayesian mixed effects models. Analyses of the *Eucalyptus* dataset rarely specified normal error distributions, likely because the response variable was in the form of counts. Mixed effects models were also common for *Eucalytpus* analyses (@tbl-Table1).
+As described in the summary statistics section of the manuscript, `r``Table1 %>% filter(dataset == "blue tit", subset_name == "effects") %>% pluck("teams")` teams submitted `r Table1 %>% filter(dataset == "blue tit", subset_name == "effects") %>% pluck("totalanalyses")` $Z_r$ model estimates and `r``Table1 %>% filter(dataset == "blue tit", subset_name == "predictions") %>% pluck("teams")` teams submitted `r``Table1 %>% filter(dataset == "blue tit", subset_name == "predictions") %>% pluck("totalanalyses")` $y_i$ predictions for the blue tit dataset. Similarly, `r Table1 %>% filter(dataset == "eucalyptus", subset_name == "effects") %>% pluck("teams")` submitted `r Table1 %>% filter(dataset == "eucalyptus", subset_name == "effects") %>% pluck("totalanalyses")` $Z_r$ model estimates and `r Table1 %>% filter(dataset == "eucalyptus", subset_name == "predictions") %>% pluck("teams")` teams submitted `r Table1 %>% filter(dataset == "eucalyptus", subset_name == "predictions") %>% pluck("totalanalyses")` $y_i$ predictions for the *Eucalytpus* dataset. The majority of the blue tit analyses specified normal error distributions and were non-Bayesian mixed effects models. Analyses of the *Eucalyptus* dataset rarely specified normal error distributions, likely because the response variable was in the form of counts. Mixed effects models were also common for *Eucalytpus* analyses (@tbl-Table1).
 
 ```{r}
 #| label: tbl-Table1
 #| tbl-cap: "Summary of the number of anaysis teams, total analyses, models with normal error distributions, mixed effects models, and models developed with Bayesian statistical methods for effect size analyses only ($Z_r$) and out-of-sample prediction only ($y_i$)."
 
 Table1 %>% 
+  rename(subset = subset_name) %>% 
   rename_with(~ str_remove(., "sum_")) %>% 
   group_by(dataset) %>% 
   gt::gt(rowname_col = "subset") %>% 
