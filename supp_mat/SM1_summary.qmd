@@ -103,14 +103,17 @@ The composition of models varied substantially (@tbl-Table2) in regards to the n
 #| tbl-cap: "Mean, standard deviation and range of number of fixed and random variables and interaction terms used in models and sample size used. Repeated for effect size analyses only ($Z_r$) and out-of-sample prediction only ($y_i$)."
 
 Table2 %>% 
-  rename(SD = sd) %>%   
+  rename(SD = sd, subset = subset_name) %>%   
   group_by(variable) %>% 
   pivot_wider(
     names_from = dataset,
     names_sep = ".",
     values_from = c(mean, SD, min, max)
   ) %>% 
+  mutate(variable = case_when(variable == "samplesize" ~ "*N*",
+                              TRUE ~ variable)) %>% 
   gt::gt(rowname_col = "subset") %>% 
+  gt::row_group_order(groups = c("fixed", "random", "interactions", "*N*")) %>% 
   gt::tab_spanner_delim(delim = ".") %>% 
   gt::fmt_scientific(columns = c(contains("mean"), contains("SD")),
                      decimals = 2) %>% 
