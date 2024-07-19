@@ -55,6 +55,13 @@ Table3 <-  # choice of variables
   filter(subset_name != "all") %>% 
   select(subset_name, variable_count_summary ) %>% 
   unnest(cols = variable_count_summary)
+
+var_names <- 
+    ManyEcoEvo::ManyEcoEvo %>% 
+    pull(diversity_data) %>% 
+    map(~ .x %>% select(-id_col, -dataset) 
+        %>% colnames) %>% 
+    enframe("dataset", "variable")
 ```
 
 ## Summary Statistics
