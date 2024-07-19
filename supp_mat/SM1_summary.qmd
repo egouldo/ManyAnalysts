@@ -170,9 +170,9 @@ Table3 %>%
   gt::sub_values(columns = subset, values = c("all"), 
                  replacement = gt::md("All analyses")) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
-  tab_style(
-    style = cell_text(transform = "capitalize"),
-    locations = cells_column_spanners()
+  gt::tab_style(
+    style = gt::cell_text(transform = "capitalize"),
+    locations = gt::cells_column_spanners()
   )
 ```
 
