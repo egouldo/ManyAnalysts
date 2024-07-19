@@ -90,6 +90,7 @@ Table1 %>%
                      locations = gt::cells_row_groups()) %>% 
   gt::text_transform(fn = function(x) map(x, gt::md), 
                      locations = gt::cells_row_groups()) %>% 
+  gt::cols_move(teams,after = totalanalyses) %>% 
   gt::as_raw_html()
 ```
 
