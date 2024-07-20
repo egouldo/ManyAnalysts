@@ -344,7 +344,7 @@ poss_fit <- possibly(fit, otherwise = NA, quiet = FALSE)
 ## Box-Cox transformation of response variable for model fitting
 
 To aid in interpreting explanatory models where the response variable has been Box-Cox transformed, we plotted the transformation relationship for each of our analysis datasets (@fig-box-cox-transformations).
-Note that `timetk::step_box_cox()` directly optimises the estimation of the transformation parameter, $\lambda$, using the "Guerrero" method such that $\lambda$ minimises the coefficient of variation for sub series of a numeric vector (see `?timetk::step_box_cox()`, for further details see @timet).
+Note that `timetk::step_box_cox()` directly optimises the estimation of the transformation parameter, $\lambda$, using the "Guerrero" method such that $\lambda$ minimises the coefficient of variation for sub series of a numeric vector (see `?timetk::step_box_cox()`, for further details see @timetk).
 Consequently, each dataset has its own unique value of the lambda parameter, and therefore a unique transformation relationship.
 
 ```{r}
