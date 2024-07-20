@@ -1904,6 +1904,9 @@ library(broom.mixed)
 library(tidymodels) #todo consider porting the extract_fit_engine into the ManyEcoEvo package
 library(grateful)
 set.seed(1234)
+
+# Helper Funs
+round_pluck <- function(data, x){pluck(data, x, \(y) round(y, 2))}
 ```
 
 # Introduction
