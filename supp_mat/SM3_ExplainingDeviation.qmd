@@ -355,7 +355,7 @@ Consequently, each dataset has its own unique value of the lambda parameter, and
 #| message: false
 
 back_transformed_predictions <- 
-  ManyEcoEvo::MManyEcoEvo_yi %>% 
+  ManyEcoEvo::ManyEcoEvo_yi %>% 
   dplyr::mutate(data = 
                   purrr::map(data, 
                              ~ dplyr::filter(.x,
@@ -524,7 +524,7 @@ model_vars <-
 all_model_fits <- 
   model_vars %>% 
   cross_join(., 
-             {ManyEcoEvo::MManyEcoEvo_results %>% 
+             {ManyEcoEvo::ManyEcoEvo_results %>% 
                  select(dataset, 
                         exclusion_set, 
                         estimate_type, 
@@ -533,7 +533,7 @@ all_model_fits <-
                         collinearity_subset == "All") %>% 
                  ungroup %>% 
                  select(-expertise_subset, -collinearity_subset)}) %>% 
-  left_join(., {ManyEcoEvo::MManyEcoEvo_results %>% 
+  left_join(., {ManyEcoEvo::ManyEcoEvo_results %>% 
       select(dataset, 
              exclusion_set, 
              estimate_type, 
