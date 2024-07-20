@@ -3356,8 +3356,8 @@ N_outliers_Zr_euc <- sample_size_euc_Zr %>%
 
 The outlier *Eucalyptus* $Z_r$ values were striking and merited special examination.
 The three negative outliers had very low sample sizes were based on either small subsets of the dataset or, in one case, extreme aggregation of data.
-The outliers associated with small subsets had sample sizes ($n=$ `r N_outliers_Zr_euc[1:2,]$sample_size %>% paste0(collapse = ", ")`) that were less than half of the total possible sample size of 351.
-The case of extreme aggregation involved averaging all values within each of the `r ManyEcoEvo::euc_data %>% distinct(Property) %>% nrow()` sites in the dataset.
+The outliers associated with small subsets had sample sizes ($n=$ `r N_outliers_Zr_euc$sample_size %>% paste0(collapse = ", ")`) that were less than half of the total possible sample size of `r nrow(ManyEcoEvo::euc_data)`.
+The case of extreme aggregation involved averaging all values within each of the `r n_distinct(ManyEcoEvo::euc_data, "Property")` sites in the dataset.
 
 ```{r}
 #| label: bt-Zr-outliers
