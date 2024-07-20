@@ -1073,7 +1073,7 @@ ManyEcoEvo_yi_viz %>%
 
 ## Deviation scores as explained by the distinctiveness of variables in each analysis
 
-### Effect Sizes $Z_r$
+### Effect Sizes $Z_r$ {#sec-sorensen-Zr}
 
 ### Out of sample predictions $y_i$ {#sec-sorensen-yi}
 
