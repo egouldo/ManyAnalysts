@@ -553,7 +553,7 @@ all_model_fits <-
   mutate(effects_analysis = 
             map(effects_analysis, 
                 mutate, 
-                weight = importance_weights(1/box_cox_var)),
+                weight = importance_weights(1/box_cox_var)), #TODO issue #27 REMOVE weights!!
          effects_analysis = 
            map(effects_analysis, 
                ~ .x %>% 
