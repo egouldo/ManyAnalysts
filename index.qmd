@@ -3200,7 +3200,7 @@ zr_heterogeneity %>%
   arrange(dataset) %>% 
   dplyr::relocate(tau_total, .after = data_subset) %>% 
   gt::gt() %>% 
-  gt::fmt_missing(columns = "collinearity_subset", rows = everything(), "") %>% 
+  gt::sub_missing(columns = "collinearity_subset", rows = everything(), "") %>% 
   gt::fmt("collinearity_subset", fns = function(x) str_replace(x, "_", " ") %>%
             str_c(", ", .)) %>% 
   gt::fmt_number(columns = 
