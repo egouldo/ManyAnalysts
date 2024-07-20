@@ -3190,7 +3190,7 @@ For further discussion of interpretation of $\tau^{2}$ in our study, please cons
 
 ```{r}
 #| label: tbl-effects-heterogeneity
-#| tbl-cap: 'Heterogeneity in the estimated effects $Z_r$ for meta-analyses of: the full dataset, as well as from post hoc analyses wherein analyses with outliers are removed, analyses with effects from analysis teams with at least one "unpublishable" rating are excluded, analyses receiving at least one "major revisions" rating or worse excluded, analyses from teams with at least one analyst self-rated as "highly proficient" or "expert" in statistical analysis are included, and (blue tit only) the dataset excluding effects from analyses that included the pair of highly collinear predictors. ${\\tau}_{Team}^{2}$ is the absolute heterogeneity for the random effect `Team`. ${\\tau}_{effectID}^{2}$ is the absolute heterogeneity for the random effect `EffectID` nested under `Team`. `EffectID` is the unique identifier assigned to each individual statistical effect submitted by an analysis team. We nested `EffectID` within analysis team identity (`Team`) because analysis teams often submitted >1 statistical effect, either because they considered >1 model or because they derived >1 effect per model, especially when a model contained a factor with multiple levels that produced >1 contrast. ${\\tau}_{total}^{2}$ is the total absolute heterogeneity. ${I^2}_{Total}$ is the proportional heterogeneity; the proportion of the variance among effects not attributable to sampling error, ${I^2}_{Team}$ is the subset of the proportional heterogeneity due to differences among `Teams` and ${I^2}_{Team,effectID}$ is subset of the proportional heterogeneity attributable to among-`EffectID` differences.'
+#| tbl-cap: 'Heterogeneity in the estimated effects $Z_r$ for meta-analyses of: the full dataset, as well as from post hoc analyses wherein analyses with outliers are removed, analyses with effects from analysis teams with at least one "unpublishable" rating are excluded, analyses receiving at least one "major revisions" rating or worse excluded, analyses from teams with at least one analyst self-rated as "highly proficient" or "expert" in statistical analysis are included, and (blue tit only) the dataset excluding effects from analyses that included the pair of highly collinear predictors. ${\\tau}_\\text{Team}^{2}$ is the absolute heterogeneity for the random effect `Team`. ${\\tau}_\\text{effectID}^{2}$ is the absolute heterogeneity for the random effect `effectID` nested under `Team`. `effectID` is the unique identifier assigned to each individual statistical effect submitted by an analysis team. We nested `effectID` within analysis team identity (`Team`) because analysis teams often submitted >1 statistical effect, either because they considered >1 model or because they derived >1 effect per model, especially when a model contained a factor with multiple levels that produced >1 contrast. ${\\tau}_\\text{Total}^{2}$ is the total absolute heterogeneity. ${I}_\\text{Total}^{2}$ is the proportional heterogeneity; the proportion of the variance among effects not attributable to sampling error, ${I}_\\text{Team}^{2}$ is the subset of the proportional heterogeneity due to differences among `Teams` and ${I}_\\text{Team, effectID}^{2}$ is subset of the proportional heterogeneity attributable to among-`effectID` differences.'
 #| echo: false
 
 zr_heterogeneity %>% 
@@ -3213,24 +3213,24 @@ zr_heterogeneity %>%
   gt::fmt_percent(columns = starts_with("I2_TeamIdentifier"), scale_values = FALSE, decimals = 2) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::cols_label(dataset="Dataset",
-                 I2_Total = "$${I^2}_{Total}$$",
-                 I2_TeamIdentifier = "$${I^2}_{Team}$$",
-                 `I2_TeamIdentifier/study_id` = "$${I^2}_{Team, effectID}$$" ,
-                 sigma2_1 = "$${\\tau}_{Team}^{2}$$",
-                 sigma2_2 = "$${\\tau}_{effectID}^{2}$$",
-                  tau_total = "$${\\tau}_{total}^{2}$$",
+                 I2_Total = "$${I^2}_\\text{Total}$$",
+                 I2_TeamIdentifier = "$${I^2}_\\text{Team}$$",
+                 `I2_TeamIdentifier/study_id` = "$${I^2}_\\text{Team, effectID}$$" ,
+                 sigma2_1 = "$${\\tau}_\\text{Team}^{2}$$",
+                 sigma2_2 = "$${\\tau}_\\text{effectID}^{2}$$",
+                 tau_total = "$${\\tau}_\\text{Total}^{2}$$",
                  Nobs = "N.Obs"
-                 ) %>% 
-   gt::cols_merge(columns = c(dataset, collinearity_subset),
+  ) %>% 
+  gt::cols_merge(columns = c(dataset, collinearity_subset),
                  hide_columns =c(collinearity_subset)) %>% 
   gt::row_group_order(groups = c("All analyses",
                                  "All analyses, Outliers removed",
                                  "Analyses receiving at least one 'Unpublishable' rating removed",
                                  "Analyses receiving at least one 'Unpublishable' and or 'Major Revisions' rating removed",
                                  "Analyses from teams with highly proficient or expert data analysts")) %>%
-   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
+  gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
                                        columns = dataset),
-                                      style = cell_text(style = "italic")) %>% 
+                style = cell_text(style = "italic")) %>% 
   gt::as_raw_html()
 
 ```
@@ -3305,13 +3305,13 @@ ManyEcoEvo_yi_results %>%
   gt::fmt_percent(columns = starts_with("I2_"), scale_values = FALSE, decimals = 2) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::cols_label(dataset = "Dataset",
-                 tau_total = gt::md("$${\\tau}_{Total}$$"),
-                 I2_Total = gt::md("$${I^2}_{Total}$$"),
-                 I2_TeamIdentifier = gt::md("$${I^2}_{Team}$$"),
-                 `I2_TeamIdentifier/study_id` = gt::md("$${I^2}_{Team, effectID}$$") ,
-                 sigma2_1 = gt::md("$${\\tau}_{Team}^{2}$$"),
-                 sigma2_2 = gt::md("$${\\tau}_{effectID}^{2}$$"),
-                 nobs = gt::md("$${N}_{Obs}$$"),
+                 tau_total = gt::md("$${\\tau}_\\text{Total}$$"),
+                 I2_Total = gt::md("$${I}_\\text{Total}^{2}$$"),
+                 I2_TeamIdentifier = gt::md("$${I}_\\text{Team}^{2}$$"),
+                 `I2_TeamIdentifier/study_id` = gt::md("$${I}_{Team, effectID}^{2}$$") ,
+                 sigma2_1 = gt::md("$${\\tau}_\\text{Team}^{2}$$"),
+                 sigma2_2 = gt::md("$${\\tau}_\\text{effectID}^{2}$$"),
+                 nobs = gt::md("$${N}_\\text{Obs}$$"),
                  estimate_type = gt::md("Prediction Scenario")) %>% 
   gt::text_transform(fn = function(x) map(x, gt::md), 
                      locations = gt::cells_row_groups()) %>% 
@@ -3476,12 +3476,12 @@ effectsparams %>%
   gt::fmt(columns = "p.value",
           fns = function(x) gtsummary::style_pvalue(x)) %>% 
   gt::fmt_number(columns = c(-p.value, -dataset)) %>% 
-  gt::fmt_missing(columns = "collinearity_subset", rows = everything(), "") %>% 
+  gt::sub_missing(columns = "collinearity_subset", rows = everything(), "") %>% 
   gt::fmt("collinearity_subset", fns = function(x) str_replace(x, "_", " ") %>%
             str_c(", ", .)) %>% 
   gt::cols_label(dataset = "Dataset",
                  estimate = "$$\\hat\\mu$$", 
-                 std.error = gt::md("$$SE[\\hat\\mu]$$"),
+                 std.error = gt::md("$$\\text{SE}[\\hat\\mu]$$"),
                  conf.low = gt::md("95\\%CI"),
                  p.value = "p-value") %>% 
   gt::cols_merge(columns = c(dataset, collinearity_subset),
@@ -3548,8 +3548,8 @@ Inclusion of collinear predictors does not harm model prediction, and so we did 
 ## Explaining Variation in Deviation Scores
 
 None of the pre-registered predictors explained substantial variation in deviation among submitted statistical effects from the meta-analytic mean (@tbl-model-summary-stats-ratings-cont, @tbl-deviation-rating-estimates).
-Note that the extremely high $R^{2}_{\text{Conditional}}$ values from the analyses of continuous peer ratings as predictors of deviation scores are a function of the random effects, not the fixed effect of interest.
-These high values of the $R^{2}_{\text{Conditional}}$ result from the fact that each effect size was included in the analysis multiple times, to allow comparison with ratings from the multiple peer reviewers who reviewed each analysis, and therefore when we included effect ID as a random effect, the observations within each random effect category were identical.
+Note that the extremely high ${R}_\text{Conditional}^{2}$ values from the analyses of continuous peer ratings as predictors of deviation scores are a function of the random effects, not the fixed effect of interest.
+These high values of the ${R}_\text{Conditional}^{2}$ result from the fact that each effect size was included in the analysis multiple times, to allow comparison with ratings from the multiple peer reviewers who reviewed each analysis, and therefore when we included effect ID as a random effect, the observations within each random effect category were identical.
 
 ```{r}
 #| label: tbl-model-summary-stats-ratings-cont
@@ -3616,10 +3616,10 @@ modelfitstats %>%
           fns = function(x) format(x, digits = 3)) %>% 
   gt::cols_label(dataset = "Dataset",
                  R2 = "$$R^2$$",
-                 R2_conditional = "$$R^{2}_\\text{Conditional}$$",
-                 R2_marginal = "$$R^{2}_\\text{Marginal}$$",
+                 R2_conditional = "$${R}_\\text{Conditional}^{2}$$",
+                 R2_marginal = "$${R}_\\text{Marginal}^{2}$$",
                  Sigma = "$$\\sigma$$",
-                 nobs = "$$N_{Obs.}$$") %>% 
+                 nobs = "$$N_\\text{Obs.}$$") %>% 
   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
                                        columns = dataset),
                 style = cell_text(style = "italic"))
