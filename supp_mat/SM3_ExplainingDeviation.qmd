@@ -1748,3 +1748,6 @@ tbl_data_yi_deviation_model_params %>%
   gt::tab_style(locations = gt::cells_stub(rows = str_detect(dataset, "Eucalyptus")),
                 style = cell_text(style = "italic"))
 ```
+
+## Post-hoc analysis: checking the use of model weights in all models explaining deviation from the meta-analytic mean {#sec-post-hoc-weights-analysis}
+

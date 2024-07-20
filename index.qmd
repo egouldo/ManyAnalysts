@@ -2239,7 +2239,7 @@ All these analyses were general linear (mixed) models.
 These analyses were secondary to our estimation of variation in effect sizes described above.
 We wished to quantify relationships among variables, but we had no a priori expectation of effect size and made no dichotomous decisions about statistical significance.
 
-::: {.callout-note appearance="simple"}
+::: {#weight-deviation .callout-note appearance="simple"}
 **Additional Explanation:** 
 
 In our meta-analyses based on Box-Cox transformed deviation scores, we leave these deviation scores unweighted. 
@@ -2249,6 +2249,7 @@ Such invalid weights can sometimes occur when the variance (upon which the weigh
 In the case of the *Eucalyptus* analyses, the most extreme outlier was weighted much more heavily (by close to two orders of magnitude) than any other effect sizes because the effect size was, itself, so high. 
 Therefore, we made the decision to avoid weighting by inverse variance in all analyses of the Box-Cox transformed deviation scores. 
 This was further justified because (a) most analyses have at least some moderately unreliable weights, and (b) the sample sizes were mostly very similar to each other across submitted analyses, and so meta-analytic weights are not particularly important here.
+We systematically investigated the impact of different weighting schemes and random effects on model convergence and results, see @sec-post-hoc-weights-analysis for more details.
 :::
 
 When examining the extent to which reviewer ratings (on a scale from 0 to 100) explained deviation from the average effect (or predicted value), each analysis had been rated by multiple peer reviewers, so for each reviewer score to be included, we include each deviation score in the analysis multiple times.
