@@ -420,7 +420,9 @@ ManyEcoEvo_yi_results %>%
          dataset == "blue tit") %>% 
   bind_rows(deviation_models_yi_euc) %>% 
   bind_rows(ManyEcoEvo_results %>%
-              filter(exclusion_set == "complete", publishable_subset == "All")) %>% 
+              filter(exclusion_set == "complete", 
+                     publishable_subset == "All", 
+                     collinearity_subset == "All")) %>% 
   select(dataset, estimate_type, effects_analysis) %>% 
   hoist(effects_analysis, "abs_deviation_score_estimate",
                                "box_cox_abs_deviation_score_estimate") %>% 
