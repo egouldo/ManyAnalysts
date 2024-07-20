@@ -3694,9 +3694,9 @@ ManyEcoEvo_viz %>%
                      locations = gt::cells_row_groups()) %>% 
   gt::as_raw_html()
 
-p_cat_bt_tidy<-broom.mixed::tidy(ManyEcoEvo_results$sorensen_glm[[1]],conf.int=T,conf.level=0.95)
+p_cat_bt_tidy<-broom.mixed::tidy(ManyEcoEvo::ManyEcoEvo_results$sorensen_glm[[1]],conf.int=T,conf.level=0.95)
 
-p_cat_euc_tidy<-broom.mixed::tidy(ManyEcoEvo_results$sorensen_glm[[2]],conf.int=T,conf.level=0.95)
+p_cat_euc_tidy<-broom.mixed::tidy(ManyEcoEvo::ManyEcoEvo_results$sorensen_glm[[2]],conf.int=T,conf.level=0.95)
 ```
 
 ## Deviation Scores as explained by Reviewer Ratings
