@@ -2239,7 +2239,7 @@ All these analyses were general linear (mixed) models.
 These analyses were secondary to our estimation of variation in effect sizes described above.
 We wished to quantify relationships among variables, but we had no a priori expectation of effect size and made no dichotomous decisions about statistical significance.
 
-::: {#weight-deviation .callout-note appearance="simple"}
+::: {#box-weight-deviation .callout-note appearance="simple"}
 **Additional Explanation:** 
 
 In our meta-analyses based on Box-Cox transformed deviation scores, we leave these deviation scores unweighted. 
