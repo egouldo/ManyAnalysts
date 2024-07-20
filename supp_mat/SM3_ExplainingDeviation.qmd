@@ -1085,7 +1085,7 @@ All models fitted without problem.
 #| message: false
 #| warning: false
 yi_sorensen_plot_data <- 
-  ManyEcoEvo_yi_viz %>% 
+  ManyEcoEvo::ManyEcoEvo_yi_viz %>% 
   filter(exclusion_set == "complete", 
          dataset == "blue tit",
          str_detect(model_name, "sorensen_glm")) %>% 
