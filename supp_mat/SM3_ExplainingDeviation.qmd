@@ -355,7 +355,7 @@ Consequently, each dataset has its own unique value of the lambda parameter, and
 #| message: false
 
 back_transformed_predictions <- 
-  ManyEcoEvo_yi %>% 
+  ManyEcoEvo::MManyEcoEvo_yi %>% 
   dplyr::mutate(data = 
                   purrr::map(data, 
                              ~ dplyr::filter(.x,
@@ -524,7 +524,7 @@ model_vars <-
 all_model_fits <- 
   model_vars %>% 
   cross_join(., 
-             {ManyEcoEvo_results %>% 
+             {ManyEcoEvo::MManyEcoEvo_results %>% 
                  select(dataset, 
                         exclusion_set, 
                         estimate_type, 
@@ -532,7 +532,7 @@ all_model_fits <-
                  filter(expertise_subset == "All") %>% 
                  ungroup %>% 
                  select(-expertise_subset)}) %>% 
-  left_join(., {  ManyEcoEvo_results %>% 
+  left_join(., {ManyEcoEvo::MManyEcoEvo_results %>% 
       select(dataset, 
              exclusion_set, 
              estimate_type, 
@@ -676,7 +676,7 @@ MA_yi_summary_stats <- # ALL ON logged RESPONSE SCALE for EUC, standardized resp
   nest(tidy_mod = -estimate_type) %>% 
   mutate(dataset = "eucalyptus") %>% 
   bind_rows({
-    ManyEcoEvo_yi_results %>% 
+    ManyEcoEvo::ManyEcoEvo_yi_results %>% 
       ungroup() %>% 
       filter(exclusion_set == "complete", dataset == "blue tit") %>% 
       select(dataset, estimate_type, MA_mod, effects_analysis, -exclusion_set) %>% 
