@@ -529,18 +529,20 @@ all_model_fits <-
                         exclusion_set, 
                         estimate_type, 
                         publishable_subset) %>% 
-                 filter(expertise_subset == "All") %>% 
+                 filter(expertise_subset == "All", 
+                        collinearity_subset == "All") %>% 
                  ungroup %>% 
-                 select(-expertise_subset)}) %>% 
+                 select(-expertise_subset, -collinearity_subset)}) %>% 
   left_join(., {ManyEcoEvo::MManyEcoEvo_results %>% 
       select(dataset, 
              exclusion_set, 
              estimate_type, 
              publishable_subset, 
              effects_analysis) %>% 
-      filter(expertise_subset == "All") %>% 
-      ungroup %>% 
-      select(-expertise_subset)},
+      filter(expertise_subset == "All", 
+                        collinearity_subset == "All") %>% 
+                 ungroup %>% 
+                 select(-expertise_subset, -collinearity_subset)},
       by = join_by(dataset, 
                    exclusion_set, 
                    estimate_type,
