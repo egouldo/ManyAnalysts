@@ -468,7 +468,7 @@ Consequently, for both blue tit and *Euclayptus* datasets, we fitted and analyse
 
 ```{r}
 #| label: tbl-explore-Zr-deviation-random-effects-structure
-#| tbl-cap: 'Singularity and convergence checking outcomes for models of deviation in effect-sizes $Z_r$ explained by peer-review ratings for different random effect structures. Problematic checking outcomes are highlighted in red. '
+#| tbl-cap: 'Singularity and convergence checking outcomes for models of deviation in effect-sizes $Z_r$ explained by peer-review ratings for different random effect structures. Problematic checking outcomes are highlighted in red.'
 #| cache: false
 
 library(multilevelmod)
