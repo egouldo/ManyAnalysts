@@ -573,8 +573,7 @@ euc_forest_experts
 
 #### Post-hoc analysis: Exploring the effect of excluding analyses of the blue tit dataset containing highly collinear predictor variables
 
-For the blue tit dataset, we created a subset of analyses that excluded effects based on analyses containing highly correlated predictor variables.
-Excluded analyses are exported internally in the `ManyEcoEvo` package as `ManyEcoEvo::collinearity_subset`. Analyses with the following identifiers are excluded in the reduced subset: `r ManyEcoEvo:::collinearity_subset %>% pull(id_col) %>% gluedown::md_italic()`.
+For the blue tit dataset, we created a subset of analyses that excluded effects based on analyses containing highly correlated predictor variables. Excluded analyses are exported internally in the `ManyEcoEvo` package as `ManyEcoEvo::collinearity_subset`. Analyses with the following identifiers are excluded in the reduced subset: `r ManyEcoEvo:::collinearity_subset %>% pull(id_col) %>% gluedown::md_italic()`.
 
 ```{r}
 #| label: fig-forest-plot-Zr-collinear-rm-subset
