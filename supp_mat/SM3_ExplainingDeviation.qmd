@@ -1709,7 +1709,7 @@ tbl_data_yi_deviation_model_params <- all_yi_deviation_models %>%
                                          `Deviation explained by categorical ratings` = "box_cox_rating_cat",
                                          `Deviation explained by continuous ratings` = "box_cox_rating_cont",
                                          `Deviation explained by Sorensen's index` =  "sorensen_glm",
-                                         `Deviation explained by inclusion of random effects` =  "uni_mixed_effects")) %>% 
+                                         `Deviation explained by inclusion of random effects` =  "uni_mixed_effects")) %>%
   group_by(model_name) %>% 
   relocate("R2", .before = starts_with("R2_")) 
 ```
@@ -1751,3 +1751,58 @@ tbl_data_yi_deviation_model_params %>%
 
 ## Post-hoc analysis: checking the use of model weights in all models explaining deviation from the meta-analytic mean {#sec-post-hoc-weights-analysis}
 
+As we describe in @box-weight-deviation, for models of deviation from the meta-analytic mean effect-size, we had intended to use the inverse variance of the Box-Cox transformed deviation from the meta-analytic mean as model weights. Unfortunately using our intended weights specification resulted in invalid transformed response variables for some models whereby extreme outliers were weighted more heavily (two orders of magnitude) than other effect sizes, which caused both issues in the estimated model parameters as well as convergence issues, in particular for models analysing the effect of categorical peer-review rating on deviation from the meta-analytic mean. 
+
+We systematically investigated the impact of using different weighting schemes (no weights, inverse-Box-Cox transformed,  and inverse folded variance, of the absolute deviation scores) and random-effects inclusion (effect ID, reviewer ID, or both effect ID and reviewer ID) on model convergence, singularity and other model checking metrics to aid decision-making about the appropriate weighting scheme and random-effects structure for these models.
+
+Note that the folded variance of the absolute deviation scores is calculated during the Box-Cox transformation of the deviation scores from the mean for each effect.
+
+```{r}
+#| label: lst-variance-box-cox
+#| echo: true
+
+variance_box_cox <- function(folded_mu, folded_v, lambda){
+  variance_bc <- folded_v*(lambda*folded_mu^(lambda-1))^2 # delta method
+  return(variance_bc)
+}
+
+folded_params <- function(abs_dev_score, VZr){
+  mu <- abs_dev_score
+  sigma <- sqrt(VZr)
+  fold_mu <- sigma * sqrt(2/pi) * exp((-mu^2)/(2 * sigma^2)) + mu * (1 - 2 * pnorm(-mu/sigma)) # folded abs_dev_score
+  fold_se <- sqrt(mu^2 + sigma^2 - fold_mu^2)
+  fold_v <- fold_se^2 # folded VZr
+  return(list(fold_mu = fold_mu, fold_v = fold_v))
+}
+
+# library(mathml)
+# mathml::math(call("<-", quote(folded_v(abs_dev_score, VZr)), folded_v))
+```
+
+
+$$
+\begin{aligned}
+\text{folded}_\mu &= \sigma \sqrt{\frac{2}{\pi}} \exp\left(-\frac{\mu^2}{2 \sigma^2}\right) + \mu \left(1 - 2 \times \boldsymbol{\phi}\left(-\frac{\mu}{\sigma}; 0,1\right)\right) \\
+\text{fold_se}_\mu &= \sqrt{\mu^2 + \sigma^2 - \text{folded}_\mu^2} \\
+\text{folded}_v &= \text{folded_se}_\mu^2
+\end{aligned}
+$$ {#eq:folded-variance}
+
+
+
+
+where:
+
+- $\text{folded}_\mu$ is the folded mean of the deviation scores from the mean for effect $i$,
+- $\text{folded}_v$ is the folded variance of the deviation scores from the mean for effect $i$,
+- $\mu$ is the deviation score from the mean for effect $i$, calculated as the difference between effect size $i$ and the mean for all effects: $\bar{Z}_r - Z_{r_i}$,
+- $\sigma$ is the square root of the variance of effect $i$, $VZ_r$.
+
+
+
+*weights findings*
+We also found that models that used the intended weights were more likely to fail to converge, and that models that used the intended weights were more likely to be singular.
+
+
+*random effects*
+We found that models that included random effects for both Effect ID and Reviewer ID were more likely to fail to converge, and that models that included random effects for Reviewer ID only were more likely to be singular. 
