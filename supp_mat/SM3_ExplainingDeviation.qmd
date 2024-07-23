@@ -1890,10 +1890,12 @@ all_models <-
   mutate(model_data = map(effects_analysis, 
                           prepare_ratings_data), 
          .keep = "unused") %>% 
-  expand_grid(expand_grid(weight_formulas, random_expressions) %>% 
-                mutate(weight_forms = names(weight_formulas),
-                       random_effect = names(random_expressions)) %>% 
-                unite("model_spec", weight_forms, random_effect, sep = "_") ) %>% 
+  expand_grid(
+    expand_grid(weight_formulas, random_expressions) %>% 
+      mutate(weight_forms = names(weight_formulas),
+             random_effect = names(random_expressions)) %>% 
+      unite("model_spec", weight_forms, random_effect, sep = "_") 
+  ) %>% 
   mutate(model = pmap(list(model_data, 
                            random_expressions, 
                            weight_formulas), 
