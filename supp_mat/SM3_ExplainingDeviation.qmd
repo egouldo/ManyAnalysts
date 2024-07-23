@@ -1766,7 +1766,7 @@ Where:
 
 Which is executed in the \function{variance_box_cox} function from the the \package{ManyEcoEvo} package, illustrated in the following code snippet:
 
-```{{r}}
+```{r}
 #| label: lst-variance-box-cox
 #| echo: true
 #| code-fold: false
