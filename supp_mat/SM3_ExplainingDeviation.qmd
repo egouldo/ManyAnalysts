@@ -1793,6 +1793,147 @@ folded_params <- function(abs_dev_score, VZr){
 We systematically investigated the impact of using different weighting schemes (no weights, inverse-Box-Cox transformed variance-, and inverse folded variance-, of the absolute deviation scores) on model convergence, singularity and other model checking metrics to aid decision-making about the appropriate weighting scheme and random-effects structure for these models. Given the convergence issues we encountered when using the intended weights, and that the desired random effects structure could not be fitted, we also investigated the impact of using different random-effects structures (effect ID, reviewer ID, or both effect ID and reviewer ID) on model convergence and singularity. For each weighting scheme, we fitted models with each different random effects structure to both the blue tit and *Eucalyptus* analyst data, and evaluated model convergence, singularity and model performance using the `performance::compare_performance` function. 
 
 
+```{r}
+#| label: calc-post-hoc-weights-analysis
+#| echo: true
+#| warning: false
+#| message: false
+#| code-fold: true
+#| code-overflow: wrap
+#| code-summary: "Weight investigation code"
+
+# Create filter argument expressions
+filter_args = rlang::exprs(exclusion_set == "complete", 
+                           publishable_subset == "All",
+                           expertise_subset == "All",
+                           collinearity_subset == "All")
+
+# Create function to prepare ratings data
+prepare_ratings_data <- function(effects_analysis){
+  data_tbl <-
+    effects_analysis %>% 
+    unnest(cols = c(review_data)) %>% 
+    select(study_id, 
+           TeamIdentifier,
+           starts_with("box_cox_"),
+           ReviewerId, 
+           PublishableAsIs,
+           # lambda,
+           folded_v_val) %>% 
+    ungroup() %>% 
+    mutate(PublishableAsIs = 
+             forcats::fct_relevel(PublishableAsIs, 
+                                  c("deeply flawed and unpublishable", 
+                                    "publishable with major revision", 
+                                    "publishable with minor revision", 
+                                    "publishable as is")),
+           obs_id = 1:n()) 
+  return(data_tbl)
+}
+
+# Create base model formulat
+base_formula <- rlang::new_formula(rlang::expr(box_cox_abs_deviation_score_estimate), 
+                                   rlang::expr(PublishableAsIs))
+# Create weight functions
+calc_inv_bc_var <- rlang::as_function(~ 1/pull(.x, box_cox_var))
+calc_inv_folded_v <- rlang::as_function(~ 1/pull(.x, folded_v_val))
+no_weights <- NA
+
+weight_formulas <- list(no_weights,
+                        calc_inv_bc_var,
+                        calc_inv_folded_v
+) %>%  purrr::set_names("no_weights",
+                        "inv_bc_var",
+                        "inv_folded_v")
+
+# Create random effect expressions
+RE_rev <- expr((1 | ReviewerId))
+RE_study <- expr((1 | study_id))
+RE_both <- expr(!!RE_rev + !!RE_study)
+
+random_expressions <- list(
+  RE_rev,
+  RE_study,
+  RE_both
+) %>% purrr::set_names("RE_rev",
+                       "RE_study",
+                       "RE_both")
+
+# Create model fitting wrapper function
+lmer_wrap <- function(data_tbl, 
+                      random_effect, 
+                      weight_form, 
+                      ..., 
+                      env = caller_env()){
+  f <- rlang::new_formula(expr(box_cox_abs_deviation_score_estimate), 
+                          expr(PublishableAsIs + !!random_effect), 
+                          env = env)
+  
+  weights <- if ( rlang::is_na(weight_form) ) NULL else weight_form(data_tbl)
+  
+  rlang::inject(lme4::lmer(!!f,
+                           data = data_tbl,
+                           weights = weights, 
+                           ...))
+}
+
+# Fit all models
+all_models <-
+  ManyEcoEvo_results %>% 
+  ungroup %>% 
+  filter(!!!filter_args) %>% 
+  select(dataset, effects_analysis) %>%
+  hoist(.col = effects_analysis,
+        "lambda",
+        .simplify = TRUE,
+        .transform = unique) %>% 
+  mutate(model_data = map(effects_analysis, 
+                          prepare_ratings_data), 
+         .keep = "unused") %>% 
+  expand_grid(expand_grid(weight_formulas, random_expressions) %>% 
+                mutate(weight_forms = names(weight_formulas),
+                       random_effect = names(random_expressions)) %>% 
+                unite("model_spec", weight_forms, random_effect, sep = "_") ) %>% 
+  mutate(model = pmap(list(model_data, 
+                           random_expressions, 
+                           weight_formulas), 
+                      lmer_wrap), 
+         .keep = "unused") %>% 
+  mutate(singularity = map_lgl(model, 
+                               performance::check_singularity),
+         convergence = map_lgl(model, 
+                               performance::check_convergence))
+
+# Extract Parameter Estimates
+estimate_means <- 
+  all_models %>% 
+  filter(singularity == F, convergence == T) %>%
+  reframe(model = set_names(model, model_spec), 
+          results = map(model, 
+                        possibly(modelbased::estimate_means, otherwise = NULL), 
+                        at = "PublishableAsIs"),
+          results = set_names(results, dataset), dataset = dataset, model_spec = model_spec) %>% 
+  rowwise() %>% 
+  drop_na(results) # model means couldn't be estimated due to convergence issues, drop those models
+
+# evaluate and compare performance for remaining models
+model_comparison_results <-
+  all_models %>% 
+  semi_join(estimate_means, 
+            by = join_by(dataset, model_spec)) %>% 
+  group_by(dataset) %>% 
+  summarise(model = set_names(model, model_spec) %>% list, 
+            results = map(model, 
+                          performance::compare_performance, 
+                          rank = T), 
+            results = set_names(results, 
+                                unique(dataset)), 
+            .groups = "keep")
+```
+
+
+
+
 ### Model Weight Investigation Findings
 
 *weights findings*
