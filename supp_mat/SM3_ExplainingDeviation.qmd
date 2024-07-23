@@ -1741,13 +1741,36 @@ tbl_data_yi_deviation_model_params %>%
 
 As we describe in @box-weight-deviation, for models of deviation from the meta-analytic mean effect-size, we had intended to use the inverse variance of the Box-Cox transformed deviation from the meta-analytic mean as model weights. Unfortunately using our intended weights specification resulted in invalid transformed response variables for some models whereby extreme outliers were weighted more heavily (two orders of magnitude) than other effect sizes, which caused both issues in the estimated model parameters as well as convergence issues, in particular for models analysing the effect of categorical peer-review rating on deviation from the meta-analytic mean. 
 
-We systematically investigated the impact of using different weighting schemes (no weights, inverse-Box-Cox transformed,  and inverse folded variance, of the absolute deviation scores) and random-effects inclusion (effect ID, reviewer ID, or both effect ID and reviewer ID) on model convergence, singularity and other model checking metrics to aid decision-making about the appropriate weighting scheme and random-effects structure for these models.
+::: {.callout-note appearance="simple"}
+# Model Weight Calculation Details
 
-Note that the folded variance of the absolute deviation scores is calculated during the Box-Cox transformation of the deviation scores from the mean for each effect.
+We intended to use the invariance of the Box-Cox transformed deviation scores as model weights in our models of deviation from the meta-analytic mean. The variance of the Box-Cox transformation scores is calculated using the delta method ([@eq-folded-variance] and [@lst-variance-box-cox]). 
 
-```{r}
+$$
+\begin{aligned}
+\mu_{\text{folded}} &= \sigma \sqrt{\frac{2}{\pi}} \exp\left(-\frac{\mu^2}{2 \sigma^2}\right) + \mu \left(1 - 2 \times \boldsymbol{\phi}\left(-\frac{\mu}{\sigma}; 0,1\right)\right) \\
+\text{SE}_\text{folded} &= \sqrt{\mu^2 + \sigma^2 - \mu_{\text{folded}}^2} \\
+\text{VAR}_\text{folded} &= \text{SE}_\text{folded}^2 \\
+VAR_{\text{Box-Cox}} &= \text{VAR}_\text{folded} \times \left(\lambda \mu_{\text{folded}}^{\lambda - 1}\right)^2
+\end{aligned}
+$$ {#eq-folded-variance}
+
+where:
+
+- $\mu_{\text{folded}}$ is the folded mean of the deviation scores from the mean for effect $i$,
+- $\text{VAR}_\text{folded}$ is the folded variance of the deviation scores from the mean for effect $i$,
+- $\mu$ is the deviation score from the mean for effect $i$, calculated as the difference between effect size $i$ and the mean for all effects: $\bar{Z}_r - Z_{r_i}$,
+- $\sigma$ is the square root of the variance of effect $i$, $\text{VZ}_r$.
+
+Which is executed in the \function{variance_box_cox} function from the the \package{ManyEcoEvo} package, illustrated in the following code snippet:
+
+```{{r}}
 #| label: lst-variance-box-cox
 #| echo: true
+#| code-fold: false
+#| code-caption: "Function to calculate the variance of the Box-Cox transformed deviation scores."
+#| code-overflow: wrap
+#| filename: box_cox_transform.R
 
 variance_box_cox <- function(folded_mu, folded_v, lambda){
   variance_bc <- folded_v * (lambda * folded_mu^(lambda - 1))^2 # delta method
@@ -1762,29 +1785,12 @@ folded_params <- function(abs_dev_score, VZr){
   fold_v <- fold_se^2 # folded VZr
   return(list(fold_mu = fold_mu, fold_v = fold_v))
 }
-
-# library(mathml)
-# mathml::math(call("<-", quote(folded_v(abs_dev_score, VZr)), folded_v))
 ```
+:::
 
+We systematically investigated the impact of using different weighting schemes (no weights, inverse-Box-Cox transformed variance-, and inverse folded variance-, of the absolute deviation scores) and random-effects inclusion (effect ID, reviewer ID, or both effect ID and reviewer ID) on model convergence, singularity and other model checking metrics to aid decision-making about the appropriate weighting scheme and random-effects structure for these models.
 
-$$
-\begin{aligned}
-\mu_{\text{folded}} &= \sigma \sqrt{\frac{2}{\pi}} \exp\left(-\frac{\mu^2}{2 \sigma^2}\right) + \mu \left(1 - 2 \times \boldsymbol{\phi}\left(-\frac{\mu}{\sigma}; 0,1\right)\right) \\
-\text{SE}_\text{folded} &= \sqrt{\mu^2 + \sigma^2 - \mu_{\text{folded}}^2} \\
-\text{VAR}_\text{folded} &= \text{SE}_\text{folded}^2
-\end{aligned}
-$$ {#eq-folded-variance}
-
-
-where:
-
-- $\mu_{\text{folded}}$ is the folded mean of the deviation scores from the mean for effect $i$,
-- $\text{VAR}_\text{folded}$ is the folded variance of the deviation scores from the mean for effect $i$,
-- $\mu$ is the deviation score from the mean for effect $i$, calculated as the difference between effect size $i$ and the mean for all effects: $\bar{Z}_r - Z_{r_i}$,
-- $\sigma$ is the square root of the variance of effect $i$, $\text{VZ}_r$.
-
-
+### Model Weight Investigation Findings
 
 *weights findings*
 We also found that models that used the intended weights were more likely to fail to converge, and that models that used the intended weights were more likely to be singular.
