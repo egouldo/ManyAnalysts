@@ -1156,6 +1156,16 @@ yi_singularity_convergence_sorensen_mixed_mod %>%
                  singularity = "Singular Fit?",
                  convergence = "Model converged?") %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
+  tab_style(
+    style = list(
+      cell_fill(color = scales::alpha("red", 0.6)),
+      cell_text(color = "white", weight = "bold")
+    ),
+    locations = list(
+      cells_body(columns = "singularity", rows = singularity == TRUE),
+      cells_body(columns = "convergence", rows = convergence == FALSE)
+    )
+  )  %>% 
   gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
                      locations = cells_body(columns = c("singularity",
                                                         "convergence")
@@ -1169,17 +1179,7 @@ yi_singularity_convergence_sorensen_mixed_mod %>%
     }
   ) %>% 
   gt::tab_style(locations = cells_stub(rows = str_detect(dataset, "Eucalyptus")),
-                style = cell_text(style = "italic")) %>% 
-  tab_style(
-    style = list(
-      cell_fill(color = scales::alpha("red", 0.6)),
-      cell_text(color = "white", weight = "bold")
-    ),
-    locations = list(
-      cells_body(columns = "singularity", rows = singularity == TRUE),
-      cells_body(columns = "convergence", rows = convergence == FALSE)
-    )
-  ) 
+                style = cell_text(style = "italic"))
 ```
 
 ## Deviation scores as explained by the inclusion of random effects
