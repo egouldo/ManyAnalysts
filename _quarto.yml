@@ -48,6 +48,7 @@ format:
           window.MathJax = {
             loader: {
               load: ['[tex]/physics']
+              load: ['[tex]/physics'] // extensions to load
             },
             tex: {
               packages: {'[+]': ['physics']}
