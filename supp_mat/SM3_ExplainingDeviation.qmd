@@ -1934,9 +1934,72 @@ model_comparison_results <-
 ```
 
 
-
-
 ### Model Weight Investigation Findings
+
+```{r}
+#| label: tbl-weights-analysis-fit-checks
+#| tbl-cap: "Singularity and convergence checks for all combinations of model weights and random-effects structure in models of the effect of categorical peer rating on deviation from the analytic mean."
+
+all_models %>% 
+  select(dataset, model_spec, singularity, convergence) %>% 
+  separate(model_spec, into = c("model_spec_weight", 
+                                "model_spec_random_effect"), sep = "\\.") %>%
+  group_by(dataset) %>% 
+  gt::gt(rowname_col = "model_spec_weight") %>% #
+  gt::tab_stubhead(label = "Model Weight") %>%
+  gt::tab_style(
+    style = list(
+      cell_fill(color = scales::alpha("red", 0.6)),
+      cell_text(color = "white", weight = "bold")
+    ),
+    locations = list(
+      cells_body(columns = "singularity", rows = singularity == TRUE),
+      cells_body(columns = "convergence", rows = convergence == FALSE)
+    )
+  ) %>%
+  gt::tab_style(style = cell_text(style = "italic"), 
+                locations = cells_row_groups(groups = "eucalyptus")) %>% 
+  gt::opt_stylize(style = 6, color = "gray") %>% 
+  gt::cols_label(dataset = "Dataset",
+                 singularity = "Singular Fit?",
+                 convergence = "Model converged?",
+                 model_spec_random_effect = "Random Effects") %>% 
+
+  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
+                     locations = cells_body(columns = c("singularity", 
+                                                        "convergence"))) %>%
+  gt::text_transform(
+    locations = cells_stub(
+      rows = model_spec_random_effect != "RE_rev"
+    ),
+    fn = function(x){
+      paste0("")
+    }
+  ) %>% 
+  gt::text_transform(
+    locations = cells_body(columns = "model_spec_random_effect"),
+    fn = function(x){
+      str_replace(x, "RE_rev", "Reviewer ID") %>% 
+        str_replace("RE_study", "Study ID") %>% 
+        str_replace("RE_both", "Reviewer ID and Study ID")
+    }
+  ) %>% 
+gt::text_transform(
+  locations = cells_stub(),
+    fn = function(x){
+      str_replace(x, "no_weights", "None") %>% 
+        str_replace("inv_bc_var", "Inverse Box-Cox variance") %>% 
+        str_replace("inv_folded_v", "Inverse folded variance")
+    }
+) %>%   
+  gt::tab_style(
+    style = gt::cell_text(transform = "capitalize"),
+    locations = gt::cells_row_groups()
+  ) %>% 
+  gt::as_raw_html()
+```
+
+
 
 *weights findings*
 We also found that models that used the intended weights were more likely to fail to converge, and that models that used the intended weights were more likely to be singular.
