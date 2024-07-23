@@ -1,5 +1,6 @@
 project:
   type: book
+  # lib-dir: "renv/library/R-4.4/aarch64-apple-darwin20/"
   render:
      - "!internal/"
      - "!outputs/"
@@ -47,11 +48,10 @@ format:
           <script>
           window.MathJax = {
             loader: {
-              load: ['[tex]/physics']
               load: ['[tex]/physics'] // extensions to load
             },
             tex: {
-              packages: {'[+]': ['physics']}
+              packages: {'[+]': ['physics']},
             }
           };
           </script>
