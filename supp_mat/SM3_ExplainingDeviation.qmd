@@ -606,7 +606,7 @@ Zr_singularity_convergence <-
 # ----- new code showing ALL model fits not just bad fits
 
 Zr_singularity_convergence %>% 
- select(-fitted_model, -params, -exclusion_set,	-publishable_subset, -estimate_type) %>% 
+  select(-fitted_model, -params, -exclusion_set,	-publishable_subset, -estimate_type) %>% 
   arrange(dataset,
           fixed_effects,
           random_intercepts_1,
@@ -1868,7 +1868,6 @@ random_expressions <- list(
 ) %>% purrr::set_names("RE_rev",
                        "RE_study",
                        "RE_both")
-
 # Create model fitting wrapper function
 lmer_wrap <- function(data_tbl, 
                       random_effect, 
@@ -1932,6 +1931,7 @@ estimate_means <-
 # evaluate and compare performance for remaining models
 model_comparison_results <-
   all_models %>% 
+  filter(model_spec != "inv_bc_var.RE_study" | dataset != "eucalyptus") %>% #rm nearly unidentifiable model
   semi_join(estimate_means, 
             by = join_by(dataset, model_spec)) %>% 
   group_by(dataset) %>% 
@@ -1942,12 +1942,6 @@ model_comparison_results <-
             results = set_names(results, 
                                 unique(dataset)), 
             .groups = "keep")
-
-# plot performance for remaining models
-model_comparison_plots <- 
-  model_comparison_results %>% 
-  pull(results, "dataset") %>% 
-  map(plot)
 
 model_means_results <- 
   estimate_means %>% 
@@ -2036,12 +2030,14 @@ all_models %>%
 
 To check that the alternative weighting methods generated sensible parameter estimates, we generated marginal effects plots for all models that passed the convergence and singularity checks where marginal effects were estimable for both blue tit [@fig-effects-plots-BT] and *Eucalyptus* datasets [@fig-effects-plots-Euc]. 
 
-For the *Eucalyptus* dataset, rounded marginal means were all equal in both mean estimate and their standard error when the inverse Box-Cox variance was used as a weight with Study ID as the random effect because the model was nearly unidentifiable [@tbl-marginal-means-weights-analysis and @]
+Using the inverse Box-Cox transformed variance for model weights resulted in the marginal mean being pulled towards zero for both datasets, however, this was quite extreme for the *Eucalyptus* dataset [@fig-effects-plots-Euc]*A*. When the random-effect for study ID is substituted in place of the reviewer ID, the model means seem more fitting to the data, but uncertainty of estimates seemed artificially small [@fig-effects-plots-Euc]*B*. For this model, marginal means were all equal in both mean estimate and their standard error when the inverse Box-Cox variance was used as a weight with Study ID as the random effect because the model was nearly unidentifiable [@tbl-marginal-means-weights-analysis], so we eliminated this specification from further consideration. 
 
 ```{r}
 #| label: fig-effects-plots-Euc
 #| fig-cap: "Effect plots for each non-singular model that converged with estimable fixed effect group means for the *Eucalyptus* dataset."
 #| echo: false
+#| fig-width: 10
+#| fig-pos: page
 modify_plot <- function(p, .y){
   p + 
     labs(subtitle = as_label(.y), 
@@ -2057,7 +2053,9 @@ model_means_results %>%
   arrange(model_spec) %>% 
   pull(results, name = model_spec) %>% 
   map(., plot, at = "PublishableAsIs") %>% 
-  map2(., names(.), modify_plot)
+  map2(., names(.), modify_plot) %>% 
+  patchwork::wrap_plots() +
+  patchwork::plot_annotation(tag_levels = 'A')
 ```
 ```{r}
 #| label: fig-effects-plots-BT
@@ -2077,7 +2075,9 @@ model_means_results %>%
   filter(dataset == "blue tit") %>% 
   pull(results, name = model_spec) %>% 
   map(., plot, at = "PublishableAsIs") %>% 
-  map2(., names(.), modify_plot)
+  map2(., names(.), modify_plot) %>% 
+  patchwork::wrap_plots() +
+  patchwork::plot_annotation(tag_levels = 'A')
 ```
 
 ```{r}
@@ -2129,10 +2129,90 @@ model_means_results %>%
 
 ```
 
+After discarding models based on the above criteria, we were left with a subset of models that passed convergence and singularity checks, and had estimable parameter means, all of which included reviewer ID as the only random effect. Although it seemed that the inverse Box-Cox variance resulted skewed estimated marginal means, it was unclear whether the inverse folded variance was a better alternative over using no weights, as the inverse folded variance seemed to exhibit a similar pattern in pulling the estimated marginal effects towards zero, but to a lesser extent than for the inverse Box-Cox variance. 
 
-*weights findings*
-We also found that models that used the intended weights were more likely to fail to converge, and that models that used the intended weights were more likely to be singular.
+To further aid in decision-making about which model weights to use, we compared the performance of all models that passed the convergence and singularity checks, and had estimable parameter means. We used the `performance::compare_performance` function to calculate performance metrics for this subset of models, and plotted the results using the `performance` package's in-built plotting method, which creates spider plots of normalised performance metrics for each model [@fig-model-comparison-weights-analysis]. For completeness, all model performance results of this final subset are reported in [@tbl-model-perf-metrics-weights-analysis].
+
+The performance comparison plots confirmed our suspicions that the inverse Box-Cox variance was not a suitable weight for these models, and it performed relatively poorly across all metrics for both the *Eucalyptus* and blue tit datasets [@fig-model-comparison-weights-analysis]. The inverse folded variance weighted models performed similarly poorly for both datasets across all metrics except for RMSE in the case of the blue tit dataset, and both Sigma and RMSE for the *Eucalyptus* dataset. For both datasets using no weights when there is only a random-effect for Reviewer ID resulted in the best model fit and performance across all metrics. In keeping with our informed preference of using no weights, model comparison analysis highlighted that using no weights in the models was preferable.
 
 
-*random effects*
-We found that models that included random effects for both Effect ID and Reviewer ID were more likely to fail to converge, and that models that included random effects for Reviewer ID only were more likely to be singular. 
+```{r}
+#| label: fig-model-comparison-weights-analysis
+#| fig-cap: "Model performance comparison plots for a subset of models that passed convergence and singularity checks and had estimable marginal effects. Models are compared based on their performance metrics, including $R^{2}_\\text{Conditional}$, $R^{2}_\\text{Marginal}$, Intra-Class Correlation, Root Mean Squared Error (RMSE), and the weighted AIC, corrected AIC and BIC. Values of performance are normalised across models for each metric, against the top-most performing model across all metrics. Greater distance from the centre on each metric axis indicates dominance in performance. For both blue tit and *Eucalyptus* models, all included a random effect for Reviewer ID, and weights consisted of the inverse Box-Cox variance for weights (blue line), inverse folded variance (yellow line), or none (red line)." 
+#| fig-subcap: 
+#|   - "Blue tit models."
+#|   - "*Eucalyptus* models."
+#| echo: false
+#| message: false
+#| results: 'hide'
+
+# plot performance for remaining models
+model_comparison_plots <- 
+  model_comparison_results %>% 
+  mutate(dataset = str_replace(dataset, 
+                               "eucalyptus", 
+                               "*Eucalyptus*")) %>% 
+  pull(results, "dataset") %>% 
+  map(plot)
+
+# for printing plot name on figure
+# model_comparison_plots %>% 
+#   map2(.x = ., .y = names(.), ~ .x + ggtitle(.y) #+ 
+#          theme(title = ggtext::element_markdown())
+#        )
+model_comparison_plots
+```
+
+```{r}
+#| label: tbl-model-perf-metrics-weights-analysis
+#| tbl-cap: "Model performance metric values (non-normalised) for final subset of models considered in weights analysis. All models in final subset included random-effect of Reviewer ID. Metrics included $R^{2}_\\text{Conditional}$, $R^{2}_\\text{Marginal}$, Intra-Class Correlation, Root Mean Squared Error (RMSE), and the weighted AIC, corrected AIC and BIC."
+all_models %>% 
+    filter(model_spec != "inv_bc_var.RE_study" | dataset != "eucalyptus") %>% #rm nearly unidentifiable model
+    semi_join(estimate_means, 
+              by = join_by(dataset, model_spec)) %>% 
+    group_by(dataset) %>% 
+    summarise(model = set_names(model, model_spec) %>% list, 
+              results = map(model, 
+                            performance::compare_performance, 
+                            rank = F), 
+              results = set_names(results, 
+                                  unique(dataset)), 
+              .groups = "keep") %>% 
+  unnest(results) %>%
+  select(-Model, -model) %>% 
+  gt::gt() %>% 
+  gt::cols_label(Name = "Model Weight",
+                 R2_conditional = gt::md("$$R^{2}_\\text{Conditional}$$"),
+                 R2_marginal = gt::md("$$R^{2}_\\text{Marginal}$$"),
+                 Sigma = gt::md("$$\\sigma$$"),
+                 AICc = gt::md("$$AIC_c$$"),
+                 AICc_wt = gt::md("$$AIC_c$$ weight"),
+                 BIC_wt = "BIC weight",
+                 AIC_wt = gt::md("$$AIC$$ weight")) %>%
+  gt::fmt_number(columns =  !gt::contains(c("Name", "wt")),
+                 rows = Name != "no_weights.RE_rev",
+                 decimals = 2) %>%
+  gt::fmt_scientific(columns = c(gt::contains(("R2")), "ICC", "BIC", "AIC", "RMSE", "Sigma", "AICc"),
+                     drop_trailing_zeros = T,
+                     decimals = 2) %>% 
+    gt::fmt_scientific(columns =  gt::contains(c("_wt")),  
+                     rows = Name != "no_weights.RE_rev",
+                     drop_trailing_zeros = T,
+                     decimals = 2) %>%
+  gt::opt_stylize(style = 6, color = "gray") %>%
+  gt::tab_style(
+    style = list(gt::cell_text(transform = "capitalize"), 
+                 gt::cell_text(style = "italic")),
+    locations = gt::cells_row_groups(groups = "eucalyptus")
+  ) %>% 
+  gt::fmt(
+    columns = gt::contains("Name"),
+    fns = function(x) str_remove(x, ".RE_rev") %>% 
+      str_replace("no_weights", "None") %>%
+      str_replace("inv_bc_var", "Inverse Box-Cox variance") %>%
+      str_replace("inv_folded_v", "Inverse folded variance")
+  ) %>%
+  gt::as_raw_html()
+
+```
+
