@@ -1905,6 +1905,7 @@ all_models <-
              random_effect = names(random_expressions)) %>% 
       unite("model_spec", weight_forms, random_effect, sep = ".") 
   ) %>% 
+  # hoist("model_data", weights = list("study_id", "box_cox_var", "folded_v_val"),.remove = F) %>% 
   mutate(model = pmap(list(model_data, 
                            random_expressions, 
                            weight_formulas), 
