@@ -3410,7 +3410,7 @@ model_vars <-
 
 Surprisingly, both the largest and smallest effect sizes in the blue tit analyses (@fig-forest-plots-Zr-1) come from the same analyst (anonymous ID: '`r pluck(key_vars, "TeamIdentifier", unique)`'), with identical models in terms of the explanatory variable structure, but with different response variables.
 However, the radical change in effect was primarily due to collinearity with covariates.
-The primary predictor variable (brood count after manipulation) was accompanied by several collinear variables, including the highly collinear (correlation of 0.89 (@fig-ggpairs-bt)) covariate (brood count at day 14) in both analyses.
+The primary predictor variable (brood count after manipulation) was accompanied by several collinear variables, including the highly collinear (correlation of 0.89 @fig-ggpairs-bt) covariate (brood count at day 14) in both analyses.
 In the analysis of nestling weight, brood count after manipulation showed a strong positive partial correlation with weight after controlling for brood count at day 14 and treatment category (increased, decreased, unmanipulated).
 In that same analysis, the most collinear covariate (the day 14 count) had a negative partial correlation with weight.
 In the analysis with tarsus length as the response variable, these partial correlations were almost identical in absolute magnitude, but reversed in sign and so brood count after manipulation was now the collinear predictor with the negative relationship.
