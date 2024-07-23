@@ -3556,7 +3556,6 @@ These high values of the ${R}_\text{Conditional}^{2}$ result from the fact that 
 #| label: tbl-model-summary-stats-ratings-cont
 #| echo: false
 #| message: false
-#| tbl-cap: "Summary metrics for registered models seeking to explain deviation (Box-Cox transformed absolute deviation scores) from the mean $Z_r$ as a function of Sorensen's Index, categorical peer ratings, and continuous peer ratings for blue tit and *Eucalyptus* analyses, and as a function of the presence or absence of random effects (in the analyst's models) for *Eucalyptus* analyses. We report coefficient of determination, $R^2$, for our models including only fixed effects as predictors of deviation, and we report $R^{2}_{Conditional}$, $R^{2}_{Marginal}$ and the intra-class correlation (ICC) from our models that included both fixed and random effects. For all our models, we calculated the residual standard deviation $\\sigma$ and root mean squared error (RMSE)."
 #| column: page-right
 
 modelfitstats <- ManyEcoEvo_viz %>% 
@@ -3611,6 +3610,7 @@ modelfitstats %>%
                              TRUE ~ dataset)) %>% 
   arrange(model_name, dataset) %>% 
   gt::gt() %>% 
+  gt::tab_caption(caption = gt::md("Summary metrics for registered models seeking to explain deviation (Box-Cox transformed absolute deviation scores) from the mean $Z_r$ as a function of Sorensen's Index, categorical peer ratings, and continuous peer ratings for blue tit and *Eucalyptus* analyses, and as a function of the presence or absence of random effects (in the analyst's models) for *Eucalyptus* analyses. We report coefficient of determination, $R^2$, for our models including only fixed effects as predictors of deviation, and we report $R^{2}_\\text{Conditional}$, $R^{2}_\\text{Marginal}$ and the intra-class correlation (ICC) from our models that included both fixed and random effects. For all our models, we calculated the residual standard deviation $\\sigma$ and root mean squared error (RMSE).")) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::sub_missing(missing_text = "") %>% 
   gt::fmt(columns = function(x) rlang::is_bare_numeric(x),
@@ -3623,13 +3623,13 @@ modelfitstats %>%
                  nobs = "$$N_\\text{Obs.}$$") %>% 
   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
                                        columns = dataset),
-                style = cell_text(style = "italic"))
+                style = cell_text(style = "italic")) %>% 
+  gt::as_raw_html()
 ```
-
 
 ```{r}
 #| label: tbl-deviation-rating-estimates 
-#| tbl-cap: "Parameter estimates from models of Box-Cox transformed deviation scores as a function of continuous and categorical peer ratings, Sorensen scores, and the inclusion of random effects. Standard Errors (SE), 95$\\%$ confidence intervals (95$\\%$ CI) are reported for all estimates, while t values, degrees of freedom and p-values are presented for fixed-effects. Note that positive parameter estimates mean that as the predictor variable increases, so does the absolute value of the deviation from the meta-analytic mean."
+#| tbl-cap: "Parameter estimates from models of Box-Cox transformed deviation scores as a function of continuous and categorical peer ratings, Sorensen scores, and the inclusion of random effects. Standard Errors (SE), 95% confidence intervals (95% CI) are reported for all estimates, while t values, degrees of freedom and p-values are presented for fixed-effects. Note that positive parameter estimates mean that as the predictor variable increases, so does the absolute value of the deviation from the meta-analytic mean."
 #| echo: false
 #| message: false
 
