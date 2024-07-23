@@ -1394,8 +1394,8 @@ multivar_performance_tidy %>%
   gt::fmt(columns = function(x) rlang::is_bare_numeric(x),
           fns = function(x) round(x, 2)) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
-  gt::cols_label(R2_conditional = gt::md("$$R^{2}_{Conditional}$$"),
-                 R2_marginal = gt::md("$$R^{2}_{Marginal}$$"),
+  gt::cols_label(R2_conditional = gt::md("$$R^{2}_\\text{Conditional}$$"),
+                 R2_marginal = gt::md("$$R^{2}_\\text{Marginal}$$"),
                  Sigma = gt::md("$$\\sigma$$"),
                  dataset = "Dataset") %>% 
   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
@@ -1608,8 +1608,8 @@ yi_multivar_singularity_convergence %>%
   gt::fmt(columns = function(x) rlang::is_bare_numeric(x),
           fns = function(x) round(x, 3)) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
-  gt::cols_label(R2_conditional = gt::md("$$R^{2}_{Conditional}$$"),
-                 R2_marginal = gt::md("$$R^{2}_{Marginal}$$"),
+  gt::cols_label(R2_conditional = gt::md("$$R^{2}_\\text{Conditional}$$"),
+                 R2_marginal = gt::md("$$R^{2}_\\text{Marginal}$$"),
                  Sigma = gt::md("$$\\sigma$$"),
                  dataset = "Dataset",
                  nobs = gt::md("$N_{Obs}$")) %>% 
@@ -1726,8 +1726,8 @@ tbl_data_yi_deviation_model_params %>%
           fns = function(x) format(x, digits = 3)) %>% 
   gt::cols_label(dataset = "Dataset",
                  R2 = gt::md("$$R^2$$"),
-                 R2_conditional = "$$R^{2}_{Conditional}$$",
-                 R2_marginal = "$$R^{2}_{Marginal}$$",
+                 R2_conditional = "$$R^{2}_\\text{Conditional}$$",
+                 R2_marginal = "$$R^{2}_\\text{Marginal}$$",
                  Sigma = "$$\\sigma$$",
                  nobs = "$$N_{Obs.}$$",
                  estimate_type = "Prediction Scenario") %>% 
