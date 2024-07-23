@@ -1762,7 +1762,7 @@ Note that the folded variance of the absolute deviation scores is calculated dur
 #| echo: true
 
 variance_box_cox <- function(folded_mu, folded_v, lambda){
-  variance_bc <- folded_v*(lambda*folded_mu^(lambda-1))^2 # delta method
+  variance_bc <- folded_v * (lambda * folded_mu^(lambda - 1))^2 # delta method
   return(variance_bc)
 }
 
