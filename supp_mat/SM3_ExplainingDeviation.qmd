@@ -648,7 +648,15 @@ Zr_singularity_convergence %>%
                 style = cell_text(style = "italic")) %>% 
   gt::text_transform(fn = function(x) str_replace(x, "publishable_as_is", "Categorical Peer Rating") %>% 
                        str_replace(., "rate_analysis", "Continuous Peer Rating"),
-                     locations = cells_body(columns = c("fixed_effects")))
+                     locations = cells_body(columns = c("fixed_effects"))) %>% 
+  gt::text_transform(
+    locations = cells_body(
+      rows = fixed_effects != "Reviewer ID"
+    ),
+    fn = function(x){
+      paste0("")
+    }
+  )
 ```
 
 ```{r}
@@ -1894,7 +1902,7 @@ all_models <-
     expand_grid(weight_formulas, random_expressions) %>% 
       mutate(weight_forms = names(weight_formulas),
              random_effect = names(random_expressions)) %>% 
-      unite("model_spec", weight_forms, random_effect, sep = "_") 
+      unite("model_spec", weight_forms, random_effect, sep = ".") 
   ) %>% 
   mutate(model = pmap(list(model_data, 
                            random_expressions, 
