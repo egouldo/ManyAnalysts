@@ -364,7 +364,6 @@ back_transformed_predictions <-
                                 param_table = ManyEcoEvo:::analysis_data_param_tables) %>% 
   generate_yi_subsets()
 
-
 raw_mod_data_logged <- 
   back_transformed_predictions %>% 
   filter(dataset == "eucalyptus") %>%
@@ -496,7 +495,6 @@ formula_both <- workflow() %>%
   add_model(model,
             formula = box_cox_abs_deviation_score_estimate ~ publishable_as_is + (1 | study_id) + (1 | reviewer_id))
 
-
 # ---- Create DF for combinatorial model specification ----
 
 model_vars <- 
@@ -519,7 +517,6 @@ model_vars <-
 
 # ----- Run all models for all combinations of dataset, exclusion_set, and publishable_subset ----
 # And Extract 
-
 
 all_model_fits <- 
   model_vars %>% 
@@ -585,7 +582,6 @@ all_model_fits <-
          -effects_analysis,
          estimate_type) %>% 
   replace_na(list(convergence = FALSE, singularity = TRUE)) 
-
 
 # If singularity == FALSE and convergence == TRUE, but the model appears here, then that's because
 # the SD and CI's couldn't be estimated by parameters::
@@ -918,7 +914,6 @@ yi_violin_cat_plots <- yi_violin_cat_plot_data %>%
                                                "Publishable As Is"),
                                            ..3))
 
-
 library(patchwork)
 wrap_plots(yi_violin_cat_plots, ncol = 1, tag_levels = 'A', guides = 'collect')
 ```
@@ -1176,7 +1171,6 @@ yi_singularity_convergence_sorensen_mixed_mod %>%
       cells_body(columns = "convergence", rows = convergence == FALSE)
     )
   ) 
-
 ```
 
 ## Deviation scores as explained by the inclusion of random effects
@@ -1216,7 +1210,6 @@ yi_deviation_RE_plot_figcap <-
            pull(plot_names) %>% 
            paste0(paste0(paste0("**", LETTERS[1:nrow(yi_deviation_RE_plot_data)], "**", sep = ""), sep = ": "), ., collapse = ", "),
          ".")
-
 ```
 
 ```{r}
@@ -1328,7 +1321,6 @@ euc_multivar_mod_sigma <- multivar_mods %>%
 #| column: page-right
 #| tbl-cap: "Parameter estimates from models explaining Box-Cox transformed deviation scores from the mean $Z_r$ as a function of continuous and categorical peer-review ratings in multivariate analyses. Standard Errors (SE), 95% Confidence Intervals (95%CI) are reported for all estimates, while t values, degrees of freedom and p-values are presented for fixed-effects."
 
-
 multivar_mods %>% 
   select(dataset, model_params) %>% 
   unnest(model_params) %>% 
@@ -1439,7 +1431,6 @@ formula_both <- workflow() %>%
                                 study_id)) %>% 
   add_model(model,
             formula = box_cox_abs_deviation_score_estimate ~ publishable_as_is + rate_analysis + mean_diversity_index + mixed_model + (1 | study_id) + (1 | reviewer_id))
-
 
 # ---- Create DF for combinatorial model specification ----
 possibly_parameters <- possibly(parameters::parameters, otherwise = NA)
@@ -1577,9 +1568,8 @@ yi_multivar_singularity_convergence %>%
   gt::sub_missing() %>% 
   gt::cols_label_with(columns = gt::starts_with("random"),
                       fn = function(x) paste0("")) %>% 
-  gt::text_transform(fn = function(x) map(x, gt::md), locations = cells_row_groups())
-
-
+  gt::text_transform(fn = function(x) map(x, gt::md), 
+                     locations = cells_row_groups())
 ```
 
 For the blue tit analyses, models with Reviewer ID as the only random effect were the only models that converged, and that weren't singular (@tbl-yi-multivar-singularity-convergence).
@@ -1619,8 +1609,6 @@ yi_multivar_singularity_convergence %>%
                 style = cell_text(style = "italic")) %>% 
    gt::cols_hide(dataset) %>% 
   gt::as_raw_html()
-  
-
 ```
 
 ```{r}
