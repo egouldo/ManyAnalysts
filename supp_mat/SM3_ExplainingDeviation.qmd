@@ -1941,6 +1941,22 @@ model_comparison_results <-
             results = set_names(results, 
                                 unique(dataset)), 
             .groups = "keep")
+
+# plot performance for remaining models
+model_comparison_plots <- 
+  model_comparison_results %>% 
+  pull(results, "dataset") %>% 
+  map(plot)
+
+model_means_results <- 
+  estimate_means %>% 
+  left_join(model_comparison_results %>% 
+              select(-model) %>% unnest(results), 
+            by = join_by("dataset", "model_spec" == "Name")) %>%
+  mutate(label = paste(dataset, model_spec, sep = ".")) %>% 
+  arrange(dataset, desc(Performance_Score)) %>% 
+  select(Performance_Score, dataset, model_spec, results) %>% 
+  mutate(label = paste(dataset, model_spec, sep = ".")) 
 ```
 
 
