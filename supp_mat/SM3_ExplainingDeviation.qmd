@@ -2033,6 +2033,100 @@ all_models %>%
   gt::as_raw_html()
 ```
 
+To check that the alternative weighting methods generated sensible parameter estimates, we generated marginal effects plots for all models that passed the convergence and singularity checks where marginal effects were estimable for both blue tit [@fig-effects-plots-BT] and *Eucalyptus* datasets [@fig-effects-plots-Euc]. 
+
+For the *Eucalyptus* dataset, rounded marginal means were all equal in both mean estimate and their standard error when the inverse Box-Cox variance was used as a weight with Study ID as the random effect because the model was nearly unidentifiable [@tbl-marginal-means-weights-analysis and @]
+
+```{r}
+#| label: fig-effects-plots-Euc
+#| fig-cap: "Effect plots for each non-singular model that converged with estimable fixed effect group means for the *Eucalyptus* dataset."
+#| echo: false
+modify_plot <- function(p, .y){
+  p + 
+    labs(subtitle = as_label(.y), 
+         title = NULL, 
+         x = "", 
+         y = "Box-Cox transformed\nabsolute deviation from\nmeta-analytic mean") +  
+    see::theme_lucid() + 
+    theme(axis.text.x = element_text(angle = 50, hjust = 1))
+}
+
+model_means_results %>% 
+  filter(dataset == "eucalyptus") %>% 
+  arrange(model_spec) %>% 
+  pull(results, name = model_spec) %>% 
+  map(., plot, at = "PublishableAsIs") %>% 
+  map2(., names(.), modify_plot)
+```
+```{r}
+#| label: fig-effects-plots-BT
+#| fig-cap: "Effect plots for each non-singular model that converged with estimable fixed effect group means for the blue tit dataset."
+#| echo: false
+modify_plot <- function(p, .y){
+  p + 
+    labs(subtitle = as_label(.y), 
+         title = NULL, 
+         x = "", 
+         y = "Box-Cox transformed\nabsolute deviation from\nmeta-analytic mean") +  
+    see::theme_lucid() + 
+    theme(axis.text.x = element_text(angle = 50, hjust = 1))
+}
+
+model_means_results %>% 
+  filter(dataset == "blue tit") %>% 
+  pull(results, name = model_spec) %>% 
+  map(., plot, at = "PublishableAsIs") %>% 
+  map2(., names(.), modify_plot)
+```
+
+```{r}
+#| label: tbl-marginal-means-weights-analysis
+#| tbl-cap: "Marginal means estimate across weight and random effects specifications for all estimable models for both *Eucalyptus* and blue tit datasets."
+model_means_results %>% 
+  select(dataset, model_spec, results) %>% 
+  unnest(results) %>%  
+  separate(model_spec, into = c("model_spec_weight", 
+                                "model_spec_random_effect"), sep = "\\.") %>%
+  group_by(dataset) %>% 
+  gt::gt(rowname_col = "model_spec_weight") %>% #
+  gt::tab_stubhead(label = "Model Weight") %>%
+  gt::text_transform(
+    locations = cells_stub(
+      rows = str_detect(PublishableAsIs, "deeply", negate = TRUE)
+    ),
+    fn = function(x){
+      paste0("")
+    }
+  ) %>% 
+  gt::text_transform(
+    locations = cells_body(columns = "model_spec_random_effect"),
+    fn = function(x){
+      str_replace(x, "RE_rev", "Reviewer ID") %>% 
+        str_replace("RE_study", "Study ID") %>% 
+        str_replace("RE_both", "Reviewer ID and Study ID")
+    }
+  ) %>% 
+  gt::text_transform(
+    locations = cells_stub(),
+    fn = function(x){
+      str_replace(x, "no_weights", "None") %>% 
+        str_replace("inv_bc_var", "Inverse Box-Cox variance") %>% 
+        str_replace("inv_folded_v", "Inverse folded variance")
+    }
+  ) %>%   
+  gt::tab_style(
+    style = gt::cell_text(transform = "capitalize"),
+    locations = gt::cells_row_groups()
+  ) %>% 
+  gt::cols_label(model_spec_random_effect = "Random Effects",
+                 PublishableAsIs = "Peer Rating",
+                 CI_low = gt::md("95\\%CI")) %>% 
+  gt::cols_merge(columns = starts_with("CI_"), 
+                 pattern = "[{1},{2}]") %>% 
+  gt::fmt_number(columns =  c("Mean", "SE", "CI_low", "CI_high"),
+                 decimals = 2)
+
+```
 
 
 *weights findings*
