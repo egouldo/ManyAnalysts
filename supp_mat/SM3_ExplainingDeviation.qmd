@@ -1962,14 +1962,20 @@ model_means_results <-
 
 ### Model Weight Investigation Findings
 
+For the blue tit models of deviation influenced by categorical peer-review rating, no models including study ID as a random-effect were able to be properly fitted, across all model weight specifications [@tbl-weights-analysis-fit-checks]. For *Eucalyptus* models with either no weights, or inverse folded variance as weights, only models with Reviewer ID as the random-effect fitted properly. While models with either Reviewer ID or Study ID as the random-effect passed singularity and convergence fit-checks, and had estimable parameter means when the Inverse Box-Cox variance was used as a model weight [@tbl-weights-analysis-fit-checks].
+
 ```{r}
 #| label: tbl-weights-analysis-fit-checks
-#| tbl-cap: "Singularity and convergence checks for all combinations of model weights and random-effects structure in models of the effect of categorical peer rating on deviation from the analytic mean."
+#| tbl-cap: "Singularity and convergence checks for all combinations of model weights and random-effects structure in models of the effect of categorical peer rating on deviation from the analytic mean. For some models, mean estimates of parameter levels for peer-review rating were not able to be estimated. "
+#| echo: false
 
 all_models %>% 
   select(dataset, model_spec, singularity, convergence) %>% 
+  left_join(estimate_means %>% select(-model, -results) %>% 
+              mutate(estimate_means = T)) %>% 
   separate(model_spec, into = c("model_spec_weight", 
                                 "model_spec_random_effect"), sep = "\\.") %>%
+  replace_na(replace = list(estimate_means = FALSE)) %>% 
   group_by(dataset) %>% 
   gt::gt(rowname_col = "model_spec_weight") %>% #
   gt::tab_stubhead(label = "Model Weight") %>%
@@ -1980,7 +1986,8 @@ all_models %>%
     ),
     locations = list(
       cells_body(columns = "singularity", rows = singularity == TRUE),
-      cells_body(columns = "convergence", rows = convergence == FALSE)
+      cells_body(columns = "convergence", rows = convergence == FALSE),
+      cells_body(columns = "estimate_means", rows = estimate_means == FALSE)
     )
   ) %>%
   gt::tab_style(style = cell_text(style = "italic"), 
@@ -1989,11 +1996,12 @@ all_models %>%
   gt::cols_label(dataset = "Dataset",
                  singularity = "Singular Fit?",
                  convergence = "Model converged?",
-                 model_spec_random_effect = "Random Effects") %>% 
-
+                 model_spec_random_effect = "Random Effects",
+                 estimate_means = "Means Estimable?") %>% 
   gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
                      locations = cells_body(columns = c("singularity", 
-                                                        "convergence"))) %>%
+                                                        "convergence", 
+                                                        "estimate_means"))) %>%
   gt::text_transform(
     locations = cells_stub(
       rows = model_spec_random_effect != "RE_rev"
