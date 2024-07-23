@@ -619,6 +619,15 @@ Zr_singularity_convergence %>%
          dataset = case_when(dataset == "eucalyptus" ~ Hmisc::capitalize(dataset), TRUE ~ dataset)) %>% 
   group_by(dataset) %>% 
   gt::gt() %>% 
+    gt::text_transform(
+    locations = cells_body(
+    columns = fixed_effects,
+    rows = random_intercepts_1 != "Reviewer ID"
+    ),
+    fn = function(x){
+      paste0("")
+    }
+  ) %>% 
   tab_style(
     style = list(
       cell_fill(color = scales::alpha("red", 0.6)),
@@ -647,17 +656,9 @@ Zr_singularity_convergence %>%
                   cells_body(rows = str_detect(dataset, "Eucalyptus"),
                              columns = dataset),
                 style = cell_text(style = "italic")) %>% 
-  gt::text_transform(fn = function(x) str_replace(x, "publishable_as_is", "Categorical Peer Rating") %>% 
-                       str_replace(., "rate_analysis", "Continuous Peer Rating"),
-                     locations = cells_body(columns = c("fixed_effects"))) %>% 
-  gt::text_transform(
-    locations = cells_body(
-      rows = fixed_effects != "Reviewer ID"
-    ),
-    fn = function(x){
-      paste0("")
-    }
-  )
+  gt::text_transform(fn = function(x) str_replace(x, "publishable_as_is", "Categorical Peer Rating") %>% str_replace(., "rate_analysis", "Continuous Peer Rating"),
+                     locations = cells_body(columns = c("fixed_effects")))
+  
 ```
 
 ```{r}
