@@ -1782,21 +1782,19 @@ folded_params <- function(abs_dev_score, VZr){
 
 $$
 \begin{aligned}
-\text{folded}_\mu &= \sigma \sqrt{\frac{2}{\pi}} \exp\left(-\frac{\mu^2}{2 \sigma^2}\right) + \mu \left(1 - 2 \times \boldsymbol{\phi}\left(-\frac{\mu}{\sigma}; 0,1\right)\right) \\
-\text{fold_se}_\mu &= \sqrt{\mu^2 + \sigma^2 - \text{folded}_\mu^2} \\
-\text{folded}_v &= \text{folded_se}_\mu^2
+\mu_{\text{folded}} &= \sigma \sqrt{\frac{2}{\pi}} \exp\left(-\frac{\mu^2}{2 \sigma^2}\right) + \mu \left(1 - 2 \times \boldsymbol{\phi}\left(-\frac{\mu}{\sigma}; 0,1\right)\right) \\
+\text{SE}_\text{folded} &= \sqrt{\mu^2 + \sigma^2 - \mu_{\text{folded}}^2} \\
+\text{VAR}_\text{folded} &= \text{SE}_\text{folded}^2
 \end{aligned}
-$$ {#eq:folded-variance}
-
-
+$$ {#eq-folded-variance}
 
 
 where:
 
-- $\text{folded}_\mu$ is the folded mean of the deviation scores from the mean for effect $i$,
-- $\text{folded}_v$ is the folded variance of the deviation scores from the mean for effect $i$,
+- $\mu_{\text{folded}}$ is the folded mean of the deviation scores from the mean for effect $i$,
+- $\text{VAR}_\text{folded}$ is the folded variance of the deviation scores from the mean for effect $i$,
 - $\mu$ is the deviation score from the mean for effect $i$, calculated as the difference between effect size $i$ and the mean for all effects: $\bar{Z}_r - Z_{r_i}$,
-- $\sigma$ is the square root of the variance of effect $i$, $VZ_r$.
+- $\sigma$ is the square root of the variance of effect $i$, $\text{VZ}_r$.
 
 
 
