@@ -421,7 +421,8 @@ transformation_plot_data <-
   bind_rows(ManyEcoEvo_results %>%
               filter(exclusion_set == "complete", 
                      publishable_subset == "All", 
-                     collinearity_subset == "All")) %>% 
+                     collinearity_subset == "All",
+                     expertise_subset == "All")) %>% 
   select(dataset, estimate_type, effects_analysis) %>% 
   hoist(effects_analysis, "abs_deviation_score_estimate",
         "box_cox_abs_deviation_score_estimate") %>% 
