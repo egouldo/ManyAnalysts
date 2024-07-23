@@ -1755,12 +1755,14 @@ VAR_{\text{Box-Cox}} &= \text{VAR}_\text{folded} \times \left(\lambda \mu_{\text
 \end{aligned}
 $$ {#eq-folded-variance}
 
-where:
+Where:
 
 - $\mu_{\text{folded}}$ is the folded mean of the deviation scores from the mean for effect $i$,
 - $\text{VAR}_\text{folded}$ is the folded variance of the deviation scores from the mean for effect $i$,
 - $\mu$ is the deviation score from the mean for effect $i$, calculated as the difference between effect size $i$ and the mean for all effects: $\bar{Z}_r - Z_{r_i}$,
-- $\sigma$ is the square root of the variance of effect $i$, $\text{VZ}_r$.
+- $\sigma$ is the square root of the variance of effect $i$, $\text{VZ}_r$,
+- $\lambda$ is the Box-Cox transformation parameter (@fig-box-cox-transformations), and
+- $\boldsymbol{\phi}$ is the standard normal cumulative distribution function.
 
 Which is executed in the \function{variance_box_cox} function from the the \package{ManyEcoEvo} package, illustrated in the following code snippet:
 
