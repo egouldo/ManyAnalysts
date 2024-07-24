@@ -31,6 +31,15 @@ library(multilevelmod)
 library(rlang)
 
 set.seed(1234)
+
+gt_fmt_yi <- function(gt_tbl, columns, ...) {
+  gt_tbl %>% 
+    gt::fmt(!!columns, 
+            fns = function(x) str_replace(x, "y25", gt::md("$$y_{25}$$")) %>% 
+              str_replace("y50", gt::md("$$y_{50}$$")) %>%
+              str_replace("y75", gt::md("$$y_{75}$$")),
+            ...)
+}
 ```
 
 
@@ -849,6 +858,7 @@ yi_convergence_singularity %>%
       paste0("")
     }
   ) %>% 
+  gt_fmt_yi("estimate_type") %>% 
   gt::tab_style(locations = cells_stub(rows = str_detect(dataset, "Eucalyptus")),
                 style = cell_text(style = "italic")) %>% 
   tab_style(
@@ -1072,6 +1082,7 @@ ManyEcoEvo_yi_viz %>%
                                    round(x, digits = 2))) %>% 
   gt::tab_style(locations = gt::cells_stub(rows = str_detect(dataset, "Eucalyptus")),
                 style = cell_text(style = "italic")) %>% 
+  gt_fmt_yi("estimate_type") %>% 
   gt::as_raw_html()
 
 ```
@@ -1179,6 +1190,7 @@ yi_singularity_convergence_sorensen_mixed_mod %>%
       paste0("")
     }
   ) %>% 
+  gt_fmt_yi("estimate_type") %>%
   gt::tab_style(locations = cells_stub(rows = str_detect(dataset, "Eucalyptus")),
                 style = cell_text(style = "italic"))
 ```
@@ -1579,7 +1591,8 @@ yi_multivar_singularity_convergence %>%
   gt::cols_label_with(columns = gt::starts_with("random"),
                       fn = function(x) paste0("")) %>% 
   gt::text_transform(fn = function(x) map(x, gt::md), 
-                     locations = cells_row_groups())
+                     locations = cells_row_groups()) %>% 
+  gt_fmt_yi(columns = "estimate_type")
 ```
 
 For the blue tit analyses, models with Reviewer ID as the only random effect were the only models that converged, and that weren't singular (@tbl-yi-multivar-singularity-convergence).
@@ -1618,6 +1631,7 @@ yi_multivar_singularity_convergence %>%
                                        columns = dataset),
                 style = cell_text(style = "italic")) %>% 
   gt::cols_hide(dataset) %>% 
+  gt_fmt_yi(columns = "estimate_type") %>% 
   gt::as_raw_html()
 ```
 
@@ -1665,6 +1679,7 @@ yi_multivar_singularity_convergence %>%
   gt::cols_merge(columns = starts_with("CI_"), 
                  pattern = "[{1},{2}]") %>% 
   gt::cols_hide("CI")
+  gt_fmt_yi(columns = "estimate_type") %>% 
 ```
 
 ## Model Summary Metrics for out-of-sample predictions $y_i$ {#sec-yi-summary}
