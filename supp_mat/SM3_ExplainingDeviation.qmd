@@ -667,7 +667,7 @@ Zr_singularity_convergence %>%
                 style = cell_text(style = "italic")) %>% 
   gt::text_transform(fn = function(x) str_replace(x, "publishable_as_is", "Categorical Peer Rating") %>% str_replace(., "rate_analysis", "Continuous Peer Rating"),
                      locations = cells_body(columns = c("fixed_effects")))
-  
+
 ```
 
 ```{r}
