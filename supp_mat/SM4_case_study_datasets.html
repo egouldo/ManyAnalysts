@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.489">
+<meta name="generator" content="quarto-1.4.549">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -118,6 +118,7 @@ div.csl-indent {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
@@ -150,6 +151,16 @@ cookieconsent.run({
 });
 </script> 
   
+<script>
+window.MathJax = {
+  loader: {
+    load: ['[tex]/physics'] // extensions to load
+  },
+  tex: {
+    packages: {'[+]': ['physics']},
+  }
+};
+</script>
 
 
 <meta name="twitter:title" content="SM D: Correlation Matrices of Case Study Data">
@@ -264,8 +275,8 @@ cookieconsent.run({
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Pairwise-correlation plots for the <em>Eucalyptus</em> and blue tit case-study data provided to analysts are shown in <a href="#fig-ggpairs-eucalyptus" class="quarto-xref">Figure&nbsp;<span>D.1</span></a> and <a href="#fig-ggpairs-bt" class="quarto-xref">Figure&nbsp;<span>D.2</span></a>, respectively. Plots were created with R package <code>GGally</code> <span class="citation" data-cites="barret2022">(<a href="../index.html#ref-barret2022" role="doc-biblioref">Schloerke et al. 2022</a>)</span>.</p>
-<div class="cell page-columns page-full" data-hash="SM4_case_study_datasets_cache/html/fig-ggpairs-eucalyptus_c2f922d791e7f03a1dad91306408bff9">
+<p>Pairwise-correlation plots for the <em>Eucalyptus</em> and blue tit case-study data provided to analysts are shown in <a href="#fig-ggpairs-eucalyptus" class="quarto-xref">Figure&nbsp;<span>D.1</span></a> and <a href="#fig-ggpairs-bt" class="quarto-xref">Figure&nbsp;<span>D.2</span></a>, respectively. Plots were created with R package <code>GGally</code> <span class="citation" data-cites="GGally">(<a href="../index.html#ref-GGally" role="doc-biblioref">Schloerke et al. 2024</a>)</span>.</p>
+<div class="cell page-columns page-full">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ManyEcoEvo<span class="sc">::</span>euc_data <span class="sc">%&gt;%</span></span>
@@ -279,19 +290,19 @@ cookieconsent.run({
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  GGally<span class="sc">::</span><span class="fu">ggpairs</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display page-columns page-full">
-<div id="fig-ggpairs-eucalyptus" class="quarto-figure quarto-figure-center anchored page-columns page-full" width="1920">
+<div id="fig-ggpairs-eucalyptus" class="quarto-figure quarto-figure-center quarto-float anchored page-columns page-full">
 <figure class="quarto-float quarto-float-fig figure page-columns page-full">
 <div aria-describedby="fig-ggpairs-eucalyptus-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
 <img src="SM4_case_study_datasets_files/figure-html/fig-ggpairs-eucalyptus-1.png" class="img-fluid figure-img column-screen" width="1920">
 </div>
-<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-ggpairs-eucalyptus-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ggpairs-eucalyptus-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;D.1: Pairwise correllation plot for all <em>Eucalyptus</em> dataset variables except for <code>Date</code>, <code>Quadrat no</code>, <code>Easting</code>, <code>Northing</code>.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<div class="cell page-columns page-full" data-hash="SM4_case_study_datasets_cache/html/fig-ggpairs-bt_4edbfdb463dc609c528612ae90f1ea7e">
+<div class="cell page-columns page-full">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ManyEcoEvo<span class="sc">::</span>blue_tit_data <span class="sc">%&gt;%</span></span>
@@ -326,12 +337,12 @@ Figure&nbsp;D.1: Pairwise correllation plot for all <em>Eucalyptus</em> dataset 
 <span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  GGally<span class="sc">::</span><span class="fu">ggpairs</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display page-columns page-full">
-<div id="fig-ggpairs-bt" class="quarto-figure quarto-figure-center anchored page-columns page-full" width="1440">
+<div id="fig-ggpairs-bt" class="quarto-figure quarto-figure-center quarto-float anchored page-columns page-full">
 <figure class="quarto-float quarto-float-fig figure page-columns page-full">
 <div aria-describedby="fig-ggpairs-bt-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
 <img src="SM4_case_study_datasets_files/figure-html/fig-ggpairs-bt-1.png" class="img-fluid figure-img column-screen" width="1440">
 </div>
-<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-ggpairs-bt-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ggpairs-bt-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;D.2: Pairwise correlation plot of all numeric variables in blue tit case study dataset
 </figcaption>
 </figure>
@@ -341,8 +352,8 @@ Figure&nbsp;D.2: Pairwise correlation plot of all numeric variables in blue tit 
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
-<div id="ref-barret2022" class="csl-entry" role="listitem">
-Schloerke, Barret, Di Cook, Joseph Larmarange, Francois Briatte, Moritz Marbach, Edwin Thoen, Amos Elberg, and Jason Crowley. 2022. <em>GGally: Extension to ’Ggplot2’</em>.
+<div id="ref-GGally" class="csl-entry" role="listitem">
+Schloerke, Barret, Di Cook, Joseph Larmarange, Francois Briatte, Moritz Marbach, Edwin Thoen, Amos Elberg, and Jason Crowley. 2024. <em><span>GGally</span>: Extension to <span>“<span class="nocase">ggplot2</span>”</span></em>. <a href="https://ggobi.github.io/ggally/">https://ggobi.github.io/ggally/</a>.
 </div>
 </div>
 
@@ -475,38 +486,28 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
     }
     stripColumnClz(note)
-    const typesetMath = (el) => {
-      if (window.MathJax) {
-        // MathJax Typeset
-        window.MathJax.typeset([el]);
-      } else if (window.katex) {
-        // KaTeX Render
-        var mathElements = el.getElementsByClassName("math");
-        var macros = [];
-        for (var i = 0; i < mathElements.length; i++) {
-          var texText = mathElements[i].firstChild;
-          if (mathElements[i].tagName == "SPAN") {
-            window.katex.render(texText.data, mathElements[i], {
-              displayMode: mathElements[i].classList.contains('display'),
-              throwOnError: false,
-              macros: macros,
-              fleqn: false
-            });
-          }
-        }
-      }
-    }
     if (id === null || id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
       if (note.children && note.children.length > 2) {
-        for (let i = 0; i < 2; i++) {
-          container.appendChild(note.children[i].cloneNode(true));
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
         }
-        typesetMath(container);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
         return container.innerHTML
       } else {
-        typesetMath(note);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
         return note.innerHTML;
       }
     } else {
@@ -515,8 +516,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (anchorLink) {
         anchorLink.remove();
       }
-      typesetMath(note);
-      return note.innerHTML;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
     }
   }
   for (var i=0; i<xrefs.length; i++) {

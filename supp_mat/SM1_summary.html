@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.489">
+<meta name="generator" content="quarto-1.4.549">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -121,6 +121,7 @@ div.csl-indent {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
@@ -153,16 +154,53 @@ cookieconsent.run({
 });
 </script> 
   
+<script>
+window.MathJax = {
+  loader: {
+    load: ['[tex]/physics'] // extensions to load
+  },
+  tex: {
+    packages: {'[+]': ['physics']},
+  }
+};
+</script>
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta name="twitter:title" content="SM A: Summarising Variation Among Analysis Specifications">
 <meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
 
-<body class="nav-sidebar floating fullcontent">
+<body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -237,7 +275,25 @@ cookieconsent.run({
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#summary-statistics" id="toc-summary-statistics" class="nav-link active" data-scroll-target="#summary-statistics"><span class="header-section-number">A.1</span> Summary Statistics</a>
+  <ul class="collapse">
+  <li><a href="#number-of-analyses-of-different-types" id="toc-number-of-analyses-of-different-types" class="nav-link" data-scroll-target="#number-of-analyses-of-different-types"><span class="header-section-number">A.1.1</span> Number of analyses of different types</a></li>
+  <li><a href="#model-composition" id="toc-model-composition" class="nav-link" data-scroll-target="#model-composition"><span class="header-section-number">A.1.2</span> Model composition</a></li>
+  <li><a href="#choice-of-variables" id="toc-choice-of-variables" class="nav-link" data-scroll-target="#choice-of-variables"><span class="header-section-number">A.1.3</span> Choice of variables</a></li>
+  </ul></li>
+  <li><a href="#effect-size-specification-analysis" id="toc-effect-size-specification-analysis" class="nav-link" data-scroll-target="#effect-size-specification-analysis"><span class="header-section-number">A.2</span> Effect Size Specification Analysis</a>
+  <ul class="collapse">
+  <li><a href="#blue-tit" id="toc-blue-tit" class="nav-link" data-scroll-target="#blue-tit"><span class="header-section-number">A.2.1</span> Blue tit</a></li>
+  <li><a href="#eucalyptus" id="toc-eucalyptus" class="nav-link" data-scroll-target="#eucalyptus"><span class="header-section-number">A.2.2</span> <em>Eucalyptus</em></a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content page-columns page-full" id="quarto-document-content">
 
@@ -293,37 +349,39 @@ cookieconsent.run({
 <h2 data-number="A.1" class="anchored" data-anchor-id="summary-statistics"><span class="header-section-number">A.1</span> Summary Statistics</h2>
 <section id="number-of-analyses-of-different-types" class="level3" data-number="A.1.1">
 <h3 data-number="A.1.1" class="anchored" data-anchor-id="number-of-analyses-of-different-types"><span class="header-section-number">A.1.1</span> Number of analyses of different types</h3>
-<p>As described in the summary statistics section of the manuscript, 63 teams submitted 132 <span class="math inline">\(Z_r\)</span> model estimates and 43 teams submitted 65 out of sample predictions for the blue tit dataset. Similarly, 40 submitted 79 <span class="math inline">\(Z_r\)</span> model estimates and 14 teams submitted 24 out of sample predictions for the <em>Eucalytpus</em> dataset. The majority of the blue tit analyses specified normal error distributions and were non-Bayesian mixed effects models. Analyses of the <em>Eucalyptus</em> dataset rarely specified normal error distributions, likely because the response variable was in the form of counts. Mixed effects models were also common for <em>Eucalytpus</em> analyses (<a href="#tbl-Table1" class="quarto-xref">Table&nbsp;<span>A.1</span></a>).</p>
+<p>As described in the summary statistics section of the manuscript, 63 teams submitted 131 <span class="math inline">\(Z_r\)</span> model estimates and 43 teams submitted 64 <span class="math inline">\(y_i\)</span> predictions for the blue tit dataset. Similarly, 40 submitted 79 <span class="math inline">\(Z_r\)</span> model estimates and 14 teams submitted 24 <span class="math inline">\(y_i\)</span> predictions for the <em>Eucalytpus</em> dataset. The majority of the blue tit analyses specified normal error distributions and were non-Bayesian mixed effects models. Analyses of the <em>Eucalyptus</em> dataset rarely specified normal error distributions, likely because the response variable was in the form of counts. Mixed effects models were also common for <em>Eucalytpus</em> analyses (<a href="#tbl-Table1" class="quarto-xref">Table&nbsp;<span>A.1</span></a>).</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Table1 <span class="sc">%&gt;%</span> </span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">str_remove</span>(., <span class="st">"sum_"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(dataset) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>(<span class="at">rowname_col =</span> <span class="st">"subset"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label</span>(<span class="at">dataset =</span> <span class="st">"dataset"</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">subset =</span> <span class="st">"Subset"</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">totalanalyses =</span> <span class="st">"No. Analyses"</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">teams =</span> <span class="st">"No. Teams"</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">linear =</span> <span class="st">"Normal Distribution"</span>,</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">mixed =</span> <span class="st">"Mixed Effect"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"effects"</span>), </span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$Z_r$$"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"predictions"</span>), </span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$y_i$$"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>     gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"all"</span>), </span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"All analyses"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">opt_stylize</span>(<span class="at">style =</span> <span class="dv">6</span>, <span class="at">color =</span> <span class="st">"gray"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">text_transform</span>(<span class="at">fn =</span> <span class="cf">function</span>(x) <span class="fu">ifelse</span>(x <span class="sc">==</span> <span class="st">"eucalyptus"</span>, </span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>                                             gt<span class="sc">::</span><span class="fu">md</span>(<span class="fu">paste</span>(<span class="st">"*Eucalyptus*"</span>)), x),</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                 <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_row_groups</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">text_transform</span>(<span class="at">fn =</span> <span class="cf">function</span>(x) <span class="fu">map</span>(x, gt<span class="sc">::</span>md), </span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>                     <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_row_groups</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">as_raw_html</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">subset =</span> subset_name) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">str_remove</span>(., <span class="st">"sum_"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(dataset) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>(<span class="at">rowname_col =</span> <span class="st">"subset"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label</span>(<span class="at">dataset =</span> <span class="st">"dataset"</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">subset =</span> <span class="st">"Subset"</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">totalanalyses =</span> <span class="st">"No. Analyses"</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">teams =</span> <span class="st">"No. Teams"</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">linear =</span> <span class="st">"Normal Distribution"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">mixed =</span> <span class="st">"Mixed Effect"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"effects"</span>), </span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$Z_r$$"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"predictions"</span>), </span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$y_i$$"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"all"</span>), </span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"All analyses"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">opt_stylize</span>(<span class="at">style =</span> <span class="dv">6</span>, <span class="at">color =</span> <span class="st">"gray"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">text_transform</span>(<span class="at">fn =</span> <span class="cf">function</span>(x) <span class="fu">ifelse</span>(x <span class="sc">==</span> <span class="st">"eucalyptus"</span>, </span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                                             gt<span class="sc">::</span><span class="fu">md</span>(<span class="fu">paste</span>(<span class="st">"*Eucalyptus*"</span>)), x),</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>                     <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_row_groups</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">text_transform</span>(<span class="at">fn =</span> <span class="cf">function</span>(x) <span class="fu">map</span>(x, gt<span class="sc">::</span>md), </span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>                     <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_row_groups</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_move</span>(teams,<span class="at">after =</span> totalanalyses) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">as_raw_html</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div id="tbl-Table1" class="cell anchored">
+<div id="tbl-Table1" class="cell quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="table quarto-float-caption quarto-float-tbl" id="tbl-Table1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-Table1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Table&nbsp;A.1: Summary of the number of anaysis teams, total analyses, models with normal error distributions, mixed effects models, and models developed with Bayesian statistical methods for effect size analyses only (<span class="math inline">\(Z_r\)</span>) and out-of-sample prediction only (<span class="math inline">\(y_i\)</span>).
 </figcaption>
 <div aria-describedby="tbl-Table1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -331,7 +389,7 @@ Table&nbsp;A.1: Summary of the number of anaysis teams, total analyses, models w
 <div id="pzveloiefp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
-<table class="gt_table cell table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" data-bgcolor="#FFFFFF">
+<table class="gt_table do-not-create-environment cell table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" data-bgcolor="#FFFFFF">
 <thead style="border-style: none;">
 <tr class="header gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #5F5F5F; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #5F5F5F; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
 <th class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col" style="text-align: left; border-style: none; color: #FFFFFF; background-color: #5F5F5F; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden;" data-bgcolor="#5F5F5F" data-valign="bottom"></th>
@@ -348,18 +406,18 @@ Table&nbsp;A.1: Summary of the number of anaysis teams, total analyses, models w
 </tr>
 <tr class="even gt_row_group_first" style="border-style: none;">
 <td id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: left; border-style: none; padding-top: 8px; padding-bottom: 8px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #D5D5D5; font-size: 100%; font-weight: initial; text-transform: inherit; border-right-style: solid; border-right-width: 2px; border-right-color: #D5D5D5; padding-left: 5px; padding-right: 5px; border-top-width: 2px;" data-valign="middle" data-bgcolor="#D5D5D5">$$Z_r$$</td>
-<td class="gt_row gt_right" headers="blue tit stub_1_1 totalanalyses" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">132</td>
+<td class="gt_row gt_right" headers="blue tit stub_1_1 totalanalyses" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">131</td>
 <td class="gt_row gt_right" headers="blue tit stub_1_1 teams" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">63</td>
-<td class="gt_row gt_right" headers="blue tit stub_1_1 linear" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">125</td>
-<td class="gt_row gt_right" headers="blue tit stub_1_1 mixed" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">129</td>
+<td class="gt_row gt_right" headers="blue tit stub_1_1 linear" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">124</td>
+<td class="gt_row gt_right" headers="blue tit stub_1_1 mixed" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">128</td>
 <td class="gt_row gt_right" headers="blue tit stub_1_1 Bayesian" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">10</td>
 </tr>
 <tr class="odd" style="border-style: none;">
 <td id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: left; border-style: none; padding-top: 8px; padding-bottom: 8px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #D5D5D5; font-size: 100%; font-weight: initial; text-transform: inherit; border-right-style: solid; border-right-width: 2px; border-right-color: #D5D5D5; padding-left: 5px; padding-right: 5px;" data-valign="middle" data-bgcolor="#D5D5D5">$$y_i$$</td>
-<td class="gt_row gt_right gt_striped" headers="blue tit stub_1_2 totalanalyses" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">65</td>
+<td class="gt_row gt_right gt_striped" headers="blue tit stub_1_2 totalanalyses" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">64</td>
 <td class="gt_row gt_right gt_striped" headers="blue tit stub_1_2 teams" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">43</td>
-<td class="gt_row gt_right gt_striped" headers="blue tit stub_1_2 linear" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">60</td>
-<td class="gt_row gt_right gt_striped" headers="blue tit stub_1_2 mixed" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">64</td>
+<td class="gt_row gt_right gt_striped" headers="blue tit stub_1_2 linear" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">59</td>
+<td class="gt_row gt_right gt_striped" headers="blue tit stub_1_2 mixed" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">63</td>
 <td class="gt_row gt_right gt_striped" headers="blue tit stub_1_2 Bayesian" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">10</td>
 </tr>
 <tr class="even gt_group_heading_row" style="border-style: none;">
@@ -393,49 +451,52 @@ Table&nbsp;A.1: Summary of the number of anaysis teams, total analyses, models w
 </section>
 <section id="model-composition" class="level3" data-number="A.1.2">
 <h3 data-number="A.1.2" class="anchored" data-anchor-id="model-composition"><span class="header-section-number">A.1.2</span> Model composition</h3>
-<p>The composition of models varied substantially (<a href="#tbl-Table2" class="quarto-xref">Table&nbsp;<span>A.2</span></a>) in regards to the number of fixed and random effects, interaction terms and the number of data points used. For the blue tit dataset, models used up to 19 fixed effects, 12 random effects, and 10 interaction terms and had sample sizes ranging from 76 to 3720 For the Eucalyptus dataset models had up to 13 fixed effects, 4 random effects, 5 interaction terms and sample sizes ranging from 18 to 351.</p>
+<p>The composition of models varied substantially (<a href="#tbl-Table2" class="quarto-xref">Table&nbsp;<span>A.2</span></a>) in regards to the number of fixed and random effects, interaction terms and the number of data points used. For the blue tit dataset, models used up to 19 fixed effects, 12 random effects, and 10 interaction terms and had sample sizes ranging from 76 to 3720. For the <em>Eucalyptus</em> dataset models had up to 13 fixed effects, 4 random effects, 5 interaction terms and sample sizes ranging from 18 to 351.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Table2 <span class="sc">%&gt;%</span> </span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">SD =</span> sd) <span class="sc">%&gt;%</span>   </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">SD =</span> sd, <span class="at">subset =</span> subset_name) <span class="sc">%&gt;%</span>   </span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(variable) <span class="sc">%&gt;%</span> </span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> dataset,</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_sep =</span> <span class="st">"."</span>,</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> <span class="fu">c</span>(mean, SD, min, max)</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>(<span class="at">rowname_col =</span> <span class="st">"subset"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a> gt<span class="sc">::</span><span class="fu">tab_spanner_delim</span>(<span class="at">delim =</span> <span class="st">"."</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    gt<span class="sc">::</span><span class="fu">fmt_scientific</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="fu">contains</span>(<span class="st">"mean"</span>), <span class="fu">contains</span>(<span class="st">"SD"</span>)),</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                     <span class="at">decimals =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>   gt<span class="sc">::</span><span class="fu">cols_label_with</span>(<span class="at">fn =</span> Hmisc<span class="sc">::</span>capitalize) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    gt<span class="sc">::</span><span class="fu">tab_style</span>(</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">style =</span> gt<span class="sc">::</span><span class="fu">cell_text</span>(<span class="at">transform =</span> <span class="st">"capitalize"</span>),</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_column_spanners</span>()</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>   gt<span class="sc">::</span><span class="fu">cols_label_with</span>(<span class="fu">c</span>(<span class="fu">contains</span>(<span class="st">"Eucalyptus"</span>)), </span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>                       <span class="at">fn =</span> <span class="sc">~</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="fu">paste0</span>(<span class="st">"*"</span>,.x, <span class="st">"*"</span>))) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"effects"</span>), </span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$Z_r$$"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>   gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"predictions"</span>), </span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>                  <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$y_i$$"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>     gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"all"</span>), </span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>                  <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"All analyses"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">opt_stylize</span>(<span class="at">style =</span> <span class="dv">6</span>, <span class="at">color =</span> <span class="st">"gray"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">as_raw_html</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">variable =</span> <span class="fu">case_when</span>(variable <span class="sc">==</span> <span class="st">"samplesize"</span> <span class="sc">~</span> <span class="st">"*N*"</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                              <span class="cn">TRUE</span> <span class="sc">~</span> variable)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>(<span class="at">rowname_col =</span> <span class="st">"subset"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">row_group_order</span>(<span class="at">groups =</span> <span class="fu">c</span>(<span class="st">"fixed"</span>, <span class="st">"random"</span>, <span class="st">"interactions"</span>, <span class="st">"*N*"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_spanner_delim</span>(<span class="at">delim =</span> <span class="st">"."</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">fmt_scientific</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="fu">contains</span>(<span class="st">"mean"</span>), <span class="fu">contains</span>(<span class="st">"SD"</span>)),</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>                     <span class="at">decimals =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label_with</span>(<span class="at">fn =</span> Hmisc<span class="sc">::</span>capitalize) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_style</span>(</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">style =</span> gt<span class="sc">::</span><span class="fu">cell_text</span>(<span class="at">transform =</span> <span class="st">"capitalize"</span>),</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_column_spanners</span>()</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label_with</span>(<span class="fu">c</span>(<span class="fu">contains</span>(<span class="st">"Eucalyptus"</span>)), </span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>                      <span class="at">fn =</span> <span class="sc">~</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="fu">paste0</span>(<span class="st">"*"</span>,.x, <span class="st">"*"</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"effects"</span>), </span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$Z_r$$"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"predictions"</span>), </span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$y_i$$"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"all"</span>), </span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"All analyses"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">opt_stylize</span>(<span class="at">style =</span> <span class="dv">6</span>, <span class="at">color =</span> <span class="st">"gray"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">as_raw_html</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div id="tbl-Table2" class="cell anchored">
+<div id="tbl-Table2" class="cell quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="table quarto-float-caption quarto-float-tbl" id="tbl-Table2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-Table2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Table&nbsp;A.2: Mean, standard deviation and range of number of fixed and random variables and interaction terms used in models and sample size used. Repeated for effect size analyses only (<span class="math inline">\(Z_r\)</span>) and out-of-sample prediction only (<span class="math inline">\(y_i\)</span>).
 </figcaption>
 <div aria-describedby="tbl-Table2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="dbgvzfontn" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="wisvdhjkbu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
-<table class="gt_table cell table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" data-bgcolor="#FFFFFF">
+<table class="gt_table do-not-create-environment cell table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" data-bgcolor="#FFFFFF">
 <thead style="border-style: none;">
 <tr class="header gt_col_headings gt_spanner_row" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #5F5F5F; border-bottom-width: 2px; border-bottom-color: #5F5F5F; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; border-bottom-style: hidden;">
 <th rowspan="2" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col" style="text-align: left; border-style: none; color: #FFFFFF; background-color: #5F5F5F; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden;" data-bgcolor="#5F5F5F" data-valign="bottom"></th>
@@ -482,79 +543,79 @@ Table&nbsp;A.2: Mean, standard deviation and range of number of fixed and random
 <td class="gt_row gt_right gt_striped" headers="fixed stub_1_2 max.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">13</td>
 </tr>
 <tr class="even gt_group_heading_row" style="border-style: none;">
-<td colspan="9" id="interactions" class="gt_group_heading" data-quarto-table-cell-role="th" scope="colgroup" style="text-align: left; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-top-style: solid; border-top-width: 2px; border-top-color: #5F5F5F; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #5F5F5F; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle;" data-bgcolor="#FFFFFF" data-valign="middle">interactions</td>
+<td colspan="9" id="random" class="gt_group_heading" data-quarto-table-cell-role="th" scope="colgroup" style="text-align: left; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-top-style: solid; border-top-width: 2px; border-top-color: #5F5F5F; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #5F5F5F; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle;" data-bgcolor="#FFFFFF" data-valign="middle">random</td>
 </tr>
 <tr class="odd gt_row_group_first" style="border-style: none;">
 <td id="stub_1_3" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: left; border-style: none; padding-top: 8px; padding-bottom: 8px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #D5D5D5; font-size: 100%; font-weight: initial; text-transform: inherit; border-right-style: solid; border-right-width: 2px; border-right-color: #D5D5D5; padding-left: 5px; padding-right: 5px; border-top-width: 2px;" data-valign="middle" data-bgcolor="#D5D5D5">$$Z_r$$</td>
-<td class="gt_row gt_right" headers="interactions stub_1_3 mean.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">4.40 × 10<sup>−1</sup></td>
-<td class="gt_row gt_right" headers="interactions stub_1_3 mean.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">1.60 × 10<sup>−1</sup></td>
-<td class="gt_row gt_right" headers="interactions stub_1_3 SD.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">1.11</td>
-<td class="gt_row gt_right" headers="interactions stub_1_3 SD.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">6.50 × 10<sup>−1</sup></td>
-<td class="gt_row gt_right" headers="interactions stub_1_3 min.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">0</td>
-<td class="gt_row gt_right" headers="interactions stub_1_3 min.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">0</td>
-<td class="gt_row gt_right" headers="interactions stub_1_3 max.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">10</td>
-<td class="gt_row gt_right" headers="interactions stub_1_3 max.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">5</td>
+<td class="gt_row gt_right" headers="random stub_1_3 mean.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">3.53</td>
+<td class="gt_row gt_right" headers="random stub_1_3 mean.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">1.41</td>
+<td class="gt_row gt_right" headers="random stub_1_3 SD.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">2.08</td>
+<td class="gt_row gt_right" headers="random stub_1_3 SD.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">1.09</td>
+<td class="gt_row gt_right" headers="random stub_1_3 min.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">0</td>
+<td class="gt_row gt_right" headers="random stub_1_3 min.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">0</td>
+<td class="gt_row gt_right" headers="random stub_1_3 max.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">10</td>
+<td class="gt_row gt_right" headers="random stub_1_3 max.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">4</td>
 </tr>
 <tr class="even" style="border-style: none;">
 <td id="stub_1_4" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: left; border-style: none; padding-top: 8px; padding-bottom: 8px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #D5D5D5; font-size: 100%; font-weight: initial; text-transform: inherit; border-right-style: solid; border-right-width: 2px; border-right-color: #D5D5D5; padding-left: 5px; padding-right: 5px;" data-valign="middle" data-bgcolor="#D5D5D5">$$y_i$$</td>
-<td class="gt_row gt_right gt_striped" headers="interactions stub_1_4 mean.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">2.80 × 10<sup>−1</sup></td>
-<td class="gt_row gt_right gt_striped" headers="interactions stub_1_4 mean.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">1.70 × 10<sup>−1</sup></td>
-<td class="gt_row gt_right gt_striped" headers="interactions stub_1_4 SD.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">6.30 × 10<sup>−1</sup></td>
-<td class="gt_row gt_right gt_striped" headers="interactions stub_1_4 SD.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">4.80 × 10<sup>−1</sup></td>
-<td class="gt_row gt_right gt_striped" headers="interactions stub_1_4 min.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">0</td>
-<td class="gt_row gt_right gt_striped" headers="interactions stub_1_4 min.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">0</td>
-<td class="gt_row gt_right gt_striped" headers="interactions stub_1_4 max.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">3</td>
-<td class="gt_row gt_right gt_striped" headers="interactions stub_1_4 max.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">2</td>
+<td class="gt_row gt_right gt_striped" headers="random stub_1_4 mean.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">4.42</td>
+<td class="gt_row gt_right gt_striped" headers="random stub_1_4 mean.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">9.60 × 10<sup>−1</sup></td>
+<td class="gt_row gt_right gt_striped" headers="random stub_1_4 SD.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">2.78</td>
+<td class="gt_row gt_right gt_striped" headers="random stub_1_4 SD.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">8.10 × 10<sup>−1</sup></td>
+<td class="gt_row gt_right gt_striped" headers="random stub_1_4 min.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">1</td>
+<td class="gt_row gt_right gt_striped" headers="random stub_1_4 min.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">0</td>
+<td class="gt_row gt_right gt_striped" headers="random stub_1_4 max.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">12</td>
+<td class="gt_row gt_right gt_striped" headers="random stub_1_4 max.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">3</td>
 </tr>
 <tr class="odd gt_group_heading_row" style="border-style: none;">
-<td colspan="9" id="random" class="gt_group_heading" data-quarto-table-cell-role="th" scope="colgroup" style="text-align: left; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-top-style: solid; border-top-width: 2px; border-top-color: #5F5F5F; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #5F5F5F; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle;" data-bgcolor="#FFFFFF" data-valign="middle">random</td>
+<td colspan="9" id="interactions" class="gt_group_heading" data-quarto-table-cell-role="th" scope="colgroup" style="text-align: left; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-top-style: solid; border-top-width: 2px; border-top-color: #5F5F5F; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #5F5F5F; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle;" data-bgcolor="#FFFFFF" data-valign="middle">interactions</td>
 </tr>
 <tr class="even gt_row_group_first" style="border-style: none;">
 <td id="stub_1_5" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: left; border-style: none; padding-top: 8px; padding-bottom: 8px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #D5D5D5; font-size: 100%; font-weight: initial; text-transform: inherit; border-right-style: solid; border-right-width: 2px; border-right-color: #D5D5D5; padding-left: 5px; padding-right: 5px; border-top-width: 2px;" data-valign="middle" data-bgcolor="#D5D5D5">$$Z_r$$</td>
-<td class="gt_row gt_right" headers="random stub_1_5 mean.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">3.53</td>
-<td class="gt_row gt_right" headers="random stub_1_5 mean.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">1.41</td>
-<td class="gt_row gt_right" headers="random stub_1_5 SD.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">2.08</td>
-<td class="gt_row gt_right" headers="random stub_1_5 SD.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">1.09</td>
-<td class="gt_row gt_right" headers="random stub_1_5 min.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">0</td>
-<td class="gt_row gt_right" headers="random stub_1_5 min.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">0</td>
-<td class="gt_row gt_right" headers="random stub_1_5 max.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">10</td>
-<td class="gt_row gt_right" headers="random stub_1_5 max.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">4</td>
+<td class="gt_row gt_right" headers="interactions stub_1_5 mean.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">4.40 × 10<sup>−1</sup></td>
+<td class="gt_row gt_right" headers="interactions stub_1_5 mean.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">1.60 × 10<sup>−1</sup></td>
+<td class="gt_row gt_right" headers="interactions stub_1_5 SD.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">1.11</td>
+<td class="gt_row gt_right" headers="interactions stub_1_5 SD.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">6.50 × 10<sup>−1</sup></td>
+<td class="gt_row gt_right" headers="interactions stub_1_5 min.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">0</td>
+<td class="gt_row gt_right" headers="interactions stub_1_5 min.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">0</td>
+<td class="gt_row gt_right" headers="interactions stub_1_5 max.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">10</td>
+<td class="gt_row gt_right" headers="interactions stub_1_5 max.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">5</td>
 </tr>
 <tr class="odd" style="border-style: none;">
 <td id="stub_1_6" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: left; border-style: none; padding-top: 8px; padding-bottom: 8px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #D5D5D5; font-size: 100%; font-weight: initial; text-transform: inherit; border-right-style: solid; border-right-width: 2px; border-right-color: #D5D5D5; padding-left: 5px; padding-right: 5px;" data-valign="middle" data-bgcolor="#D5D5D5">$$y_i$$</td>
-<td class="gt_row gt_right gt_striped" headers="random stub_1_6 mean.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">4.42</td>
-<td class="gt_row gt_right gt_striped" headers="random stub_1_6 mean.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">9.60 × 10<sup>−1</sup></td>
-<td class="gt_row gt_right gt_striped" headers="random stub_1_6 SD.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">2.78</td>
-<td class="gt_row gt_right gt_striped" headers="random stub_1_6 SD.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">8.10 × 10<sup>−1</sup></td>
-<td class="gt_row gt_right gt_striped" headers="random stub_1_6 min.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">1</td>
-<td class="gt_row gt_right gt_striped" headers="random stub_1_6 min.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">0</td>
-<td class="gt_row gt_right gt_striped" headers="random stub_1_6 max.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">12</td>
-<td class="gt_row gt_right gt_striped" headers="random stub_1_6 max.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">3</td>
+<td class="gt_row gt_right gt_striped" headers="interactions stub_1_6 mean.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">2.80 × 10<sup>−1</sup></td>
+<td class="gt_row gt_right gt_striped" headers="interactions stub_1_6 mean.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">1.70 × 10<sup>−1</sup></td>
+<td class="gt_row gt_right gt_striped" headers="interactions stub_1_6 SD.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">6.30 × 10<sup>−1</sup></td>
+<td class="gt_row gt_right gt_striped" headers="interactions stub_1_6 SD.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">4.80 × 10<sup>−1</sup></td>
+<td class="gt_row gt_right gt_striped" headers="interactions stub_1_6 min.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">0</td>
+<td class="gt_row gt_right gt_striped" headers="interactions stub_1_6 min.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">0</td>
+<td class="gt_row gt_right gt_striped" headers="interactions stub_1_6 max.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">3</td>
+<td class="gt_row gt_right gt_striped" headers="interactions stub_1_6 max.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">2</td>
 </tr>
 <tr class="even gt_group_heading_row" style="border-style: none;">
-<td colspan="9" id="samplesize" class="gt_group_heading" data-quarto-table-cell-role="th" scope="colgroup" style="text-align: left; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-top-style: solid; border-top-width: 2px; border-top-color: #5F5F5F; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #5F5F5F; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle;" data-bgcolor="#FFFFFF" data-valign="middle">samplesize</td>
+<td colspan="9" id="*N*" class="gt_group_heading" data-quarto-table-cell-role="th" scope="colgroup" style="text-align: left; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-top-style: solid; border-top-width: 2px; border-top-color: #5F5F5F; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #5F5F5F; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle;" data-bgcolor="#FFFFFF" data-valign="middle">*N*</td>
 </tr>
 <tr class="odd gt_row_group_first" style="border-style: none;">
 <td id="stub_1_7" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: left; border-style: none; padding-top: 8px; padding-bottom: 8px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #D5D5D5; font-size: 100%; font-weight: initial; text-transform: inherit; border-right-style: solid; border-right-width: 2px; border-right-color: #D5D5D5; padding-left: 5px; padding-right: 5px; border-top-width: 2px;" data-valign="middle" data-bgcolor="#D5D5D5">$$Z_r$$</td>
-<td class="gt_row gt_right" headers="samplesize stub_1_7 mean.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">2.62 × 10<sup>3</sup></td>
-<td class="gt_row gt_right" headers="samplesize stub_1_7 mean.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">2.98 × 10<sup>2</sup></td>
-<td class="gt_row gt_right" headers="samplesize stub_1_7 SD.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">9.39 × 10<sup>2</sup></td>
-<td class="gt_row gt_right" headers="samplesize stub_1_7 SD.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">1.06 × 10<sup>2</sup></td>
-<td class="gt_row gt_right" headers="samplesize stub_1_7 min.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">76</td>
-<td class="gt_row gt_right" headers="samplesize stub_1_7 min.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">18</td>
-<td class="gt_row gt_right" headers="samplesize stub_1_7 max.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">3720</td>
-<td class="gt_row gt_right" headers="samplesize stub_1_7 max.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">351</td>
+<td class="gt_row gt_right" headers="*N* stub_1_7 mean.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">2.61 × 10<sup>3</sup></td>
+<td class="gt_row gt_right" headers="*N* stub_1_7 mean.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">2.98 × 10<sup>2</sup></td>
+<td class="gt_row gt_right" headers="*N* stub_1_7 SD.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">9.37 × 10<sup>2</sup></td>
+<td class="gt_row gt_right" headers="*N* stub_1_7 SD.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">1.06 × 10<sup>2</sup></td>
+<td class="gt_row gt_right" headers="*N* stub_1_7 min.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">76</td>
+<td class="gt_row gt_right" headers="*N* stub_1_7 min.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">18</td>
+<td class="gt_row gt_right" headers="*N* stub_1_7 max.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">3720</td>
+<td class="gt_row gt_right" headers="*N* stub_1_7 max.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums; border-top-width: 2px;" data-valign="middle">351</td>
 </tr>
 <tr class="even" style="border-style: none;">
 <td id="stub_1_8" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: left; border-style: none; padding-top: 8px; padding-bottom: 8px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #D5D5D5; font-size: 100%; font-weight: initial; text-transform: inherit; border-right-style: solid; border-right-width: 2px; border-right-color: #D5D5D5; padding-left: 5px; padding-right: 5px;" data-valign="middle" data-bgcolor="#D5D5D5">$$y_i$$</td>
-<td class="gt_row gt_right gt_striped" headers="samplesize stub_1_8 mean.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">2.84 × 10<sup>3</sup></td>
-<td class="gt_row gt_right gt_striped" headers="samplesize stub_1_8 mean.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">3.26 × 10<sup>2</sup></td>
-<td class="gt_row gt_right gt_striped" headers="samplesize stub_1_8 SD.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">7.76 × 10<sup>2</sup></td>
-<td class="gt_row gt_right gt_striped" headers="samplesize stub_1_8 SD.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">6.42 × 10<sup>1</sup></td>
-<td class="gt_row gt_right gt_striped" headers="samplesize stub_1_8 min.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">396</td>
-<td class="gt_row gt_right gt_striped" headers="samplesize stub_1_8 min.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">90</td>
-<td class="gt_row gt_right gt_striped" headers="samplesize stub_1_8 max.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">3720</td>
-<td class="gt_row gt_right gt_striped" headers="samplesize stub_1_8 max.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">350</td>
+<td class="gt_row gt_right gt_striped" headers="*N* stub_1_8 mean.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">2.82 × 10<sup>3</sup></td>
+<td class="gt_row gt_right gt_striped" headers="*N* stub_1_8 mean.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">3.26 × 10<sup>2</sup></td>
+<td class="gt_row gt_right gt_striped" headers="*N* stub_1_8 SD.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">7.73 × 10<sup>2</sup></td>
+<td class="gt_row gt_right gt_striped" headers="*N* stub_1_8 SD.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">6.42 × 10<sup>1</sup></td>
+<td class="gt_row gt_right gt_striped" headers="*N* stub_1_8 min.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">396</td>
+<td class="gt_row gt_right gt_striped" headers="*N* stub_1_8 min.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">90</td>
+<td class="gt_row gt_right gt_striped" headers="*N* stub_1_8 max.blue tit" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">3720</td>
+<td class="gt_row gt_right gt_striped" headers="*N* stub_1_8 max.eucalyptus" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D5D5D5; border-left-style: none; border-left-width: 1px; border-left-color: #D5D5D5; border-right-style: none; border-right-width: 1px; border-right-color: #D5D5D5; vertical-align: middle; overflow-x: hidden; background-color: #F4F4F4; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#F4F4F4">350</td>
 </tr>
 </tbody>
 </table>
@@ -568,13 +629,13 @@ Table&nbsp;A.2: Mean, standard deviation and range of number of fixed and random
 </section>
 <section id="choice-of-variables" class="level3" data-number="A.1.3">
 <h3 data-number="A.1.3" class="anchored" data-anchor-id="choice-of-variables"><span class="header-section-number">A.1.3</span> Choice of variables</h3>
-<p>The choice of variables also differed substantially among models (<a href="#tbl-Table3" class="quarto-xref">Table&nbsp;<span>A.3</span></a>). Considering all submitted analyses, the blue tit dataset had 52 candidate variables, which were used in a mean of 20.58 <span class="math inline">\(Z_r\)</span> analyses (range 0- 101), the <em>Eucalyptus</em> dataset had 58 candidate variables which were used in a mean of 9.07 <span class="math inline">\(Z_r\)</span> analyses (range 0-55).</p>
+<p>The choice of variables also differed substantially among analyses (<a href="#tbl-Table3" class="quarto-xref">Table&nbsp;<span>A.3</span></a>) and some analysts constructed new variables that transformed or aggregated one or more existing variables. The blue tit dataset had a total of 52 candidate variables. These variables were included in a mean of 20.5 <span class="math inline">\(Z_r\)</span> analyses (range 0- 100). The <em>Eucalyptus</em> dataset had a total of 59 candidate variables. The variables in the <em>Eucalyptus</em> dataset were included in a mean of 8.92 <span class="math inline">\(Z_r\)</span> analyses (range 0-55).</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#table 3 - summary of mean, sd and range for the number of analyses in which each variable was used</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>Table3 <span class="sc">%&gt;%</span> </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">SD =</span> sd) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">SD =</span> sd, <span class="at">subset =</span> subset_name) <span class="sc">%&gt;%</span> </span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> dataset,</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_sep =</span> <span class="st">"."</span>,</span>
@@ -582,47 +643,47 @@ Table&nbsp;A.2: Mean, standard deviation and range of number of fixed and random
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  ungroup <span class="sc">%&gt;%</span> </span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>(<span class="at">rowname_col =</span> <span class="st">"subset"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    gt<span class="sc">::</span><span class="fu">tab_spanner_delim</span>(<span class="at">delim =</span> <span class="st">"."</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    gt<span class="sc">::</span><span class="fu">fmt_scientific</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="fu">contains</span>(<span class="st">"mean"</span>), <span class="fu">contains</span>(<span class="st">"SD"</span>)),</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_spanner_delim</span>(<span class="at">delim =</span> <span class="st">"."</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">fmt_scientific</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="fu">contains</span>(<span class="st">"mean"</span>), <span class="fu">contains</span>(<span class="st">"SD"</span>)),</span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">decimals =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>   gt<span class="sc">::</span><span class="fu">cols_label_with</span>(<span class="at">fn =</span> Hmisc<span class="sc">::</span>capitalize) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>   gt<span class="sc">::</span><span class="fu">cols_label_with</span>(<span class="fu">c</span>(<span class="fu">contains</span>(<span class="st">"Eucalyptus"</span>)), <span class="at">fn =</span> <span class="sc">~</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="fu">paste0</span>(<span class="st">"*"</span>,.x, <span class="st">"*"</span>))) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"effects"</span>), </span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label_with</span>(<span class="at">fn =</span> Hmisc<span class="sc">::</span>capitalize) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label_with</span>(<span class="fu">c</span>(<span class="fu">contains</span>(<span class="st">"Eucalyptus"</span>)), <span class="at">fn =</span> <span class="sc">~</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="fu">paste0</span>(<span class="st">"*"</span>,.x, <span class="st">"*"</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"effects"</span>), </span>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$Z_r$$"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>   gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"predictions"</span>), </span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>                  <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$y_i$$"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>     gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"all"</span>), </span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>                  <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"All analyses"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"predictions"</span>), </span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$y_i$$"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">sub_values</span>(<span class="at">columns =</span> subset, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"all"</span>), </span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replacement =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"All analyses"</span>)) <span class="sc">%&gt;%</span> </span>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">opt_stylize</span>(<span class="at">style =</span> <span class="dv">6</span>, <span class="at">color =</span> <span class="st">"gray"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tab_style</span>(</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">style =</span> <span class="fu">cell_text</span>(<span class="at">transform =</span> <span class="st">"capitalize"</span>),</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_column_spanners</span>()</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_style</span>(</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">style =</span> gt<span class="sc">::</span><span class="fu">cell_text</span>(<span class="at">transform =</span> <span class="st">"capitalize"</span>),</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_column_spanners</span>()</span>
 <span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div id="tbl-Table3" class="cell anchored">
+<div id="tbl-Table3" class="cell quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="table quarto-float-caption quarto-float-tbl" id="tbl-Table3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-Table3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each variable was used, for effect size analyses only (<span class="math inline">\(Z_r\)</span>), out-of-sample prediction only (<span class="math inline">\(y_i\)</span>), using the full dataset.
 </figcaption>
 <div aria-describedby="tbl-Table3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="xdduhtxcdz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#xdduhtxcdz table {
+<div id="hzqhjovcip" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#hzqhjovcip table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#xdduhtxcdz thead, #xdduhtxcdz tbody, #xdduhtxcdz tfoot, #xdduhtxcdz tr, #xdduhtxcdz td, #xdduhtxcdz th {
+#hzqhjovcip thead, #hzqhjovcip tbody, #hzqhjovcip tfoot, #hzqhjovcip tr, #hzqhjovcip td, #hzqhjovcip th {
   border-style: none;
 }
 
-#xdduhtxcdz p {
+#hzqhjovcip p {
   margin: 0;
   padding: 0;
 }
 
-#xdduhtxcdz .gt_table {
+#hzqhjovcip .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -648,12 +709,12 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   border-left-color: #D3D3D3;
 }
 
-#xdduhtxcdz .gt_caption {
+#hzqhjovcip .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#xdduhtxcdz .gt_title {
+#hzqhjovcip .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -665,7 +726,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   border-bottom-width: 0;
 }
 
-#xdduhtxcdz .gt_subtitle {
+#hzqhjovcip .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -677,7 +738,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   border-top-width: 0;
 }
 
-#xdduhtxcdz .gt_heading {
+#hzqhjovcip .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -689,13 +750,13 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   border-right-color: #D3D3D3;
 }
 
-#xdduhtxcdz .gt_bottom_border {
+#hzqhjovcip .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #5F5F5F;
 }
 
-#xdduhtxcdz .gt_col_headings {
+#hzqhjovcip .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #5F5F5F;
@@ -710,7 +771,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   border-right-color: #D3D3D3;
 }
 
-#xdduhtxcdz .gt_col_heading {
+#hzqhjovcip .gt_col_heading {
   color: #FFFFFF;
   background-color: #5F5F5F;
   font-size: 100%;
@@ -730,7 +791,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   overflow-x: hidden;
 }
 
-#xdduhtxcdz .gt_column_spanner_outer {
+#hzqhjovcip .gt_column_spanner_outer {
   color: #FFFFFF;
   background-color: #5F5F5F;
   font-size: 100%;
@@ -742,15 +803,15 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   padding-right: 4px;
 }
 
-#xdduhtxcdz .gt_column_spanner_outer:first-child {
+#hzqhjovcip .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#xdduhtxcdz .gt_column_spanner_outer:last-child {
+#hzqhjovcip .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#xdduhtxcdz .gt_column_spanner {
+#hzqhjovcip .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #5F5F5F;
@@ -762,11 +823,11 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   width: 100%;
 }
 
-#xdduhtxcdz .gt_spanner_row {
+#hzqhjovcip .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#xdduhtxcdz .gt_group_heading {
+#hzqhjovcip .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -792,7 +853,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   text-align: left;
 }
 
-#xdduhtxcdz .gt_empty_group_heading {
+#hzqhjovcip .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -807,15 +868,15 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   vertical-align: middle;
 }
 
-#xdduhtxcdz .gt_from_md > :first-child {
+#hzqhjovcip .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#xdduhtxcdz .gt_from_md > :last-child {
+#hzqhjovcip .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#xdduhtxcdz .gt_row {
+#hzqhjovcip .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -834,7 +895,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   overflow-x: hidden;
 }
 
-#xdduhtxcdz .gt_stub {
+#hzqhjovcip .gt_stub {
   color: #333333;
   background-color: #D5D5D5;
   font-size: 100%;
@@ -847,7 +908,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   padding-right: 5px;
 }
 
-#xdduhtxcdz .gt_stub_row_group {
+#hzqhjovcip .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -861,15 +922,15 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   vertical-align: top;
 }
 
-#xdduhtxcdz .gt_row_group_first td {
+#hzqhjovcip .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#xdduhtxcdz .gt_row_group_first th {
+#hzqhjovcip .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#xdduhtxcdz .gt_summary_row {
+#hzqhjovcip .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -879,16 +940,16 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   padding-right: 5px;
 }
 
-#xdduhtxcdz .gt_first_summary_row {
+#hzqhjovcip .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #5F5F5F;
 }
 
-#xdduhtxcdz .gt_first_summary_row.thick {
+#hzqhjovcip .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#xdduhtxcdz .gt_last_summary_row {
+#hzqhjovcip .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -898,7 +959,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   border-bottom-color: #5F5F5F;
 }
 
-#xdduhtxcdz .gt_grand_summary_row {
+#hzqhjovcip .gt_grand_summary_row {
   color: #333333;
   background-color: #D5D5D5;
   text-transform: inherit;
@@ -908,7 +969,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   padding-right: 5px;
 }
 
-#xdduhtxcdz .gt_first_grand_summary_row {
+#hzqhjovcip .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -918,7 +979,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   border-top-color: #5F5F5F;
 }
 
-#xdduhtxcdz .gt_last_grand_summary_row_top {
+#hzqhjovcip .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -928,11 +989,11 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   border-bottom-color: #5F5F5F;
 }
 
-#xdduhtxcdz .gt_striped {
+#hzqhjovcip .gt_striped {
   background-color: #F4F4F4;
 }
 
-#xdduhtxcdz .gt_table_body {
+#hzqhjovcip .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #5F5F5F;
@@ -941,7 +1002,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   border-bottom-color: #5F5F5F;
 }
 
-#xdduhtxcdz .gt_footnotes {
+#hzqhjovcip .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -955,7 +1016,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   border-right-color: #D3D3D3;
 }
 
-#xdduhtxcdz .gt_footnote {
+#hzqhjovcip .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -964,7 +1025,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   padding-right: 5px;
 }
 
-#xdduhtxcdz .gt_sourcenotes {
+#hzqhjovcip .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -978,7 +1039,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   border-right-color: #D3D3D3;
 }
 
-#xdduhtxcdz .gt_sourcenote {
+#hzqhjovcip .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -986,68 +1047,68 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
   padding-right: 5px;
 }
 
-#xdduhtxcdz .gt_left {
+#hzqhjovcip .gt_left {
   text-align: left;
 }
 
-#xdduhtxcdz .gt_center {
+#hzqhjovcip .gt_center {
   text-align: center;
 }
 
-#xdduhtxcdz .gt_right {
+#hzqhjovcip .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#xdduhtxcdz .gt_font_normal {
+#hzqhjovcip .gt_font_normal {
   font-weight: normal;
 }
 
-#xdduhtxcdz .gt_font_bold {
+#hzqhjovcip .gt_font_bold {
   font-weight: bold;
 }
 
-#xdduhtxcdz .gt_font_italic {
+#hzqhjovcip .gt_font_italic {
   font-style: italic;
 }
 
-#xdduhtxcdz .gt_super {
+#hzqhjovcip .gt_super {
   font-size: 65%;
 }
 
-#xdduhtxcdz .gt_footnote_marks {
+#hzqhjovcip .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#xdduhtxcdz .gt_asterisk {
+#hzqhjovcip .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#xdduhtxcdz .gt_indent_1 {
+#hzqhjovcip .gt_indent_1 {
   text-indent: 5px;
 }
 
-#xdduhtxcdz .gt_indent_2 {
+#hzqhjovcip .gt_indent_2 {
   text-indent: 10px;
 }
 
-#xdduhtxcdz .gt_indent_3 {
+#hzqhjovcip .gt_indent_3 {
   text-indent: 15px;
 }
 
-#xdduhtxcdz .gt_indent_4 {
+#hzqhjovcip .gt_indent_4 {
   text-indent: 20px;
 }
 
-#xdduhtxcdz .gt_indent_5 {
+#hzqhjovcip .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
 
-<table class="gt_table cell table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<table class="gt_table do-not-create-environment cell table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
 <thead>
 <tr class="header gt_col_headings gt_spanner_row">
 <th rowspan="2" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"></th>
@@ -1070,24 +1131,24 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
 <tbody class="gt_table_body">
 <tr class="odd">
 <td id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">$$Z_r$$</td>
-<td class="gt_row gt_right" headers="stub_1_1 mean.blue tit">2.06 × 10<sup>1</sup></td>
-<td class="gt_row gt_right" headers="stub_1_1 mean.eucalyptus">9.07</td>
-<td class="gt_row gt_right" headers="stub_1_1 SD.blue tit">2.71 × 10<sup>1</sup></td>
+<td class="gt_row gt_right" headers="stub_1_1 mean.blue tit">2.05 × 10<sup>1</sup></td>
+<td class="gt_row gt_right" headers="stub_1_1 mean.eucalyptus">8.92</td>
+<td class="gt_row gt_right" headers="stub_1_1 SD.blue tit">2.70 × 10<sup>1</sup></td>
 <td class="gt_row gt_right" headers="stub_1_1 SD.eucalyptus">1.23 × 10<sup>1</sup></td>
 <td class="gt_row gt_right" headers="stub_1_1 min.blue tit">0</td>
 <td class="gt_row gt_right" headers="stub_1_1 min.eucalyptus">0</td>
-<td class="gt_row gt_right" headers="stub_1_1 max.blue tit">101</td>
+<td class="gt_row gt_right" headers="stub_1_1 max.blue tit">100</td>
 <td class="gt_row gt_right" headers="stub_1_1 max.eucalyptus">55</td>
 </tr>
 <tr class="even">
 <td id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">$$y_i$$</td>
-<td class="gt_row gt_right gt_striped" headers="stub_1_2 mean.blue tit">1.09 × 10<sup>1</sup></td>
-<td class="gt_row gt_right gt_striped" headers="stub_1_2 mean.eucalyptus">2.31</td>
-<td class="gt_row gt_right gt_striped" headers="stub_1_2 SD.blue tit">1.41 × 10<sup>1</sup></td>
-<td class="gt_row gt_right gt_striped" headers="stub_1_2 SD.eucalyptus">3.88</td>
+<td class="gt_row gt_right gt_striped" headers="stub_1_2 mean.blue tit">1.08 × 10<sup>1</sup></td>
+<td class="gt_row gt_right gt_striped" headers="stub_1_2 mean.eucalyptus">2.20</td>
+<td class="gt_row gt_right gt_striped" headers="stub_1_2 SD.blue tit">1.39 × 10<sup>1</sup></td>
+<td class="gt_row gt_right gt_striped" headers="stub_1_2 SD.eucalyptus">3.70</td>
 <td class="gt_row gt_right gt_striped" headers="stub_1_2 min.blue tit">0</td>
 <td class="gt_row gt_right gt_striped" headers="stub_1_2 min.eucalyptus">0</td>
-<td class="gt_row gt_right gt_striped" headers="stub_1_2 max.blue tit">54</td>
+<td class="gt_row gt_right gt_striped" headers="stub_1_2 max.blue tit">52</td>
 <td class="gt_row gt_right gt_striped" headers="stub_1_2 max.eucalyptus">17</td>
 </tr>
 </tbody>
@@ -1111,7 +1172,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># knitr::read_chunk(here::here("index.qmd"), labels = "calc_MA_mod_coefs")</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#TODO why is here??</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>coefs_MA_mod <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>( ManyEcoEvo_viz <span class="sc">%&gt;%</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                             <span class="fu">filter</span>(model_name <span class="sc">==</span> <span class="st">"MA_mod"</span>,</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                                    exclusion_set <span class="sc">==</span> <span class="st">"complete"</span>,</span>
@@ -1119,7 +1180,7 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                           ManyEcoEvo_viz <span class="sc">%&gt;%</span></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                             <span class="fu">filter</span>(model_name <span class="sc">==</span> <span class="st">"MA_mod"</span>,</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                                    exclusion_set <span class="sc">==</span> <span class="st">"complete-rm_outliers"</span>,</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                                    expertise_subset <span class="sc">==</span> <span class="st">"All"</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                                    expertise_subset <span class="sc">==</span> <span class="st">"All"</span>) <span class="co">#TODO may need to recalculate</span></span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                           ) <span class="sc">%&gt;%</span></span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hoist</span>(tidy_mod_summary) <span class="sc">%&gt;%</span></span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">starts_with</span>(<span class="st">"mod"</span>), <span class="sc">-</span><span class="fu">ends_with</span>(<span class="st">"plot"</span>), <span class="sc">-</span>estimate_type) <span class="sc">%&gt;%</span></span>
@@ -1211,12 +1272,12 @@ Table&nbsp;A.3: Mean, SD, minimum and maximum number of analyses in which each v
 <span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>                   <span class="at">axis =</span> <span class="st">"rbl"</span>,<span class="at">labels =</span> <span class="st">"AUTO"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display page-columns page-full">
-<div id="fig-specr-bt" class="quarto-figure quarto-figure-center anchored page-columns page-full" data-fig-align="center" width="1152">
+<div id="fig-specr-bt" class="quarto-figure quarto-figure-center quarto-float anchored page-columns page-full" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure page-columns page-full">
 <div aria-describedby="fig-specr-bt-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
-<img src="SM1_summary_files/figure-html/fig-specr-bt-1.png" class="img-fluid quarto-figure-center figure-img column-page-right" width="1152">
+<img src="SM1_summary_files/figure-html/fig-specr-bt-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img column-page-right" width="1152">
 </div>
-<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-specr-bt-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-specr-bt-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;A.1: <strong>A.</strong> Forest plot for blue tit analyses: standardized effect-sizes (circles) and their 95% confidence intervals are displayed for each analysis included in the meta-analysis model. The meta-analytic mean effect-size is denoted by a black diamond, with error bars also representing the 95% confidence interval. The dashed black line demarcates effect sizes of 0, whereby no effect of the test variable on the response variable is found. Blue points where Zr and its associated confidence intervals are greater than 0 indicate analyses that found a negative effect of sibling number on nestling growth. Gray coloured points have confidence intervals crossing 0, indicating no relationship between the test and response variable. Red points indicate the analysis found a positive relationship between sibling number and nestling growth. <strong>B.</strong> Analysis specification plot: for each analysis plotted in A, the corresponding combination of analysis decisions is plotted. Each decision and its alternative choices is grouped into its own facet, with the decision point described on the right of the panel, and the option shown on the left. Lines indicate the option chosen used in the corresponding point in plot A. <strong>C.</strong> Sample sizes of each analysis. Note that empty bars indicate analyst did not report sample size and sample size could not be derived by lead team.
 </figcaption>
 </figure>
@@ -1318,31 +1379,13 @@ Figure&nbsp;A.1: <strong>A.</strong> Forest plot for blue tit analyses: standard
 <span id="cb7-86"><a href="#cb7-86" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis =</span> <span class="st">"rbl"</span>,<span class="at">labels =</span> <span class="st">"AUTO"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display page-columns page-full">
-<div id="fig-specr-euc" class="quarto-figure quarto-figure-center anchored page-columns page-full" data-fig-align="center" width="1152">
+<div id="fig-specr-euc" class="quarto-figure quarto-figure-center quarto-float anchored page-columns page-full" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure page-columns page-full">
 <div aria-describedby="fig-specr-euc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
-<img src="SM1_summary_files/figure-html/fig-specr-euc-1.png" class="img-fluid quarto-figure-center figure-img column-page-right" width="1152">
+<img src="SM1_summary_files/figure-html/fig-specr-euc-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img column-page-right" width="1152">
 </div>
-<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-specr-euc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-specr-euc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;A.2: <strong>A.</strong> Forest plot for <em>Eucalyptus</em> analyses: standardized effect-sizes (circles) and their 95% confidence intervals are displayed for each analysis included in the meta-analysis model. The meta-analytic mean effect-size is denoted by a black diamond, with error bars also representing the 95% confidence interval. The dashed black line demarcates effect sizes of 0, whereby no effect of the test variable on the response variable is found. Blue points where <span class="math inline">\(Z_r\)</span> and its associated confidence intervals are greater than 0 indicate analyses that found a positive relationship of grass cover on <em>Eucalyptus</em> seedling success. Gray coloured points have confidence intervals crossing 0, indicating no relationship between the test and response variable. Red points indicate the analysis found a negative relationship between grass cover and <em>Eucalyptus seedling success</em>. <strong>B.</strong> Analysis specification plot: for each analysis plotted in A, the corresponding combination of analysis decisions is plotted. Each decision and its alternative choices is grouped into its own facet, with the decision point described on the right of the panel, and the option shown on the left. Lines indicate the option chosen used in the corresponding point in plot A. <strong>C.</strong> Sample sizes of each analysis. Note that empty bars indicate analyst did not report sample size and sample size could not be derived by lead team.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="post-hoc-analysis-exploring-the-effect-of-removing-analyses-with-poor-peer-review-ratings-on-heterogeneity" class="level3 page-columns page-full" data-number="A.2.3">
-<h3 data-number="A.2.3" class="anchored" data-anchor-id="post-hoc-analysis-exploring-the-effect-of-removing-analyses-with-poor-peer-review-ratings-on-heterogeneity"><span class="header-section-number">A.2.3</span> Post-hoc analysis: Exploring the effect of removing analyses with poor peer-review ratings on heterogeneity</h3>
-<p>The forest plots in <a href="SM2_EffectSizeAnalysis.html#fig-all-forest-plots-Zr" class="quarto-xref">Figure&nbsp;<span>B.3</span></a> compare the distributions of <span class="math inline">\(Z_r\)</span> effects from our full set of analyses with the distributions of <span class="math inline">\(Z_r\)</span> effects from our post-hoc analyses which removed either analyses that were reviewed at least once as being ‘unpublishable’ or analyses that were reviewed at least once as being ‘unpublishable’ or requiring ‘major revisions’. Removing these analyses from the blue tit data had little impact on the overall distribution of the results. For the <em>Eucalytpus</em> analyses, removing ‘unpublishable’ analyses meant dropping the extreme outlier ‘Brooklyn-2-2-1’ which made a substantial difference to the amount of observerd deviation from the meta-analytic mean.</p>
-<div class="cell page-columns page-full">
-<div class="cell-output-display page-columns page-full">
-<div id="fig-all-forest-plots-Zr" class="quarto-figure quarto-figure-center anchored page-columns page-full" width="960">
-<figure class="quarto-float quarto-float-fig figure page-columns page-full">
-<div aria-describedby="fig-all-forest-plots-Zr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
-<img src="SM1_summary_files/figure-html/fig-all-forest-plots-Zr-1.png" class="img-fluid figure-img column-body-outset-right" width="960">
-</div>
-<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-all-forest-plots-Zr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;A.3: Forest plots of meta-analytic estimated standardized effect sizes (<span class="math inline">\(Z_r\)</span>, blue circles) and their 95% confidence intervals for each effect size included in the meta-analysis model. The meta-analytic mean effect size is denoted by a black triangle and a dashed vertical line, with error bars also representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0, indicating no relationship between the test variable and the response variable. The left side of each panel shows the analysis team names (anonymous arbitrary names assigned by us), each followed by three numbers. The first number is the submission ID (some analyst teams submitted results to us on &gt;1 submission form), the second number is the analysis ID (some analyst teams included results of &gt;1 analysis in a given submission), and the third number is the effect ID (some analysts submitted values for &gt;1 effect per analysis). Thus, each row in each forest plot is uniquely identified, but it is possible to determine which effects come from which analyses and which analysis teams. The plots in the top row depict effects from analyses of blue tit data, and the bottom row plots depict effects from analyses of Eucalyptus data. The right-most plots depict all usable effect sizes. The plots on the left side exclude effects from analysis sets that received at least one rating of “unpublishable” from peer reviewers, and the plots in the middle exclude effects from analysis sets that received at least one rating of either “unpublishable” or “major revision” from peer reviewers.
 </figcaption>
 </figure>
 </div>
@@ -1487,38 +1530,28 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
     }
     stripColumnClz(note)
-    const typesetMath = (el) => {
-      if (window.MathJax) {
-        // MathJax Typeset
-        window.MathJax.typeset([el]);
-      } else if (window.katex) {
-        // KaTeX Render
-        var mathElements = el.getElementsByClassName("math");
-        var macros = [];
-        for (var i = 0; i < mathElements.length; i++) {
-          var texText = mathElements[i].firstChild;
-          if (mathElements[i].tagName == "SPAN") {
-            window.katex.render(texText.data, mathElements[i], {
-              displayMode: mathElements[i].classList.contains('display'),
-              throwOnError: false,
-              macros: macros,
-              fleqn: false
-            });
-          }
-        }
-      }
-    }
     if (id === null || id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
       if (note.children && note.children.length > 2) {
-        for (let i = 0; i < 2; i++) {
-          container.appendChild(note.children[i].cloneNode(true));
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
         }
-        typesetMath(container);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
         return container.innerHTML
       } else {
-        typesetMath(note);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
         return note.innerHTML;
       }
     } else {
@@ -1527,8 +1560,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (anchorLink) {
         anchorLink.remove();
       }
-      typesetMath(note);
-      return note.innerHTML;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
     }
   }
   for (var i=0; i<xrefs.length; i++) {

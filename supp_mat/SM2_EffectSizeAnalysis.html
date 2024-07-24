@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.489">
+<meta name="generator" content="quarto-1.4.549">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -99,6 +99,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
@@ -131,15 +132,52 @@ cookieconsent.run({
 });
 </script> 
   
+<script>
+window.MathJax = {
+  loader: {
+    load: ['[tex]/physics'] // extensions to load
+  },
+  tex: {
+    packages: {'[+]': ['physics']},
+  }
+};
+</script>
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta name="twitter:title" content="SM B: Effect Size Analysis">
 <meta name="twitter:card" content="summary">
 </head>
 
-<body class="nav-sidebar floating fullcontent">
+<body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -214,7 +252,19 @@ cookieconsent.run({
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#meta-analysis" id="toc-meta-analysis" class="nav-link active" data-scroll-target="#meta-analysis"><span class="header-section-number">B.1</span> Meta-analysis</a>
+  <ul class="collapse">
+  <li><a href="#effect-sizes-z_r" id="toc-effect-sizes-z_r" class="nav-link" data-scroll-target="#effect-sizes-z_r"><span class="header-section-number">B.1.1</span> Effect Sizes <span class="math inline">\(Z_r\)</span></a></li>
+  <li><a href="#out-of-sample-predictions-y_i" id="toc-out-of-sample-predictions-y_i" class="nav-link" data-scroll-target="#out-of-sample-predictions-y_i"><span class="header-section-number">B.1.2</span> Out of sample predictions <span class="math inline">\(y_i\)</span></a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content page-columns page-full" id="quarto-document-content">
 
@@ -240,18 +290,19 @@ cookieconsent.run({
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(targets)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(withr)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(performance)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom.mixed)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MuMIn)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ManyEcoEvo)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(withr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(performance)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom.mixed)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MuMIn)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ManyEcoEvo)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glue)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gluedown)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell" data-eavl="true">
@@ -280,12 +331,12 @@ cookieconsent.run({
 <p>The figures below (<a href="#fig-euc-cat-ratings-MA" class="quarto-xref">Figure&nbsp;<span>B.1</span></a>,<a href="#fig-bt-cat-ratings-MA" class="quarto-xref">Figure&nbsp;<span>B.2</span></a>) shows the fixed effect of categorical review rating on deviation from the meta-analytic mean. There is very little difference in deviation for analyses in any of the review categories. It is worth noting that each analysis features multiple times in these figures corresponding to the multiple reviewers that provided ratings.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-euc-cat-ratings-MA" class="quarto-figure quarto-figure-center anchored" width="768">
+<div id="fig-euc-cat-ratings-MA" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-euc-cat-ratings-MA-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="SM2_EffectSizeAnalysis_files/figure-html/fig-euc-cat-ratings-MA-1.png" class="img-fluid figure-img" width="768">
 </div>
-<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-euc-cat-ratings-MA-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-euc-cat-ratings-MA-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;B.1: Orchard plot of meta-analytic model fitted to all eucalyptus analyses with a fixed effect for categorical peer-review ratings, and random effects for analyst ID and reviewer ID. Black circles denote coefficient mean for each categorical publishability rating. Thick error bars represent 95% confidence intervals and whiskers indicate 95% prediction intervals. Effect sizes are represented by circles and their size corresponds to the precision of the estimate.
 </figcaption>
 </figure>
@@ -294,12 +345,12 @@ Figure&nbsp;B.1: Orchard plot of meta-analytic model fitted to all eucalyptus an
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-bt-cat-ratings-MA" class="quarto-figure quarto-figure-center anchored" width="768">
+<div id="fig-bt-cat-ratings-MA" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-bt-cat-ratings-MA-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="SM2_EffectSizeAnalysis_files/figure-html/fig-bt-cat-ratings-MA-1.png" class="img-fluid figure-img" width="768">
 </div>
-<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-bt-cat-ratings-MA-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bt-cat-ratings-MA-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;B.2: Orchard plot of meta-analytic model fitted to all blue tit analyses with a fixed effect for categorical peer-review ratings, and random effects for analyst ID and reviewer ID. Black circles denote coefficient mean for each categorical publishability rating. Thick error bars represent 95% confidence intervals and whiskers indicate 95% prediction intervals. Effect sizes are represented by circles and their size corresponds to the precision of the estimate.
 </figcaption>
 </figure>
@@ -309,16 +360,16 @@ Figure&nbsp;B.2: Orchard plot of meta-analytic model fitted to all blue tit anal
 </section>
 <section id="post-hoc-analysis-exploring-the-effect-of-removing-analyses-with-poor-peer-review-ratings-on-heterogeneity" class="level4 page-columns page-full" data-number="B.1.1.2">
 <h4 data-number="B.1.1.2" class="anchored" data-anchor-id="post-hoc-analysis-exploring-the-effect-of-removing-analyses-with-poor-peer-review-ratings-on-heterogeneity"><span class="header-section-number">B.1.1.2</span> Post-hoc analysis: Exploring the effect of removing analyses with poor peer-review ratings on heterogeneity</h4>
-<p>In <a href="#fig-all-forest-plots-Zr" class="quarto-xref">Figure&nbsp;<span>B.3</span></a> we display the results of our post-hoc analysis, examining the effect of removing analyses that were reviewed at least once as being ‘unpublishable’, ‘unpublishable’ or requiring ‘major revisions’, as compared with retaining the full set of analyses. Removing these analyses from the blue tit data had little impact on the overall amount of deviation or the distribution of the results. For the <em>Eucalytpus</em> analyses, removing ‘unpublishable’ analyses meant dropping the outlier ‘Brooklyn-2-2-1’ which made a substantial difference to the amount of observerd deviation from the meta-analytic mean.</p>
+<p>The forest plots in <a href="#fig-all-forest-plots-Zr" class="quarto-xref">Figure&nbsp;<span>B.3</span></a> compare the distributions of <span class="math inline">\(Z_r\)</span> effects from our full set of analyses with the distributions of <span class="math inline">\(Z_r\)</span> effects from our post-hoc analyses, which removed either analyses that were reviewed at least once as being ‘unpublishable’, and analyses that were reviewed at least once as being ‘unpublishable’ or requiring ‘major revisions’. Removing these analyses from the blue tit data had little impact on the overall distribution of the results. When ‘unpublishable’ analyses of the <em>Eucalyptus</em> dataset were removed, the extreme outlier ‘Brooklyn-2-2-1’ was also removed, resulting in a substantial difference to the amount of observed deviation from the meta-analytic mean.</p>
 <div class="cell page-columns page-full">
 <div class="cell-output-display page-columns page-full">
-<div id="fig-all-forest-plots-Zr" class="quarto-figure quarto-figure-center anchored page-columns page-full" width="960">
+<div id="fig-all-forest-plots-Zr" class="quarto-figure quarto-figure-center quarto-float anchored page-columns page-full">
 <figure class="quarto-float quarto-float-fig figure page-columns page-full">
 <div aria-describedby="fig-all-forest-plots-Zr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
 <img src="SM2_EffectSizeAnalysis_files/figure-html/fig-all-forest-plots-Zr-1.png" class="img-fluid figure-img column-body-outset-right" width="960">
 </div>
-<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-all-forest-plots-Zr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;B.3: Forest plots of meta-analytic estimated standardized effect sizes (<span class="math inline">\(Zr\)</span>, blue circles) and their 95% confidence intervals for each effect size included in the meta-analysis model. The meta-analytic mean effect size is denoted by a black triangle and a dashed vertical line, with error bars also representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0, indicating no relationship between the test variable and the response variable. The left side of each panel shows the analysis team names (anonymous arbitrary names assigned by us), each followed by three numbers. The first number is the submission ID (some analyst teams submitted results to us on &gt;1 submission form), the second number is the analysis ID (some analyst teams included results of &gt;1 analysis in a given submission), and the third number is the effect ID (some analysts submitted values for &gt;1 effect per analysis). Thus, each row in each forest plot is uniquely identified, but it is possible to determine which effects come from which analyses and which analysis teams. The plots in the top row depict effects from analyses of blue tit data, and the bottom row plots depict effects from analyses of Eucalyptus data. The right-most plots depict all usable effect sizes. The, plots on the left side exclude effects from analysis sets that received at least one rating of “unpublishable” from peer reviewers, and the plots in the middle exclude effects from analysis sets that received at least one rating of either “unpublishable” or “major revision” from peer reviewers.
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-all-forest-plots-Zr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;B.3: Forest plots of meta-analytic estimated standardized effect sizes (<span class="math inline">\(Z_r\)</span>, blue circles) and their 95% confidence intervals for each effect size included in the meta-analysis model. The meta-analytic mean effect size is denoted by a black triangle and a dashed vertical line, with error bars also representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0, indicating no relationship between the test variable and the response variable. The left side of each panel shows the analysis team names (anonymous arbitrary names assigned by us), each followed by three numbers. The first number is the submission ID (some analyst teams submitted results to us on &gt;1 submission form), the second number is the analysis ID (some analyst teams included results of &gt;1 analysis in a given submission), and the third number is the effect ID (some analysts submitted values for &gt;1 effect per analysis). Thus, each row in each forest plot is uniquely identified, but it is possible to determine which effects come from which analyses and which analysis teams. The plots in the top row depict effects from analyses of blue tit data, and the bottom row plots depict effects from analyses of Eucalyptus data. The right-most plots depict all usable effect sizes. The plots on the left exclude effects from analysis sets that received at least one rating of “unpublishable” from peer reviewers, and the plots in the middle exclude effects from analysis sets that received at least one rating of either “unpublishable” or “major revision” from peer reviewers.
 </figcaption>
 </figure>
 </div>
@@ -327,48 +378,54 @@ Figure&nbsp;B.3: Forest plots of meta-analytic estimated standardized effect siz
 </section>
 <section id="post-hoc-analysis-exploring-the-effect-of-excluding-estimates-in-which-we-had-reduced-confidence" class="level4" data-number="B.1.1.3">
 <h4 data-number="B.1.1.3" class="anchored" data-anchor-id="post-hoc-analysis-exploring-the-effect-of-excluding-estimates-in-which-we-had-reduced-confidence"><span class="header-section-number">B.1.1.3</span> Post-hoc analysis: Exploring the effect of excluding estimates in which we had reduced confidence</h4>
-<p>For each dataset (blue tit, <em>Eucalyptus</em>), we created a second, more conservative version, that excluded effects based on estimates of <span class="math inline">\(df\)</span> that we considered less reliable (<a href="#tbl-Zr-exclusion-subsetting" class="quarto-xref">Table&nbsp;<span>B.1</span></a>). We compared the outcomes of analyses of the primary dataset (constituted according to our registered plan) with the outcomes of analyses of the more conservative version of the dataset. We also compared results from analyses of both of these versions of the dataset to versions with our post-hoc removal of outliers described in the main text. Our more conservative exclusions (based on unreliable estimates of <span class="math inline">\(df\)</span>) had minimal impact on the meta-analytic mean for both blue tit and <em>Eucalyptus</em> analyses, regardless of whether outliers were excluded (<a href="#tbl-Zr-exclusion-subsetting" class="quarto-xref">Table&nbsp;<span>B.1</span></a>).</p>
+<p>For each dataset (blue tit, Eucalyptus), we created a second, more conservative version, that excluded effects based on estimates of <span class="math inline">\(df\)</span> that we considered less reliable (<a href="#tbl-Zr-exclusion-subsetting" class="quarto-xref">Table&nbsp;<span>B.1</span></a>). We compared the outcomes of analyses of the primary dataset (constituted according to our registered plan) with the outcomes of analyses of the more conservative version of the dataset. We also compared results from analyses of both of these versions of the dataset to versions with our post-hoc removal of outliers described in the main text. Our more conservative exclusions (based on unreliable estimates of <span class="math inline">\(df\)</span>) had minimal impact on the meta-analytic mean for both blue tit and Eucalyptus analyses, regardless of whether outliers were excluded (<a href="#tbl-Zr-exclusion-subsetting" class="quarto-xref">Table&nbsp;<span>B.1</span></a>).</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ManyEcoEvo_viz <span class="sc">%&gt;%</span> </span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(estimate_type <span class="sc">==</span> <span class="st">"Zr"</span>, </span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                  model_name <span class="sc">==</span> <span class="st">"MA_mod"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hoist</span>(tidy_mod_summary) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(tidy_mod_summary) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(publishable_subset <span class="sc">==</span> <span class="st">"All"</span>, expertise_subset <span class="sc">==</span> <span class="st">"All"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>publishable_subset, <span class="sc">-</span>expertise_subset) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(dataset, </span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>         exclusion_set, </span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>         estimate, </span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>         std.error, </span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>         statistic, </span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>         p.value, </span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>         <span class="fu">starts_with</span>(<span class="st">"conf"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">exclusion_set =</span> </span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>           <span class="fu">case_when</span>(exclusion_set <span class="sc">==</span> <span class="st">"complete"</span> <span class="sc">~</span> </span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"Primary dataset"</span>,</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                     exclusion_set <span class="sc">==</span> <span class="st">"complete-rm_outliers"</span> <span class="sc">~</span> </span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"Primary dataset, outliers removed"</span>,</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>                     exclusion_set <span class="sc">==</span> <span class="st">"partial"</span> <span class="sc">~</span> </span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"Conservative exclusions"</span>,</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>                     <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Conservative exclusions, outliers removed"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="fu">group_by</span>(exclusion_set) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">opt_stylize</span>(<span class="at">style =</span> <span class="dv">6</span>, <span class="at">color =</span> <span class="st">"gray"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">fmt</span>(<span class="at">columns =</span> <span class="st">"p.value"</span>,</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>          <span class="at">fns =</span> <span class="cf">function</span>(x) gtsummary<span class="sc">::</span><span class="fu">style_pvalue</span>(x, <span class="at">prepend_p =</span> <span class="cn">FALSE</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="sc">-</span>p.value, <span class="sc">-</span>dataset)) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label</span>(<span class="at">estimate =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$</span><span class="sc">\\</span><span class="st">hat</span><span class="sc">\\</span><span class="st">mu$$"</span>), </span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>                 <span class="at">std.error =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$SE[</span><span class="sc">\\</span><span class="st">hat</span><span class="sc">\\</span><span class="st">mu]$$"</span>),</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>                 <span class="at">conf.low =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"95</span><span class="sc">\\</span><span class="st">%CI"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_merge</span>(<span class="at">columns =</span> <span class="fu">starts_with</span>(<span class="st">"conf"</span>), </span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>                 <span class="at">pattern =</span> <span class="st">"[{1},{2}]"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_move</span>(<span class="at">columns =</span> conf.low, <span class="at">after =</span> std.error) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                  model_name <span class="sc">==</span> <span class="st">"MA_mod"</span>, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                  collinearity_subset <span class="sc">!=</span> <span class="st">"collinearity_removed"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hoist</span>(tidy_mod_summary) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(tidy_mod_summary) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(publishable_subset <span class="sc">==</span> <span class="st">"All"</span>, expertise_subset <span class="sc">==</span> <span class="st">"All"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>publishable_subset, <span class="sc">-</span>expertise_subset) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(dataset, </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>         exclusion_set, </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>         estimate, </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>         std.error, </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>         statistic, </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>         p.value, </span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>         <span class="fu">starts_with</span>(<span class="st">"conf"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">exclusion_set =</span> </span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>           <span class="fu">case_when</span>(exclusion_set <span class="sc">==</span> <span class="st">"complete"</span> <span class="sc">~</span> </span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"Primary dataset"</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>                     exclusion_set <span class="sc">==</span> <span class="st">"complete-rm_outliers"</span> <span class="sc">~</span> </span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"Primary dataset, outliers removed"</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>                     exclusion_set <span class="sc">==</span> <span class="st">"partial"</span> <span class="sc">~</span> </span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"Conservative exclusions"</span>,</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>                     <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Conservative exclusions, outliers removed"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="fu">group_by</span>(exclusion_set) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">opt_stylize</span>(<span class="at">style =</span> <span class="dv">6</span>, <span class="at">color =</span> <span class="st">"gray"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">fmt</span>(<span class="at">columns =</span> <span class="st">"p.value"</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>          <span class="at">fns =</span> <span class="cf">function</span>(x) gtsummary<span class="sc">::</span><span class="fu">style_pvalue</span>(x, <span class="at">prepend_p =</span> <span class="cn">FALSE</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="sc">-</span>p.value, <span class="sc">-</span>dataset)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label</span>(<span class="at">estimate =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$</span><span class="sc">\\</span><span class="st">hat</span><span class="sc">\\</span><span class="st">mu$$"</span>), </span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>                 <span class="at">std.error =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"$$SE[</span><span class="sc">\\</span><span class="st">hat</span><span class="sc">\\</span><span class="st">mu]$$"</span>),</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>                 <span class="at">conf.low =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"95</span><span class="sc">\\</span><span class="st">%CI"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_merge</span>(<span class="at">columns =</span> <span class="fu">starts_with</span>(<span class="st">"conf"</span>), </span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>                 <span class="at">pattern =</span> <span class="st">"[{1},{2}]"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_move</span>(<span class="at">columns =</span> conf.low, <span class="at">after =</span> std.error) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>   gt<span class="sc">::</span><span class="fu">tab_style</span>(</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">style =</span> <span class="fu">list</span>(gt<span class="sc">::</span><span class="fu">cell_text</span>(<span class="at">transform =</span> <span class="st">"capitalize"</span>), </span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>                 gt<span class="sc">::</span><span class="fu">cell_text</span>(<span class="at">style =</span> <span class="st">"italic"</span>)),</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_body</span>(<span class="at">columns =</span> <span class="st">"dataset"</span>, <span class="at">rows =</span> dataset <span class="sc">==</span> <span class="st">"eucalyptus"</span>)</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>  ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div id="tbl-Zr-exclusion-subsetting" class="cell anchored">
+<div id="tbl-Zr-exclusion-subsetting" class="cell quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="table quarto-float-caption quarto-float-tbl" id="tbl-Zr-exclusion-subsetting-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-Zr-exclusion-subsetting-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Table&nbsp;B.1: Estimated meta-analytic mean, standard error, and 95% confidence intervals, from analyses of the primary data set, the more conservative version of the dataset which excluded effects based on less reliable estimates of <span class="math inline">\(df\)</span>, and both of these datasets with outliers removed.
 </figcaption>
 <div aria-describedby="tbl-Zr-exclusion-subsetting-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -814,7 +871,7 @@ Table&nbsp;B.1: Estimated meta-analytic mean, standard error, and 95% confidence
 }
 </style>
 
-<table class="gt_table cell table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<table class="gt_table do-not-create-environment cell table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
 <thead>
 <tr class="header gt_col_headings">
 <th id="dataset" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">dataset</th>
@@ -833,12 +890,12 @@ Table&nbsp;B.1: Estimated meta-analytic mean, standard error, and 95% confidence
 <td class="gt_row gt_left" headers="Primary dataset  dataset">blue tit</td>
 <td class="gt_row gt_right" headers="Primary dataset  estimate">−0.35</td>
 <td class="gt_row gt_right" headers="Primary dataset  std.error">0.03</td>
-<td class="gt_row gt_right" headers="Primary dataset  conf.low">[−0.41,−0.28]</td>
-<td class="gt_row gt_right" headers="Primary dataset  statistic">−10.49</td>
+<td class="gt_row gt_right" headers="Primary dataset  conf.low">[−0.41,−0.29]</td>
+<td class="gt_row gt_right" headers="Primary dataset  statistic">−11.02</td>
 <td class="gt_row gt_right" headers="Primary dataset  p.value">&lt;0.001</td>
 </tr>
 <tr class="odd">
-<td class="gt_row gt_left gt_striped" headers="Primary dataset  dataset">eucalyptus</td>
+<td class="gt_row gt_left gt_striped" headers="Primary dataset  dataset" style="text-transform: capitalize; font-style: italic">eucalyptus</td>
 <td class="gt_row gt_right gt_striped" headers="Primary dataset  estimate">−0.09</td>
 <td class="gt_row gt_right gt_striped" headers="Primary dataset  std.error">0.06</td>
 <td class="gt_row gt_right gt_striped" headers="Primary dataset  conf.low">[−0.22,0.03]</td>
@@ -853,11 +910,11 @@ Table&nbsp;B.1: Estimated meta-analytic mean, standard error, and 95% confidence
 <td class="gt_row gt_right" headers="Conservative exclusions  estimate">−0.36</td>
 <td class="gt_row gt_right" headers="Conservative exclusions  std.error">0.03</td>
 <td class="gt_row gt_right" headers="Conservative exclusions  conf.low">[−0.42,−0.29]</td>
-<td class="gt_row gt_right" headers="Conservative exclusions  statistic">−10.50</td>
+<td class="gt_row gt_right" headers="Conservative exclusions  statistic">−10.77</td>
 <td class="gt_row gt_right" headers="Conservative exclusions  p.value">&lt;0.001</td>
 </tr>
 <tr class="even">
-<td class="gt_row gt_left gt_striped" headers="Conservative exclusions  dataset">eucalyptus</td>
+<td class="gt_row gt_left gt_striped" headers="Conservative exclusions  dataset" style="text-transform: capitalize; font-style: italic">eucalyptus</td>
 <td class="gt_row gt_right gt_striped" headers="Conservative exclusions  estimate">−0.11</td>
 <td class="gt_row gt_right gt_striped" headers="Conservative exclusions  std.error">0.07</td>
 <td class="gt_row gt_right gt_striped" headers="Conservative exclusions  conf.low">[−0.24,0.03]</td>
@@ -869,14 +926,14 @@ Table&nbsp;B.1: Estimated meta-analytic mean, standard error, and 95% confidence
 </tr>
 <tr class="even gt_row_group_first">
 <td class="gt_row gt_left" headers="Primary dataset, outliers removed  dataset">blue tit</td>
-<td class="gt_row gt_right" headers="Primary dataset, outliers removed  estimate">−0.35</td>
+<td class="gt_row gt_right" headers="Primary dataset, outliers removed  estimate">−0.36</td>
 <td class="gt_row gt_right" headers="Primary dataset, outliers removed  std.error">0.03</td>
-<td class="gt_row gt_right" headers="Primary dataset, outliers removed  conf.low">[−0.42,−0.29]</td>
-<td class="gt_row gt_right" headers="Primary dataset, outliers removed  statistic">−10.95</td>
+<td class="gt_row gt_right" headers="Primary dataset, outliers removed  conf.low">[−0.42,−0.30]</td>
+<td class="gt_row gt_right" headers="Primary dataset, outliers removed  statistic">−11.48</td>
 <td class="gt_row gt_right" headers="Primary dataset, outliers removed  p.value">&lt;0.001</td>
 </tr>
 <tr class="odd">
-<td class="gt_row gt_left gt_striped" headers="Primary dataset, outliers removed  dataset">eucalyptus</td>
+<td class="gt_row gt_left gt_striped" headers="Primary dataset, outliers removed  dataset" style="text-transform: capitalize; font-style: italic">eucalyptus</td>
 <td class="gt_row gt_right gt_striped" headers="Primary dataset, outliers removed  estimate">−0.03</td>
 <td class="gt_row gt_right gt_striped" headers="Primary dataset, outliers removed  std.error">0.01</td>
 <td class="gt_row gt_right gt_striped" headers="Primary dataset, outliers removed  conf.low">[−0.06,0.00]</td>
@@ -891,11 +948,11 @@ Table&nbsp;B.1: Estimated meta-analytic mean, standard error, and 95% confidence
 <td class="gt_row gt_right" headers="Conservative exclusions, outliers removed  estimate">−0.36</td>
 <td class="gt_row gt_right" headers="Conservative exclusions, outliers removed  std.error">0.03</td>
 <td class="gt_row gt_right" headers="Conservative exclusions, outliers removed  conf.low">[−0.43,−0.30]</td>
-<td class="gt_row gt_right" headers="Conservative exclusions, outliers removed  statistic">−11.09</td>
+<td class="gt_row gt_right" headers="Conservative exclusions, outliers removed  statistic">−11.38</td>
 <td class="gt_row gt_right" headers="Conservative exclusions, outliers removed  p.value">&lt;0.001</td>
 </tr>
 <tr class="even">
-<td class="gt_row gt_left gt_striped" headers="Conservative exclusions, outliers removed  dataset">eucalyptus</td>
+<td class="gt_row gt_left gt_striped" headers="Conservative exclusions, outliers removed  dataset" style="text-transform: capitalize; font-style: italic">eucalyptus</td>
 <td class="gt_row gt_right gt_striped" headers="Conservative exclusions, outliers removed  estimate">−0.04</td>
 <td class="gt_row gt_right gt_striped" headers="Conservative exclusions, outliers removed  std.error">0.02</td>
 <td class="gt_row gt_right gt_striped" headers="Conservative exclusions, outliers removed  conf.low">[−0.07,−0.01]</td>
@@ -915,7 +972,7 @@ Table&nbsp;B.1: Estimated meta-analytic mean, standard error, and 95% confidence
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>plot_forest <span class="ot">&lt;-</span> <span class="cf">function</span>(data, <span class="at">intercept =</span> <span class="cn">TRUE</span>, <span class="at">MA_mean =</span> <span class="cn">TRUE</span> ){</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(MA_mean <span class="sc">==</span> <span class="cn">FALSE</span>){</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (MA_mean <span class="sc">==</span> <span class="cn">FALSE</span>) {</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    data <span class="ot">&lt;-</span> <span class="fu">filter</span>(data, term <span class="sc">!=</span> <span class="st">"Overall"</span>)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  </span>
@@ -939,10 +996,10 @@ Table&nbsp;B.1: Estimated meta-analytic mean, standard error, and 95% confidence
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>                       <span class="at">minor_breaks =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="fl">4.5</span>, <span class="at">to =</span> <span class="fl">1.5</span>, <span class="at">by =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    NatParksPalettes<span class="sc">::</span><span class="fu">scale_color_natparks_d</span>(<span class="st">"Glacier"</span>)</span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(intercept <span class="sc">==</span> <span class="cn">TRUE</span>){</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (intercept <span class="sc">==</span> <span class="cn">TRUE</span>) {</span>
 <span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>      p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>)</span>
 <span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(MA_mean <span class="sc">==</span> <span class="cn">TRUE</span>){</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (MA_mean <span class="sc">==</span> <span class="cn">TRUE</span>) {</span>
 <span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>      p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> meta_analytic_mean), </span>
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>                          <span class="at">data =</span> data,</span>
 <span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>                          <span class="at">colour =</span> <span class="st">"#01353D"</span>, </span>
@@ -1024,6 +1081,7 @@ Table&nbsp;B.1: Estimated meta-analytic mean, standard error, and 95% confidence
 </section>
 <section id="post-hoc-analysis-exploring-the-effect-of-including-only-analyses-conducted-by-analysis-teams-with-at-least-one-member-self-rated-as-highly-proficient-or-expert-in-conducting-statitistical-analyses-in-their-research-area" class="level4" data-number="B.1.1.4">
 <h4 data-number="B.1.1.4" class="anchored" data-anchor-id="post-hoc-analysis-exploring-the-effect-of-including-only-analyses-conducted-by-analysis-teams-with-at-least-one-member-self-rated-as-highly-proficient-or-expert-in-conducting-statitistical-analyses-in-their-research-area"><span class="header-section-number">B.1.1.4</span> Post-hoc analysis: Exploring the effect of including only analyses conducted by analysis teams with at least one member self-rated as “highly proficient” or “expert” in conducting statitistical analyses in their research area</h4>
+<p>The anonymous Team Identifiers in the reduced subset of “expert” or “highly proficient” analysts are exported internally in the <code>ManyEcoEvo</code> package as <code>ManyEcoEvo:::expert_subset</code>. Analyses from the following teams are retained in the reduced subset: <em>Bell</em>, <em>Berr</em>, <em>Brim</em>, <em>Bruc</em>, <em>Burr</em>, <em>Byng</em>, <em>Cape</em>, <em>Clar</em>, <em>Clev</em>, <em>Alban</em>, <em>Alpha</em>, <em>Bargo</em>, <em>Berry</em>, <em>Bowen</em>, <em>Bulli</em>, <em>Aldgat</em>, <em>Alding</em>, <em>Anakie</em>, <em>Aramac</em>, <em>August</em>, <em>Bamaga</em>, <em>Barham</em>, <em>Barmah</em>, <em>Batlow</em>, <em>Beltan</em>, <em>Bethan</em>, <em>Beulah</em>, <em>Bindoo</em>, <em>Boonah</em>, <em>Bowral</em>, <em>Bright</em>, <em>Buchan</em>, <em>Burnie</em>, <em>Cairns</em>, <em>Casino</em>, <em>Cattai</em>, <em>Adelong</em>, <em>Angasto</em>, <em>Antwerp</em>, <em>Arltung</em>, <em>Ashford</em>, <em>Babinda</em>, <em>Bargara</em>, <em>Barooga</em>, <em>Barraba</em>, <em>Belmont</em>, <em>Bemboka</em>, <em>Benalla</em>, <em>Bendigo</em>, <em>Berrima</em>, <em>Berwick</em>, <em>Beverle</em>, <em>Bicheno</em>, <em>Biloela</em>, <em>Birchip</em>, <em>Bombala</em>, <em>Bonalbo</em>, <em>Brookto</em>, <em>Bruthen</em>, <em>Buderim</em>, <em>Candelo</em>, <em>Capella</em>, <em>Carcoar</em>, <em>Carnama</em>, <em>Chewton</em>, <em>Anglesea</em>, <em>Ardrossa</em>, <em>Armidale</em>, <em>Atherton</em>, <em>Balaklav</em>, <em>Ballarat</em>, <em>Barellan</em>, <em>Belgrave</em>, <em>Berrigan</em>, <em>Binalong</em>, <em>Binnaway</em>, <em>Blackall</em>, <em>Boggabri</em>, <em>Bridport</em>, <em>Brooklyn</em>, <em>Buckland</em>, <em>Bundeena</em>, <em>Bungonia</em>, <em>Busselto</em>, <em>Calliope</em>, <em>Cardwell</em>, <em>Cassilis</em>, <em>Cessnock</em>, <em>Charlton</em>.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -1067,72 +1125,72 @@ Table&nbsp;B.1: Estimated meta-analytic mean, standard error, and 95% confidence
 <span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(p)</span>
 <span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>bt_experts_only <span class="ot">&lt;-</span> </span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>  ManyEcoEvo_viz <span class="sc">%&gt;%</span> </span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(exclusion_set <span class="sc">==</span> <span class="st">"complete"</span>, </span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>         estimate_type <span class="sc">==</span> <span class="st">"Zr"</span>, </span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>         model_name <span class="sc">==</span> <span class="st">"MA_mod"</span>,</span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>         dataset <span class="sc">==</span> <span class="st">"blue tit"</span>,</span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>         publishable_subset <span class="sc">==</span> <span class="st">"All"</span>, </span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>         expertise_subset <span class="sc">==</span> <span class="st">"expert"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(model) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">plot_data =</span> <span class="fu">map</span>(model, </span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>                         <span class="at">.f =</span> <span class="sc">~</span> broom<span class="sc">::</span><span class="fu">tidy</span>(.x, </span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">conf.int =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">include_studies =</span> <span class="cn">TRUE</span>)<span class="sc">%&gt;%</span> </span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>                           dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">point_shape =</span> </span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>                                           <span class="fu">ifelse</span>(stringr<span class="sc">::</span><span class="fu">str_detect</span>(term, <span class="st">"overall"</span>), </span>
-<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>                                                  <span class="st">"diamond"</span>, </span>
-<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>                                                  <span class="st">"circle"</span>),</span>
-<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">Parameter =</span> </span>
-<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>                                           forcats<span class="sc">::</span><span class="fu">fct_reorder</span>(term, </span>
-<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>                                                                estimate) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>                                           forcats<span class="sc">::</span><span class="fu">fct_reorder</span>(., </span>
-<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>                                                                point_shape,</span>
-<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>                                                                <span class="at">.desc =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>  <span class="at">meta_analytic_mean =</span> <span class="fu">map_dbl</span>(plot_data, </span>
-<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>                               <span class="sc">~</span> <span class="fu">filter</span>(.x, Parameter <span class="sc">==</span> <span class="st">"overall"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>                                 <span class="fu">pull</span>(estimate))) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(plot_data, meta_analytic_mean) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="st">"plot_data"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">parameter_type =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(Parameter, <span class="st">"overall"</span>) <span class="sc">~</span> <span class="st">"mean"</span>,</span>
-<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>                                    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"study"</span>)) </span>
-<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a><span class="co"># bt_experts_only &lt;- </span></span>
-<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a><span class="co">#   bt_experts_only %&gt;% </span></span>
-<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a><span class="co">#   rename(id_col = term) %&gt;% </span></span>
-<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a><span class="co">#   group_by(type) %&gt;%  </span></span>
-<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a><span class="co">#   group_split() %&gt;% </span></span>
-<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a><span class="co">#   set_names(., bt_experts_only$type %&gt;%  unique) %&gt;% </span></span>
-<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a><span class="co">#   # map_if(.x = ., names(.) == "study",</span></span>
-<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a><span class="co">#          # .f = ~ anonymise_teams(.x, TeamIdentifier_lookup)) %&gt;% </span></span>
-<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a><span class="co">#   bind_rows() %&gt;% </span></span>
-<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a><span class="co">#   rename(term = id_col)</span></span>
-<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>bt_forest_experts <span class="ot">&lt;-</span> bt_experts_only <span class="sc">%&gt;%</span> </span>
-<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(type)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">type =</span> forcats<span class="sc">::</span><span class="fu">as_factor</span>(type)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(type) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(estimate),<span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">term =</span> forcats<span class="sc">::</span><span class="fu">as_factor</span>(term),</span>
-<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>         <span class="at">point_shape =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(type, <span class="st">"summary"</span>) <span class="sc">~</span> <span class="st">"mean"</span>,</span>
-<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a>                                 <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"study"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_forest</span>(<span class="at">intercept =</span> <span class="cn">TRUE</span>, <span class="at">MA_mean =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>), </span>
-<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>),</span>
-<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.6</span>, <span class="fl">0.65</span>)) </span>
-<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a>euc_experts_only <span class="ot">&lt;-</span> </span>
-<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a>  ManyEcoEvo_viz <span class="sc">%&gt;%</span> </span>
-<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(exclusion_set <span class="sc">==</span> <span class="st">"complete"</span>, </span>
-<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a>         estimate_type <span class="sc">==</span> <span class="st">"Zr"</span>, </span>
-<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a>         model_name <span class="sc">==</span> <span class="st">"MA_mod"</span>,</span>
-<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a>         dataset <span class="sc">==</span> <span class="st">"eucalyptus"</span>,</span>
-<span id="cb6-105"><a href="#cb6-105" aria-hidden="true" tabindex="-1"></a>         publishable_subset <span class="sc">==</span> <span class="st">"All"</span>,</span>
-<span id="cb6-106"><a href="#cb6-106" aria-hidden="true" tabindex="-1"></a>         expertise_subset <span class="sc">==</span> <span class="st">"expert"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>filter_experts <span class="ot">&lt;-</span> </span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>  rlang<span class="sc">::</span><span class="fu">exprs</span>(</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>    exclusion_set <span class="sc">==</span> <span class="st">"complete"</span>, </span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>    estimate_type <span class="sc">==</span> <span class="st">"Zr"</span>, </span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>    model_name <span class="sc">==</span> <span class="st">"MA_mod"</span>,</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>    publishable_subset <span class="sc">==</span> <span class="st">"All"</span>, </span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>    expertise_subset <span class="sc">==</span> <span class="st">"expert"</span>)</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>bt_experts_only <span class="ot">&lt;-</span> </span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>  ManyEcoEvo_viz <span class="sc">%&gt;%</span> </span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!!!</span>filter_experts, </span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>         dataset <span class="sc">==</span> <span class="st">"blue tit"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(model) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">plot_data =</span> <span class="fu">map</span>(model, </span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>                         <span class="at">.f =</span> <span class="sc">~</span> broom<span class="sc">::</span><span class="fu">tidy</span>(.x, </span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">conf.int =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">include_studies =</span> <span class="cn">TRUE</span>)<span class="sc">%&gt;%</span> </span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>                           dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">point_shape =</span> </span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>                                           <span class="fu">ifelse</span>(stringr<span class="sc">::</span><span class="fu">str_detect</span>(term, <span class="st">"overall"</span>), </span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>                                                  <span class="st">"diamond"</span>, </span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>                                                  <span class="st">"circle"</span>),</span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">Parameter =</span> </span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>                                           forcats<span class="sc">::</span><span class="fu">fct_reorder</span>(term, </span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>                                                                estimate) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>                                           forcats<span class="sc">::</span><span class="fu">fct_reorder</span>(., </span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>                                                                point_shape,</span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>                                                                <span class="at">.desc =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>  <span class="at">meta_analytic_mean =</span> <span class="fu">map_dbl</span>(plot_data, </span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>                               <span class="sc">~</span> <span class="fu">filter</span>(.x, Parameter <span class="sc">==</span> <span class="st">"overall"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>                                 <span class="fu">pull</span>(estimate))) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(plot_data, meta_analytic_mean) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="st">"plot_data"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">parameter_type =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(Parameter, <span class="st">"overall"</span>) <span class="sc">~</span> <span class="st">"mean"</span>,</span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>                                    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"study"</span>)) </span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a><span class="co"># bt_experts_only &lt;- </span></span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a><span class="co">#   bt_experts_only %&gt;% </span></span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a><span class="co">#   rename(id_col = term) %&gt;% </span></span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a><span class="co">#   group_by(type) %&gt;%  </span></span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a><span class="co">#   group_split() %&gt;% </span></span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a><span class="co">#   set_names(., bt_experts_only$type %&gt;%  unique) %&gt;% </span></span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a><span class="co">#   # map_if(.x = ., names(.) == "study",</span></span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a><span class="co">#          # .f = ~ anonymise_teams(.x, TeamIdentifier_lookup)) %&gt;% </span></span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a><span class="co">#   bind_rows() %&gt;% </span></span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a><span class="co">#   rename(term = id_col)</span></span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>bt_forest_experts <span class="ot">&lt;-</span> bt_experts_only <span class="sc">%&gt;%</span> </span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(type)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">type =</span> forcats<span class="sc">::</span><span class="fu">as_factor</span>(type)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(type) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(estimate),<span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">term =</span> forcats<span class="sc">::</span><span class="fu">as_factor</span>(term),</span>
+<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a>         <span class="at">point_shape =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(type, <span class="st">"summary"</span>) <span class="sc">~</span> <span class="st">"mean"</span>,</span>
+<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a>                                 <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"study"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_forest</span>(<span class="at">intercept =</span> <span class="cn">TRUE</span>, <span class="at">MA_mean =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>), </span>
+<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>),</span>
+<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.6</span>, <span class="fl">0.65</span>)) </span>
+<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a>euc_experts_only <span class="ot">&lt;-</span> </span>
+<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a>  ManyEcoEvo_viz <span class="sc">%&gt;%</span> </span>
+<span id="cb6-105"><a href="#cb6-105" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!!!</span>filter_experts, </span>
+<span id="cb6-106"><a href="#cb6-106" aria-hidden="true" tabindex="-1"></a>         dataset <span class="sc">==</span> <span class="st">"eucalyptus"</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb6-107"><a href="#cb6-107" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(model) <span class="sc">%&gt;%</span> </span>
 <span id="cb6-108"><a href="#cb6-108" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">plot_data =</span> <span class="fu">map</span>(model, </span>
 <span id="cb6-109"><a href="#cb6-109" aria-hidden="true" tabindex="-1"></a>                         <span class="at">.f =</span> <span class="sc">~</span> broom<span class="sc">::</span><span class="fu">tidy</span>(.x, </span>
@@ -1157,72 +1215,139 @@ Table&nbsp;B.1: Estimated meta-analytic mean, standard error, and 95% confidence
 <span id="cb6-128"><a href="#cb6-128" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">parameter_type =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(Parameter, <span class="st">"overall"</span>) <span class="sc">~</span> <span class="st">"mean"</span>,</span>
 <span id="cb6-129"><a href="#cb6-129" aria-hidden="true" tabindex="-1"></a>                                    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"study"</span>))</span>
 <span id="cb6-130"><a href="#cb6-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-132"><a href="#cb6-132" aria-hidden="true" tabindex="-1"></a><span class="co"># euc_experts_only &lt;- </span></span>
-<span id="cb6-133"><a href="#cb6-133" aria-hidden="true" tabindex="-1"></a><span class="co">#   euc_experts_only %&gt;% </span></span>
-<span id="cb6-134"><a href="#cb6-134" aria-hidden="true" tabindex="-1"></a><span class="co">#   rename(id_col = term) %&gt;% </span></span>
-<span id="cb6-135"><a href="#cb6-135" aria-hidden="true" tabindex="-1"></a><span class="co">#   group_by(type) %&gt;%  </span></span>
-<span id="cb6-136"><a href="#cb6-136" aria-hidden="true" tabindex="-1"></a><span class="co">#   group_split() %&gt;% </span></span>
-<span id="cb6-137"><a href="#cb6-137" aria-hidden="true" tabindex="-1"></a><span class="co">#   set_names(., euc_experts_only$type %&gt;%  unique) %&gt;% </span></span>
-<span id="cb6-138"><a href="#cb6-138" aria-hidden="true" tabindex="-1"></a><span class="co">#   # map_if(.x = ., names(.) == "study",</span></span>
-<span id="cb6-139"><a href="#cb6-139" aria-hidden="true" tabindex="-1"></a><span class="co">#          # .f = ~ anonymise_teams(.x, TeamIdentifier_lookup)) %&gt;% </span></span>
-<span id="cb6-140"><a href="#cb6-140" aria-hidden="true" tabindex="-1"></a><span class="co">#   bind_rows() %&gt;% </span></span>
-<span id="cb6-141"><a href="#cb6-141" aria-hidden="true" tabindex="-1"></a><span class="co">#   rename(term = id_col)</span></span>
-<span id="cb6-142"><a href="#cb6-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-143"><a href="#cb6-143" aria-hidden="true" tabindex="-1"></a>euc_forest_experts <span class="ot">&lt;-</span> euc_experts_only <span class="sc">%&gt;%</span> </span>
-<span id="cb6-144"><a href="#cb6-144" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(type)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-145"><a href="#cb6-145" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">type =</span> forcats<span class="sc">::</span><span class="fu">as_factor</span>(type)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-146"><a href="#cb6-146" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(type) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-147"><a href="#cb6-147" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(estimate),<span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-148"><a href="#cb6-148" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">term =</span> forcats<span class="sc">::</span><span class="fu">as_factor</span>(term),</span>
-<span id="cb6-149"><a href="#cb6-149" aria-hidden="true" tabindex="-1"></a>         <span class="at">point_shape =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(type, <span class="st">"summary"</span>) <span class="sc">~</span> <span class="st">"mean"</span>,</span>
-<span id="cb6-150"><a href="#cb6-150" aria-hidden="true" tabindex="-1"></a>                                 <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"study"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-151"><a href="#cb6-151" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_forest</span>(<span class="at">intercept =</span> <span class="cn">TRUE</span>, <span class="at">MA_mean =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb6-152"><a href="#cb6-152" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>), </span>
-<span id="cb6-153"><a href="#cb6-153" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>),</span>
-<span id="cb6-154"><a href="#cb6-154" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb6-155"><a href="#cb6-155" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-156"><a href="#cb6-156" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">1</span>), </span>
-<span id="cb6-157"><a href="#cb6-157" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="sc">-</span><span class="dv">4</span>, <span class="sc">-</span><span class="dv">3</span>, <span class="sc">-</span><span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>) )</span>
-<span id="cb6-158"><a href="#cb6-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-159"><a href="#cb6-159" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Extract Viz &amp; Summary Stats</span></span>
-<span id="cb6-160"><a href="#cb6-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-161"><a href="#cb6-161" aria-hidden="true" tabindex="-1"></a>bt_forest_experts</span>
-<span id="cb6-162"><a href="#cb6-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-163"><a href="#cb6-163" aria-hidden="true" tabindex="-1"></a>euc_forest_experts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a><span class="co"># euc_experts_only &lt;- </span></span>
+<span id="cb6-132"><a href="#cb6-132" aria-hidden="true" tabindex="-1"></a><span class="co">#   euc_experts_only %&gt;% </span></span>
+<span id="cb6-133"><a href="#cb6-133" aria-hidden="true" tabindex="-1"></a><span class="co">#   rename(id_col = term) %&gt;% </span></span>
+<span id="cb6-134"><a href="#cb6-134" aria-hidden="true" tabindex="-1"></a><span class="co">#   group_by(type) %&gt;%  </span></span>
+<span id="cb6-135"><a href="#cb6-135" aria-hidden="true" tabindex="-1"></a><span class="co">#   group_split() %&gt;% </span></span>
+<span id="cb6-136"><a href="#cb6-136" aria-hidden="true" tabindex="-1"></a><span class="co">#   set_names(., euc_experts_only$type %&gt;%  unique) %&gt;% </span></span>
+<span id="cb6-137"><a href="#cb6-137" aria-hidden="true" tabindex="-1"></a><span class="co">#   # map_if(.x = ., names(.) == "study",</span></span>
+<span id="cb6-138"><a href="#cb6-138" aria-hidden="true" tabindex="-1"></a><span class="co">#          # .f = ~ anonymise_teams(.x, TeamIdentifier_lookup)) %&gt;% </span></span>
+<span id="cb6-139"><a href="#cb6-139" aria-hidden="true" tabindex="-1"></a><span class="co">#   bind_rows() %&gt;% </span></span>
+<span id="cb6-140"><a href="#cb6-140" aria-hidden="true" tabindex="-1"></a><span class="co">#   rename(term = id_col)</span></span>
+<span id="cb6-141"><a href="#cb6-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-142"><a href="#cb6-142" aria-hidden="true" tabindex="-1"></a>euc_forest_experts <span class="ot">&lt;-</span> euc_experts_only <span class="sc">%&gt;%</span> </span>
+<span id="cb6-143"><a href="#cb6-143" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(type)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-144"><a href="#cb6-144" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">type =</span> forcats<span class="sc">::</span><span class="fu">as_factor</span>(type)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-145"><a href="#cb6-145" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(type) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-146"><a href="#cb6-146" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(estimate),<span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-147"><a href="#cb6-147" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">term =</span> forcats<span class="sc">::</span><span class="fu">as_factor</span>(term),</span>
+<span id="cb6-148"><a href="#cb6-148" aria-hidden="true" tabindex="-1"></a>         <span class="at">point_shape =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(type, <span class="st">"summary"</span>) <span class="sc">~</span> <span class="st">"mean"</span>,</span>
+<span id="cb6-149"><a href="#cb6-149" aria-hidden="true" tabindex="-1"></a>                                 <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"study"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-150"><a href="#cb6-150" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_forest</span>(<span class="at">intercept =</span> <span class="cn">TRUE</span>, <span class="at">MA_mean =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb6-151"><a href="#cb6-151" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>), </span>
+<span id="cb6-152"><a href="#cb6-152" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>),</span>
+<span id="cb6-153"><a href="#cb6-153" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb6-154"><a href="#cb6-154" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-155"><a href="#cb6-155" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">1</span>), </span>
+<span id="cb6-156"><a href="#cb6-156" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="sc">-</span><span class="dv">4</span>, <span class="sc">-</span><span class="dv">3</span>, <span class="sc">-</span><span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>) )</span>
+<span id="cb6-157"><a href="#cb6-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-158"><a href="#cb6-158" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Extract Viz ----</span></span>
+<span id="cb6-159"><a href="#cb6-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-160"><a href="#cb6-160" aria-hidden="true" tabindex="-1"></a>bt_forest_experts</span>
+<span id="cb6-161"><a href="#cb6-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-162"><a href="#cb6-162" aria-hidden="true" tabindex="-1"></a>euc_forest_experts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div id="fig-forest-plot-expertise" class="cell quarto-figure quarto-figure-center anchored">
+<div id="fig-forest-plot-expertise" class="cell quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-forest-plot-expertise-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="fig-forest-plot-expertise-1" class="quarto-figure quarto-figure-center anchored" width="672">
+<div id="fig-forest-plot-expertise-1" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-subfloat-fig figure">
 <div aria-describedby="fig-forest-plot-expertise-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="SM2_EffectSizeAnalysis_files/figure-html/fig-forest-plot-expertise-1.png" class="img-fluid figure-img" data-ref-parent="fig-forest-plot-expertise" width="672">
 </div>
-<figcaption class="figure quarto-subfloat-caption quarto-subfloat-fig" id="fig-forest-plot-expertise-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-forest-plot-expertise-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 (a) Blue tit dataset analyses
 </figcaption>
 </figure>
 </div>
 </div>
 <div class="cell-output-display">
-<div id="fig-forest-plot-expertise-2" class="quarto-figure quarto-figure-center anchored" width="672">
+<div id="fig-forest-plot-expertise-2" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-subfloat-fig figure">
 <div aria-describedby="fig-forest-plot-expertise-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="SM2_EffectSizeAnalysis_files/figure-html/fig-forest-plot-expertise-2.png" class="img-fluid figure-img" data-ref-parent="fig-forest-plot-expertise" width="672">
 </div>
-<figcaption class="figure quarto-subfloat-caption quarto-subfloat-fig" id="fig-forest-plot-expertise-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-forest-plot-expertise-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 (b) <em>Eucalyptus</em> dataset analyses
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-forest-plot-expertise-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-forest-plot-expertise-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;B.4: Estimated meta-analytic mean effect size (<span class="math inline">\(Z_r\)</span>), standard error, and 95% confidence intervals, from analyses of the primary data set with at least one member self-rated as “highly proficient” or “expert” in conducting statistical analyses in their research area.
 </figcaption>
 </figure>
+</div>
+</div>
+</section>
+<section id="post-hoc-analysis-exploring-the-effect-of-excluding-analyses-of-the-blue-tit-dataset-containing-highly-collinear-predictor-variables" class="level4" data-number="B.1.1.5">
+<h4 data-number="B.1.1.5" class="anchored" data-anchor-id="post-hoc-analysis-exploring-the-effect-of-excluding-analyses-of-the-blue-tit-dataset-containing-highly-collinear-predictor-variables"><span class="header-section-number">B.1.1.5</span> Post-hoc analysis: Exploring the effect of excluding analyses of the blue tit dataset containing highly collinear predictor variables</h4>
+<p>For the blue tit dataset, we created a subset of analyses that excluded effects based on analyses containing highly correlated predictor variables. Excluded analyses are exported internally in the <code>ManyEcoEvo</code> package as <code>ManyEcoEvo::collinearity_subset</code>. Analyses with the following identifiers are excluded in the reduced subset: <em>Armadal-1-1-1</em>, <em>Babinda-1-1-1</em>, <em>Babinda-2-2-1</em>, <em>Barham-1-1-1</em>, <em>Barham-2-2-1</em>, <em>Bega-1-1-1</em>, <em>Bega-1-1-2</em>, <em>Bega-2-2-1</em>, <em>Bega-2-2-2</em>, <em>Borde-1-1-1</em>, <em>Bruc-1-1-1</em>, <em>Caigun-1-1-1</em>, <em>Caigun-2-2-1</em>, <em>Adelong-1-1-1</em>, <em>Adelong-2-2-1</em>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>filter_collinear <span class="ot">&lt;-</span> rlang<span class="sc">::</span><span class="fu">exprs</span>(exclusion_set <span class="sc">==</span> <span class="st">"complete"</span>, </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                              publishable_subset <span class="sc">==</span> <span class="st">"All"</span>, </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                              expertise_subset <span class="sc">==</span> <span class="st">"All"</span>, </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                              collinearity_subset <span class="sc">==</span> <span class="st">"collinearity_removed"</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                              model_name <span class="sc">==</span> <span class="st">"MA_mod"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                              dataset <span class="sc">==</span> <span class="st">"blue tit"</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># summary_output_params &lt;- rlang::exprs(tidy_mod_summary, MA_fit_stats, mod_fit_stats)</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>ManyEcoEvo_viz <span class="sc">%&gt;%</span> </span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!!!</span>filter_collinear) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">plot_data =</span> <span class="fu">map</span>(model, </span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>                         <span class="at">.f =</span> <span class="sc">~</span> broom<span class="sc">::</span><span class="fu">tidy</span>(.x, </span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">conf.int =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">include_studies =</span> <span class="cn">TRUE</span>)<span class="sc">%&gt;%</span> </span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>                           dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">point_shape =</span> </span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>                                           <span class="fu">ifelse</span>(stringr<span class="sc">::</span><span class="fu">str_detect</span>(term, <span class="st">"overall"</span>), </span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                                                  <span class="st">"diamond"</span>, </span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>                                                  <span class="st">"circle"</span>),</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">Parameter =</span> </span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>                                           forcats<span class="sc">::</span><span class="fu">fct_reorder</span>(term, </span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>                                                                estimate) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>                                           forcats<span class="sc">::</span><span class="fu">fct_reorder</span>(., </span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>                                                                point_shape,</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>                                                                <span class="at">.desc =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">meta_analytic_mean =</span> <span class="fu">map_dbl</span>(plot_data, </span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>                               <span class="sc">~</span> <span class="fu">filter</span>(.x, Parameter <span class="sc">==</span> <span class="st">"overall"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>                                 <span class="fu">pull</span>(estimate))) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(plot_data, meta_analytic_mean) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="st">"plot_data"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">parameter_type =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(Parameter, <span class="st">"overall"</span>) <span class="sc">~</span> <span class="st">"mean"</span>,</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>                                    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"study"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(type)) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">type =</span> forcats<span class="sc">::</span><span class="fu">as_factor</span>(type)) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(type) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(estimate),<span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">term =</span> forcats<span class="sc">::</span><span class="fu">as_factor</span>(term),</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>         <span class="at">point_shape =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(type, <span class="st">"summary"</span>) <span class="sc">~</span> <span class="st">"mean"</span>,</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>                                 <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"study"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_forest</span>(<span class="at">intercept =</span> <span class="cn">TRUE</span>, <span class="at">MA_mean =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>), </span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>),</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.5</span>, <span class="fl">0.5</span>), </span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.5</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="sc">-</span><span class="fl">0.5</span>, <span class="dv">0</span>, <span class="fl">0.5</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-forest-plot-Zr-collinear-rm-subset" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-forest-plot-Zr-collinear-rm-subset-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="SM2_EffectSizeAnalysis_files/figure-html/fig-forest-plot-Zr-collinear-rm-subset-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-forest-plot-Zr-collinear-rm-subset-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;B.5: Forest plot of meta-analytic estimated effect-sizes <span class="math inline">\(Z_{r}\)</span>, standard error and 95% confidence intervals of Blue tit analyses with highly collinear analyses removed. The meta-analytic mean for the reduced subset is denoted by the black triangle, and a dashed vertical line, with error bars representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0.
+</figcaption>
+</figure>
+</div>
 </div>
 </div>
 </section>
@@ -1235,150 +1360,150 @@ Figure&nbsp;B.4: Estimated meta-analytic mean effect size (<span class="math inl
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plot_forest_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(data, <span class="at">intercept =</span> <span class="cn">TRUE</span>, <span class="at">MA_mean =</span> <span class="cn">TRUE</span>, <span class="at">y_zoom =</span> <span class="fu">numeric</span>(<span class="dv">2</span>L)){</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(MA_mean <span class="sc">==</span> <span class="cn">FALSE</span>){</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    data <span class="ot">&lt;-</span> <span class="fu">filter</span>(data, study_id <span class="sc">!=</span> <span class="st">"overall"</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  plot_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(study_id) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_nest</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">hoist</span>(data, <span class="st">"estimate"</span>,<span class="at">.remove =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">hoist</span>(estimate, <span class="at">y50 =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>estimate) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest</span>(data) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="fu">desc</span>(type)) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">type =</span> forcats<span class="sc">::</span><span class="fu">as_factor</span>(type)) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(type) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="fu">desc</span>(y50),<span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">study_id =</span> forcats<span class="sc">::</span><span class="fu">as_factor</span>(study_id),</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>           <span class="at">point_shape =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(type, <span class="st">"summary"</span>) <span class="sc">~</span> <span class="st">"diamond"</span>,</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>                                   <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"circle"</span>))</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(<span class="at">y =</span> estimate, </span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>                        <span class="at">x =</span>  study_id,</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>                        <span class="at">ymin =</span> conf.low, </span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>                        <span class="at">ymax =</span> conf.high,</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>                        <span class="co"># shape = type,</span></span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>                        <span class="at">shape =</span> point_shape,</span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>                        <span class="at">colour =</span> estimate_type</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>                        )) <span class="sc">+</span></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_pointrange</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    ggforestplot<span class="sc">::</span><span class="fu">theme_forest</span>() <span class="sc">+</span></span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">linewidth =</span> <span class="fl">0.10</span>, <span class="at">colour =</span> <span class="st">"black"</span>),</span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.line.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>          <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Helvetica"</span>)) <span class="sc">+</span></span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">guides</span>(<span class="at">shape =</span> <span class="st">"none"</span>, <span class="at">colour =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_flip</span>(<span class="at">ylim =</span> y_zoom) <span class="sc">+</span></span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Model estimated out of sample predictions, stem counts"</span>,</span>
-<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>         <span class="at">x =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
-<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_extended</span>(<span class="dv">10</span>)) <span class="sc">+</span></span>
-<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    NatParksPalettes<span class="sc">::</span><span class="fu">scale_color_natparks_d</span>(<span class="st">"Glacier"</span>) </span>
-<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(intercept <span class="sc">==</span> <span class="cn">TRUE</span>){</span>
-<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>)</span>
-<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(MA_mean <span class="sc">==</span> <span class="cn">TRUE</span>){</span>
-<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> p <span class="sc">+</span></span>
-<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> plot_data <span class="sc">%&gt;%</span></span>
-<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"summary"</span>, estimate_type <span class="sc">==</span> <span class="st">"y25"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">pluck</span>(<span class="st">"estimate"</span>)),</span>
-<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> data,</span>
-<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>                 <span class="at">colour =</span> <span class="st">"#01353D"</span>,</span>
-<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>                 <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> plot_data <span class="sc">%&gt;%</span></span>
-<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"summary"</span>, estimate_type <span class="sc">==</span> <span class="st">"y50"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">pluck</span>(<span class="st">"estimate"</span>)),</span>
-<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> data,</span>
-<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>                 <span class="at">colour =</span> <span class="st">"#088096"</span>,</span>
-<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>                 <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> plot_data <span class="sc">%&gt;%</span></span>
-<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"summary"</span>, estimate_type <span class="sc">==</span> <span class="st">"y75"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">pluck</span>(<span class="st">"estimate"</span>)),</span>
-<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> data,</span>
-<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>                 <span class="at">colour =</span> <span class="st">"#58B3C7"</span> ,</span>
-<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a>                 <span class="at">linetype =</span> <span class="st">"dashed"</span>)</span>
-<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(p)</span>
-<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co"> put into R/ and build into package to call!</span></span>
-<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a>fit_MA_mv <span class="ot">&lt;-</span> <span class="cf">function</span>(effects_analysis, Z_colname, VZ_colname, estimate_type){</span>
-<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a>  Zr <span class="ot">&lt;-</span> effects_analysis <span class="sc">%&gt;%</span>  <span class="fu">pull</span>({{Z_colname}})</span>
-<span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a>  VZr <span class="ot">&lt;-</span> effects_analysis <span class="sc">%&gt;%</span>  <span class="fu">pull</span>({{VZ_colname}})</span>
-<span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a>  mod <span class="ot">&lt;-</span> ManyEcoEvo<span class="sc">::</span><span class="fu">fit_metafor_mv</span>(<span class="at">estimate =</span> Zr, </span>
-<span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a>                        <span class="at">variance =</span> VZr, </span>
-<span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a>                        <span class="at">estimate_type =</span> estimate_type, </span>
-<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data =</span> effects_analysis)</span>
-<span id="cb7-77"><a href="#cb7-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(mod)</span>
-<span id="cb7-78"><a href="#cb7-78" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-79"><a href="#cb7-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-80"><a href="#cb7-80" aria-hidden="true" tabindex="-1"></a>back_transformed_predictions <span class="ot">&lt;-</span> </span>
-<span id="cb7-81"><a href="#cb7-81" aria-hidden="true" tabindex="-1"></a>  ManyEcoEvo_yi <span class="sc">%&gt;%</span> </span>
-<span id="cb7-82"><a href="#cb7-82" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">data =</span> </span>
-<span id="cb7-83"><a href="#cb7-83" aria-hidden="true" tabindex="-1"></a>                  purrr<span class="sc">::</span><span class="fu">map</span>(data, </span>
-<span id="cb7-84"><a href="#cb7-84" aria-hidden="true" tabindex="-1"></a>                             <span class="sc">~</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(.x,</span>
-<span id="cb7-85"><a href="#cb7-85" aria-hidden="true" tabindex="-1"></a>                                             stringr<span class="sc">::</span><span class="fu">str_detect</span>(response_variable_type, <span class="st">"constructed"</span>,                                                                       <span class="at">negate =</span> <span class="cn">TRUE</span>)))) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-86"><a href="#cb7-86" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prepare_response_variables_yi</span>(<span class="at">estimate_type =</span> <span class="st">"yi"</span>,</span>
-<span id="cb7-87"><a href="#cb7-87" aria-hidden="true" tabindex="-1"></a>                                <span class="at">param_table =</span> ManyEcoEvo<span class="sc">:::</span>analysis_data_param_tables) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-88"><a href="#cb7-88" aria-hidden="true" tabindex="-1"></a>  <span class="fu">generate_yi_subsets</span>()</span>
-<span id="cb7-89"><a href="#cb7-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-90"><a href="#cb7-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-91"><a href="#cb7-91" aria-hidden="true" tabindex="-1"></a>raw_mod_data_logged <span class="ot">&lt;-</span> </span>
-<span id="cb7-92"><a href="#cb7-92" aria-hidden="true" tabindex="-1"></a>  back_transformed_predictions <span class="sc">%&gt;%</span> </span>
-<span id="cb7-93"><a href="#cb7-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(dataset <span class="sc">==</span> <span class="st">"eucalyptus"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb7-94"><a href="#cb7-94" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(estimate_type) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-95"><a href="#cb7-95" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(estimate_type, data) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-96"><a href="#cb7-96" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(data) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-97"><a href="#cb7-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">study_id =</span> id_col) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-98"><a href="#cb7-98" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hoist</span>(params, <span class="at">param_mean =</span> <span class="fu">list</span>(<span class="st">"value"</span>, <span class="dv">1</span>), <span class="at">param_sd =</span> <span class="fu">list</span>(<span class="st">"value"</span>, <span class="dv">2</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-99"><a href="#cb7-99" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb7-100"><a href="#cb7-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">exclusion_threshold =</span> param_mean <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span>param_sd) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-101"><a href="#cb7-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fit <span class="sc">&lt;</span> exclusion_threshold) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-102"><a href="#cb7-102" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_vals =</span> <span class="fu">map2</span>(fit, se.fit, log_transform, <span class="dv">1000</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-103"><a href="#cb7-103" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(log_vals) <span class="sc">%&gt;%</span></span>
-<span id="cb7-104"><a href="#cb7-104" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(study_id, </span>
-<span id="cb7-105"><a href="#cb7-105" aria-hidden="true" tabindex="-1"></a>         TeamIdentifier,</span>
-<span id="cb7-106"><a href="#cb7-106" aria-hidden="true" tabindex="-1"></a>         estimate_type, </span>
-<span id="cb7-107"><a href="#cb7-107" aria-hidden="true" tabindex="-1"></a>         <span class="fu">starts_with</span>(<span class="st">"response_"</span>), </span>
-<span id="cb7-108"><a href="#cb7-108" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>response_id_S2, </span>
-<span id="cb7-109"><a href="#cb7-109" aria-hidden="true" tabindex="-1"></a>         <span class="fu">ends_with</span>(<span class="st">"_log"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-110"><a href="#cb7-110" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(estimate_type) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-111"><a href="#cb7-111" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nest</span>()</span>
-<span id="cb7-112"><a href="#cb7-112" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb7-113"><a href="#cb7-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-114"><a href="#cb7-114" aria-hidden="true" tabindex="-1"></a>mod_data_logged <span class="ot">&lt;-</span> raw_mod_data_logged <span class="sc">%&gt;%</span> </span>
-<span id="cb7-115"><a href="#cb7-115" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">MA_mod =</span> </span>
-<span id="cb7-116"><a href="#cb7-116" aria-hidden="true" tabindex="-1"></a>           <span class="fu">map</span>(data, </span>
-<span id="cb7-117"><a href="#cb7-117" aria-hidden="true" tabindex="-1"></a>               <span class="sc">~</span><span class="fu">fit_MA_mv</span>(.x, mean_log, std.error_log, <span class="st">"yi"</span>)))</span>
-<span id="cb7-118"><a href="#cb7-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-119"><a href="#cb7-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-120"><a href="#cb7-120" aria-hidden="true" tabindex="-1"></a>plot_data_logged <span class="ot">&lt;-</span> mod_data_logged <span class="sc">%&gt;%</span> </span>
-<span id="cb7-121"><a href="#cb7-121" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tidy_mod =</span> <span class="fu">map</span>(<span class="at">.x =</span> MA_mod,</span>
-<span id="cb7-122"><a href="#cb7-122" aria-hidden="true" tabindex="-1"></a>                        <span class="sc">~</span>broom<span class="sc">::</span><span class="fu">tidy</span>(.x,</span>
-<span id="cb7-123"><a href="#cb7-123" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">conf.int =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb7-124"><a href="#cb7-124" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">include_studies =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-125"><a href="#cb7-125" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">rename</span>(<span class="at">study_id =</span> term))) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-126"><a href="#cb7-126" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(tidy_mod) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-127"><a href="#cb7-127" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> <span class="fu">c</span>(tidy_mod)) </span>
-<span id="cb7-128"><a href="#cb7-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-129"><a href="#cb7-129" aria-hidden="true" tabindex="-1"></a>plot_data_logged <span class="sc">%&gt;%</span> </span>
-<span id="cb7-130"><a href="#cb7-130" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">response_scale =</span> <span class="fu">map2</span>(estimate, std.error, log_back, <span class="dv">1000</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-131"><a href="#cb7-131" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(estimate_type, study_id, type, response_scale) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-132"><a href="#cb7-132" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(response_scale) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-133"><a href="#cb7-133" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">estimate =</span> mean_origin, <span class="at">conf.low =</span> lower, <span class="at">conf.high =</span> upper) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-134"><a href="#cb7-134" aria-hidden="true" tabindex="-1"></a><span class="co">#  filter(estimate &lt;1000) %&gt;% </span></span>
-<span id="cb7-135"><a href="#cb7-135" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_forest_2</span>(<span class="at">MA_mean =</span> T,<span class="at">y_zoom =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">140</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>plot_forest_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(data, <span class="at">intercept =</span> <span class="cn">TRUE</span>, <span class="at">MA_mean =</span> <span class="cn">TRUE</span>, <span class="at">y_zoom =</span> <span class="fu">numeric</span>(<span class="dv">2</span>L)){</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(MA_mean <span class="sc">==</span> <span class="cn">FALSE</span>){</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    data <span class="ot">&lt;-</span> <span class="fu">filter</span>(data, study_id <span class="sc">!=</span> <span class="st">"overall"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  plot_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(study_id) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_nest</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">hoist</span>(data, <span class="st">"estimate"</span>,<span class="at">.remove =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">hoist</span>(estimate, <span class="at">y50 =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>estimate) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest</span>(data) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="fu">desc</span>(type)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">type =</span> forcats<span class="sc">::</span><span class="fu">as_factor</span>(type)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(type) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="fu">desc</span>(y50),<span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">study_id =</span> forcats<span class="sc">::</span><span class="fu">as_factor</span>(study_id),</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>           <span class="at">point_shape =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(type, <span class="st">"summary"</span>) <span class="sc">~</span> <span class="st">"diamond"</span>,</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>                                   <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"circle"</span>))</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(<span class="at">y =</span> estimate, </span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>                        <span class="at">x =</span>  study_id,</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>                        <span class="at">ymin =</span> conf.low, </span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>                        <span class="at">ymax =</span> conf.high,</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>                        <span class="co"># shape = type,</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>                        <span class="at">shape =</span> point_shape,</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>                        <span class="at">colour =</span> estimate_type</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>                        )) <span class="sc">+</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_pointrange</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>    ggforestplot<span class="sc">::</span><span class="fu">theme_forest</span>() <span class="sc">+</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">linewidth =</span> <span class="fl">0.10</span>, <span class="at">colour =</span> <span class="st">"black"</span>),</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.line.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>          <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Helvetica"</span>)) <span class="sc">+</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">guides</span>(<span class="at">shape =</span> <span class="st">"none"</span>, <span class="at">colour =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_flip</span>(<span class="at">ylim =</span> y_zoom) <span class="sc">+</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Model estimated out of sample predictions, stem counts"</span>,</span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>         <span class="at">x =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_extended</span>(<span class="dv">10</span>)) <span class="sc">+</span></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>    NatParksPalettes<span class="sc">::</span><span class="fu">scale_color_natparks_d</span>(<span class="st">"Glacier"</span>) </span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(intercept <span class="sc">==</span> <span class="cn">TRUE</span>){</span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>)</span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(MA_mean <span class="sc">==</span> <span class="cn">TRUE</span>){</span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> p <span class="sc">+</span></span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> plot_data <span class="sc">%&gt;%</span></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"summary"</span>, estimate_type <span class="sc">==</span> <span class="st">"y25"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">pluck</span>(<span class="st">"estimate"</span>)),</span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> data,</span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>                 <span class="at">colour =</span> <span class="st">"#01353D"</span>,</span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>                 <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> plot_data <span class="sc">%&gt;%</span></span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"summary"</span>, estimate_type <span class="sc">==</span> <span class="st">"y50"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">pluck</span>(<span class="st">"estimate"</span>)),</span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> data,</span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>                 <span class="at">colour =</span> <span class="st">"#088096"</span>,</span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>                 <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> plot_data <span class="sc">%&gt;%</span></span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"summary"</span>, estimate_type <span class="sc">==</span> <span class="st">"y75"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">pluck</span>(<span class="st">"estimate"</span>)),</span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> data,</span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a>                 <span class="at">colour =</span> <span class="st">"#58B3C7"</span> ,</span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a>                 <span class="at">linetype =</span> <span class="st">"dashed"</span>)</span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(p)</span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co"> put into R/ and build into package to call!</span></span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a>fit_MA_mv <span class="ot">&lt;-</span> <span class="cf">function</span>(effects_analysis, Z_colname, VZ_colname, estimate_type){</span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a>  Zr <span class="ot">&lt;-</span> effects_analysis <span class="sc">%&gt;%</span>  <span class="fu">pull</span>({{Z_colname}})</span>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a>  VZr <span class="ot">&lt;-</span> effects_analysis <span class="sc">%&gt;%</span>  <span class="fu">pull</span>({{VZ_colname}})</span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a>  mod <span class="ot">&lt;-</span> ManyEcoEvo<span class="sc">::</span><span class="fu">fit_metafor_mv</span>(<span class="at">estimate =</span> Zr, </span>
+<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a>                        <span class="at">variance =</span> VZr, </span>
+<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a>                        <span class="at">estimate_type =</span> estimate_type, </span>
+<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data =</span> effects_analysis)</span>
+<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(mod)</span>
+<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a>back_transformed_predictions <span class="ot">&lt;-</span> </span>
+<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a>  ManyEcoEvo_yi <span class="sc">%&gt;%</span> </span>
+<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">data =</span> </span>
+<span id="cb8-83"><a href="#cb8-83" aria-hidden="true" tabindex="-1"></a>                  purrr<span class="sc">::</span><span class="fu">map</span>(data, </span>
+<span id="cb8-84"><a href="#cb8-84" aria-hidden="true" tabindex="-1"></a>                             <span class="sc">~</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(.x,</span>
+<span id="cb8-85"><a href="#cb8-85" aria-hidden="true" tabindex="-1"></a>                                             stringr<span class="sc">::</span><span class="fu">str_detect</span>(response_variable_type, <span class="st">"constructed"</span>,                                                                       <span class="at">negate =</span> <span class="cn">TRUE</span>)))) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-86"><a href="#cb8-86" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prepare_response_variables_yi</span>(<span class="at">estimate_type =</span> <span class="st">"yi"</span>,</span>
+<span id="cb8-87"><a href="#cb8-87" aria-hidden="true" tabindex="-1"></a>                                <span class="at">param_table =</span> ManyEcoEvo<span class="sc">:::</span>analysis_data_param_tables) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-88"><a href="#cb8-88" aria-hidden="true" tabindex="-1"></a>  <span class="fu">generate_yi_subsets</span>()</span>
+<span id="cb8-89"><a href="#cb8-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-90"><a href="#cb8-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-91"><a href="#cb8-91" aria-hidden="true" tabindex="-1"></a>raw_mod_data_logged <span class="ot">&lt;-</span> </span>
+<span id="cb8-92"><a href="#cb8-92" aria-hidden="true" tabindex="-1"></a>  back_transformed_predictions <span class="sc">%&gt;%</span> </span>
+<span id="cb8-93"><a href="#cb8-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(dataset <span class="sc">==</span> <span class="st">"eucalyptus"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-94"><a href="#cb8-94" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(estimate_type) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-95"><a href="#cb8-95" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(estimate_type, data) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-96"><a href="#cb8-96" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(data) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-97"><a href="#cb8-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">study_id =</span> id_col) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-98"><a href="#cb8-98" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hoist</span>(params, <span class="at">param_mean =</span> <span class="fu">list</span>(<span class="st">"value"</span>, <span class="dv">1</span>), <span class="at">param_sd =</span> <span class="fu">list</span>(<span class="st">"value"</span>, <span class="dv">2</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-99"><a href="#cb8-99" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-100"><a href="#cb8-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">exclusion_threshold =</span> param_mean <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span>param_sd) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-101"><a href="#cb8-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fit <span class="sc">&lt;</span> exclusion_threshold) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-102"><a href="#cb8-102" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_vals =</span> <span class="fu">map2</span>(fit, se.fit, log_transform, <span class="dv">1000</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-103"><a href="#cb8-103" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(log_vals) <span class="sc">%&gt;%</span></span>
+<span id="cb8-104"><a href="#cb8-104" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(study_id, </span>
+<span id="cb8-105"><a href="#cb8-105" aria-hidden="true" tabindex="-1"></a>         TeamIdentifier,</span>
+<span id="cb8-106"><a href="#cb8-106" aria-hidden="true" tabindex="-1"></a>         estimate_type, </span>
+<span id="cb8-107"><a href="#cb8-107" aria-hidden="true" tabindex="-1"></a>         <span class="fu">starts_with</span>(<span class="st">"response_"</span>), </span>
+<span id="cb8-108"><a href="#cb8-108" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>response_id_S2, </span>
+<span id="cb8-109"><a href="#cb8-109" aria-hidden="true" tabindex="-1"></a>         <span class="fu">ends_with</span>(<span class="st">"_log"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-110"><a href="#cb8-110" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(estimate_type) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-111"><a href="#cb8-111" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nest</span>()</span>
+<span id="cb8-112"><a href="#cb8-112" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-113"><a href="#cb8-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-114"><a href="#cb8-114" aria-hidden="true" tabindex="-1"></a>mod_data_logged <span class="ot">&lt;-</span> raw_mod_data_logged <span class="sc">%&gt;%</span> </span>
+<span id="cb8-115"><a href="#cb8-115" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">MA_mod =</span> </span>
+<span id="cb8-116"><a href="#cb8-116" aria-hidden="true" tabindex="-1"></a>           <span class="fu">map</span>(data, </span>
+<span id="cb8-117"><a href="#cb8-117" aria-hidden="true" tabindex="-1"></a>               <span class="sc">~</span><span class="fu">fit_MA_mv</span>(.x, mean_log, std.error_log, <span class="st">"yi"</span>)))</span>
+<span id="cb8-118"><a href="#cb8-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-119"><a href="#cb8-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-120"><a href="#cb8-120" aria-hidden="true" tabindex="-1"></a>plot_data_logged <span class="ot">&lt;-</span> mod_data_logged <span class="sc">%&gt;%</span> </span>
+<span id="cb8-121"><a href="#cb8-121" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tidy_mod =</span> <span class="fu">map</span>(<span class="at">.x =</span> MA_mod,</span>
+<span id="cb8-122"><a href="#cb8-122" aria-hidden="true" tabindex="-1"></a>                        <span class="sc">~</span>broom<span class="sc">::</span><span class="fu">tidy</span>(.x,</span>
+<span id="cb8-123"><a href="#cb8-123" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">conf.int =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb8-124"><a href="#cb8-124" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">include_studies =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-125"><a href="#cb8-125" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">rename</span>(<span class="at">study_id =</span> term))) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-126"><a href="#cb8-126" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(tidy_mod) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-127"><a href="#cb8-127" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> <span class="fu">c</span>(tidy_mod)) </span>
+<span id="cb8-128"><a href="#cb8-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-129"><a href="#cb8-129" aria-hidden="true" tabindex="-1"></a>plot_data_logged <span class="sc">%&gt;%</span> </span>
+<span id="cb8-130"><a href="#cb8-130" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">response_scale =</span> <span class="fu">map2</span>(estimate, std.error, log_back, <span class="dv">1000</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-131"><a href="#cb8-131" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(estimate_type, study_id, type, response_scale) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-132"><a href="#cb8-132" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(response_scale) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-133"><a href="#cb8-133" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">estimate =</span> mean_origin, <span class="at">conf.low =</span> lower, <span class="at">conf.high =</span> upper) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-134"><a href="#cb8-134" aria-hidden="true" tabindex="-1"></a><span class="co">#  filter(estimate &lt;1000) %&gt;% </span></span>
+<span id="cb8-135"><a href="#cb8-135" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_forest_2</span>(<span class="at">MA_mean =</span> T,<span class="at">y_zoom =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">140</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="fig-euc-yi-forest-plot-full" class="quarto-figure quarto-figure-center anchored" width="672">
+<div id="fig-euc-yi-forest-plot-full" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-euc-yi-forest-plot-full-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="SM2_EffectSizeAnalysis_files/figure-html/fig-euc-yi-forest-plot-full-1.png" class="img-fluid figure-img" width="672">
 </div>
-<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-euc-yi-forest-plot-full-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;B.5: Forest plot of meta-analytic estimated out of sample predictions, <span class="math inline">\(y_{i}\)</span>, on the response-scale (stems counts), for <em>Eucalyptus</em> analyses. Circles represent individual analysis estimates. Triangles represent the meta-analytic mean for each prediction scenario. Navy blue coloured points correspond to <span class="math inline">\(y_{25}\)</span> scenario, blue coloured points correspond to the <span class="math inline">\(y_{50}\)</span> scenario, while light blue points correspond to the <span class="math inline">\(y_{75}\)</span> scenario. Error bars are 95% confidence intervals. Outliers (observations more than 3SD above the mean) have been removed prior to model fitting.
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-euc-yi-forest-plot-full-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;B.6: Forest plot of meta-analytic estimated out of sample predictions, <span class="math inline">\(y_{i}\)</span>, on the response-scale (stems counts), for <em>Eucalyptus</em> analyses. Circles represent individual analysis estimates. Triangles represent the meta-analytic mean for each prediction scenario. Navy blue coloured points correspond to <span class="math inline">\(y_{25}\)</span> scenario, blue coloured points correspond to the <span class="math inline">\(y_{50}\)</span> scenario, while light blue points correspond to the <span class="math inline">\(y_{75}\)</span> scenario. Error bars are 95% confidence intervals. Outliers (observations more than 3SD above the mean) have been removed prior to model fitting.
 </figcaption>
 </figure>
 </div>
@@ -1519,38 +1644,28 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
     }
     stripColumnClz(note)
-    const typesetMath = (el) => {
-      if (window.MathJax) {
-        // MathJax Typeset
-        window.MathJax.typeset([el]);
-      } else if (window.katex) {
-        // KaTeX Render
-        var mathElements = el.getElementsByClassName("math");
-        var macros = [];
-        for (var i = 0; i < mathElements.length; i++) {
-          var texText = mathElements[i].firstChild;
-          if (mathElements[i].tagName == "SPAN") {
-            window.katex.render(texText.data, mathElements[i], {
-              displayMode: mathElements[i].classList.contains('display'),
-              throwOnError: false,
-              macros: macros,
-              fleqn: false
-            });
-          }
-        }
-      }
-    }
     if (id === null || id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
       if (note.children && note.children.length > 2) {
-        for (let i = 0; i < 2; i++) {
-          container.appendChild(note.children[i].cloneNode(true));
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
         }
-        typesetMath(container);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
         return container.innerHTML
       } else {
-        typesetMath(note);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
         return note.innerHTML;
       }
     } else {
@@ -1559,8 +1674,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (anchorLink) {
         anchorLink.remove();
       }
-      typesetMath(note);
-      return note.innerHTML;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
     }
   }
   for (var i=0; i<xrefs.length; i++) {
