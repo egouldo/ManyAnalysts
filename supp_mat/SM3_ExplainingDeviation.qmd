@@ -54,7 +54,7 @@ fit_MA_mv <- function(effects_analysis, Z_colname, VZ_colname, estimate_type){
                                     data = effects_analysis)
   return(mod)
 }
-#TODO I don't think we need the forest function plotting in this document
+
 plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
   if(MA_mean == FALSE){
     data <- filter(data, study_id != "overall")
@@ -104,7 +104,7 @@ plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
   print(p)
 }
 
-#TODO I think we can delete this
+
 plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE){
   if(MA_mean == FALSE){
     data <- filter(data, study_id != "overall")
@@ -1084,8 +1084,6 @@ ManyEcoEvo_yi_viz %>%
 ```
 
 ## Deviation scores as explained by the distinctiveness of variables in each analysis
-
-### Effect Sizes $Z_r$ {#sec-sorensen-Zr}
 
 ### Out of sample predictions $y_i$ {#sec-sorensen-yi}
 
