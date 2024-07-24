@@ -1,4 +1,3 @@
-targets
 withr
 here
 tidyverse
@@ -17,7 +16,7 @@ gt
 Matrix
 lme4
 MuMIn
-ManyAnalysts
+ManyEcoEvo
 tidymodels
 broom
 scales
@@ -32,3 +31,5 @@ workflows
 workflowsets
 yardstick
 multilevelmod
+rlang
+patchwork

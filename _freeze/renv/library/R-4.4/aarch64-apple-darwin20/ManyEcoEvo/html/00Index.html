@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head><title>R: Meta-analyse data from 'Many-Analysts' style studies</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body><div class="container">
+<h1> Meta-analyse data from 'Many-Analysts' style studies
+<img class="toplogo" src="../../../doc/html/Rlogo.svg" alt="[R logo]" />
+</h1>
+<hr/>
+<div style="text-align: center;">
+<a href="../../../doc/html/packages.html"><img class="arrow" src="../../../doc/html/left.jpg" alt="[Up]" /></a>
+<a href="../../../doc/html/index.html"><img class="arrow" src="../../../doc/html/up.jpg" alt="[Top]" /></a>
+</div><h2>Documentation for package &lsquo;ManyEcoEvo&rsquo; version 1.5.0.9000</h2>
+
+<ul><li><a href="../DESCRIPTION">DESCRIPTION file</a>.</li>
+</ul>
+
+<h2>Help Pages</h2>
+
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="anonymise_teams.html">anonymise_teams</a></td>
+<td>Anonymise ManyEcoEvo Data</td></tr>
+<tr><td style="width: 25%;"><a href="apply_sorensen_calc.html">apply_sorensen_calc</a></td>
+<td>Applies the sorensen diversity index calculation to variable diversity dataset</td></tr>
+<tr><td style="width: 25%;"><a href="apply_VZ_exclusions.html">apply_VZ_exclusions</a></td>
+<td>Apply VZ exclusion to a data-frame containing list-columns of yi subsets</td></tr>
+<tr><td style="width: 25%;"><a href="apportion_heterogeneity_ml.html">apportion_heterogeneity_ml</a></td>
+<td>Apportion heterogeneity of a multi-level meta-analytic model</td></tr>
+<tr><td style="width: 25%;"><a href="assign_transformation_type.html">assign_transformation_type</a></td>
+<td>Assign back-transformation type to be applied to analysis point-estimates</td></tr>
+<tr><td style="width: 25%;"><a href="augment_prediction_data.html">augment_prediction_data</a></td>
+<td>Augment analyst out-of-sample prediction data according to the outcome of pointblank interrogation</td></tr>
+<tr><td style="width: 25%;"><a href="back_transform_response_vars_yi.html">back_transform_response_vars_yi</a></td>
+<td>Back Transform Response Variables - yi</td></tr>
+<tr><td style="width: 25%;"><a href="box_cox_transform.html">box_cox_transform</a></td>
+<td>Box-cox transform absolute deviation from the meta-analytic mean scores</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_deviation_score.html">calculate_deviation_score</a></td>
+<td>Calculate deviation from meta-analytic mean</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_sorensen_diversity_index.html">calculate_sorensen_diversity_index</a></td>
+<td>Calculate mean sorensen diversity index values for an analyst dataset</td></tr>
+<tr><td style="width: 25%;"><a href="calc_I2_ml.html">calc_I2_ml</a></td>
+<td>Calculate I2 for a multilevel meta-analytic model</td></tr>
+<tr><td style="width: 25%;"><a href="capwords.html">capwords</a></td>
+<td>Capitalise Words</td></tr>
+<tr><td style="width: 25%;"><a href="clean_response_transformation.html">clean_response_transformation</a></td>
+<td>Clean response transformation variable</td></tr>
+<tr><td style="width: 25%;"><a href="compare_ml_MA.html">compare_ml_MA</a></td>
+<td>Compare two fitted multi-level models</td></tr>
+<tr><td style="width: 25%;"><a href="compute_MA_inputs.html">compute_MA_inputs</a></td>
+<td>Compute meta-analysis inputs for a nested-dataframe containing different datasets/subsets of analyst data</td></tr>
+<tr><td style="width: 25%;"><a href="compute_metaanalysis_inputs.html">compute_metaanalysis_inputs</a></td>
+<td>Compute all metaanalysis inputs for different types of estimates</td></tr>
+<tr><td style="width: 25%;"><a href="conversion.html">conversion</a></td>
+<td>Conditionally apply back-transformation</td></tr>
+<tr><td style="width: 25%;"><a href="conversion_2.html">conversion_2</a></td>
+<td>Conditionally apply back-transformation</td></tr>
+<tr><td style="width: 25%;"><a href="convert_predictions.html">convert_predictions</a></td>
+<td>Convert Predictions</td></tr>
+<tr><td style="width: 25%;"><a href="count_analyses_variables_used.html">count_analyses_variables_used</a></td>
+<td>Count number of analyses each variable is used</td></tr>
+<tr><td style="width: 25%;"><a href="count_binary_coded_features.html">count_binary_coded_features</a></td>
+<td>Summarise binary coded features of analyses</td></tr>
+<tr><td style="width: 25%;"><a href="count_teams_analyses.html">count_teams_analyses</a></td>
+<td>Summarise number of analyst teams and total analyses per dataset</td></tr>
+<tr><td style="width: 25%;"><a href="cube_back.html">cube_back</a></td>
+<td>Back transform beta estimates for models with $x^3$-link</td></tr>
+<tr><td style="width: 25%;"><a href="divide_back.html">divide_back</a></td>
+<td>Back transform beta estimates or out-of-sample predictions from models whose response variable has been divided by some number</td></tr>
+<tr><td style="width: 25%;"><a href="est_to_zr.html">est_to_zr</a></td>
+<td>Convert estimate to Zr</td></tr>
+<tr><td style="width: 25%;"><a href="exclude_extreme_VZ.html">exclude_extreme_VZ</a></td>
+<td>Exclude extreme values of VZ from a dataframe of standardised predictions</td></tr>
+<tr><td style="width: 25%;"><a href="fit_boxcox_ratings_cat.html">fit_boxcox_ratings_cat</a></td>
+<td>Fit model of boxcox deviation scores as function of continuous ratings</td></tr>
+<tr><td style="width: 25%;"><a href="fit_boxcox_ratings_cont.html">fit_boxcox_ratings_cont</a></td>
+<td>Fit model of boxcox deviation scores as function of continuous ratings</td></tr>
+<tr><td style="width: 25%;"><a href="fit_boxcox_ratings_ord.html">fit_boxcox_ratings_ord</a></td>
+<td>Fit model of boxcox deviation scores as function of continuous ratings</td></tr>
+<tr><td style="width: 25%;"><a href="fit_metafor_mv.html">fit_metafor_mv</a></td>
+<td>Fit Multivariate Metaregression using metafoR</td></tr>
+<tr><td style="width: 25%;"><a href="fit_metafor_mv_reduced.html">fit_metafor_mv_reduced</a></td>
+<td>Fit reduced multivariate metaregression model</td></tr>
+<tr><td style="width: 25%;"><a href="fit_metafor_uni.html">fit_metafor_uni</a></td>
+<td>Fit univariate meta-analysis with metafor</td></tr>
+<tr><td style="width: 25%;"><a href="fit_sorensen_glm.html">fit_sorensen_glm</a></td>
+<td>Fit univariate glm of deviation scores on sorensen diversity index</td></tr>
+<tr><td style="width: 25%;"><a href="fit_uni_mixed_effects.html">fit_uni_mixed_effects</a></td>
+<td>Fit univariate glm of deviation scores on random effects inclusion</td></tr>
+<tr><td style="width: 25%;"><a href="generate_collinearity_subset.html">generate_collinearity_subset</a></td>
+<td>Generate Collinearity Data Subset</td></tr>
+<tr><td style="width: 25%;"><a href="generate_exclusion_subsets.html">generate_exclusion_subsets</a></td>
+<td>Generate subsets of analyst data based on different exclusion criteria</td></tr>
+<tr><td style="width: 25%;"><a href="generate_expertise_subsets.html">generate_expertise_subsets</a></td>
+<td>Generate Expertise Data Subsets</td></tr>
+<tr><td style="width: 25%;"><a href="generate_outlier_subsets.html">generate_outlier_subsets</a></td>
+<td>Generate Outlier Subsets for ManyEcoEvo datasets</td></tr>
+<tr><td style="width: 25%;"><a href="generate_rating_subsets.html">generate_rating_subsets</a></td>
+<td>Generate subsets of ManyEcoEvo Data based on Peer Review Ratings</td></tr>
+<tr><td style="width: 25%;"><a href="generate_yi_subsets.html">generate_yi_subsets</a></td>
+<td>Generate subsets of out-of-sample predictions data by 'estimate_type' for multiple analysis datasets.</td></tr>
+<tr><td style="width: 25%;"><a href="get_diversity_data.html">get_diversity_data</a></td>
+<td>Get Diversity Data</td></tr>
+<tr><td style="width: 25%;"><a href="get_MA_fit_stats.html">get_MA_fit_stats</a></td>
+<td>Extract meta-analytic statistics like I^2, etc.</td></tr>
+<tr><td style="width: 25%;"><a href="gg_forest.html">gg_forest</a></td>
+<td>Forestplot with ggplot2</td></tr>
+<tr><td style="width: 25%;"><a href="i2_ml.html">i2_ml</a></td>
+<td>i2_ml</td></tr>
+<tr><td style="width: 25%;"><a href="identity_back.html">identity_back</a></td>
+<td>Back transform beta estimates for models with identity-link</td></tr>
+<tr><td style="width: 25%;"><a href="inverse_back.html">inverse_back</a></td>
+<td>Back transform beta estimates for models with $1/x$ link</td></tr>
+<tr><td style="width: 25%;"><a href="logit_back.html">logit_back</a></td>
+<td>Back transform beta estimates for models with logit-link</td></tr>
+<tr><td style="width: 25%;"><a href="log_back.html">log_back</a></td>
+<td>Back transform beta estimates for models with log-link</td></tr>
+<tr><td style="width: 25%;"><a href="log_transform.html">log_transform</a></td>
+<td>log transform response-scale yi estimates</td></tr>
+<tr><td style="width: 25%;"><a href="make_param_table.html">make_param_table</a></td>
+<td>Make paramater table</td></tr>
+<tr><td style="width: 25%;"><a href="make_viz.html">make_viz</a></td>
+<td>Make visualisations wrapper function</td></tr>
+<tr><td style="width: 25%;"><a href="meta_analyse_datasets.html">meta_analyse_datasets</a></td>
+<td>Meta-analyses multiple datasets or subsets of datasets of analyst data</td></tr>
+<tr><td style="width: 25%;"><a href="named_group_split.html">named_group_split</a></td>
+<td>Split data frame by groups and name elements</td></tr>
+<tr><td style="width: 25%;"><a href="plot_cont_rating_effects.html">plot_cont_rating_effects</a></td>
+<td>Plot Marginal Effects for Numeric Rating Model</td></tr>
+<tr><td style="width: 25%;"><a href="plot_effects_diversity.html">plot_effects_diversity</a></td>
+<td>Marginal Effects Plot of Diversity Index Model</td></tr>
+<tr><td style="width: 25%;"><a href="plot_model_means_box_cox_cat.html">plot_model_means_box_cox_cat</a></td>
+<td>plot_model_means_box_cox_cat</td></tr>
+<tr><td style="width: 25%;"><a href="plot_model_means_orchard.html">plot_model_means_orchard</a></td>
+<td>plot_model_means_orchard</td></tr>
+<tr><td style="width: 25%;"><a href="power_back.html">power_back</a></td>
+<td>Back transform beta estimates for models with power-link</td></tr>
+<tr><td style="width: 25%;"><a href="pred_to_Z.html">pred_to_Z</a></td>
+<td>Standardize Out-Of-Sample Predictions</td></tr>
+<tr><td style="width: 25%;"><a href="prepare_diversity_raw.html">prepare_diversity_raw</a></td>
+<td>Prepare diversity index data</td></tr>
+<tr><td style="width: 25%;"><a href="prepare_ManyEcoEvo.html">prepare_ManyEcoEvo</a></td>
+<td>Prepare ManyEcoEvo raw dataset</td></tr>
+<tr><td style="width: 25%;"><a href="prepare_ManyEcoEvo_yi.html">prepare_ManyEcoEvo_yi</a></td>
+<td>Prepare ManyEcoEvo raw dataset for out-of-sample predictions</td></tr>
+<tr><td style="width: 25%;"><a href="prepare_response_variables.html">prepare_response_variables</a></td>
+<td>Prepare response variable data for nested ManyEcoEvo dataset</td></tr>
+<tr><td style="width: 25%;"><a href="prepare_response_variables_yi.html">prepare_response_variables_yi</a></td>
+<td>Prepare response variable data for nested ManyEcoEvo dataset - out of sample predictions only</td></tr>
+<tr><td style="width: 25%;"><a href="prepare_review_data.html">prepare_review_data</a></td>
+<td>Prepare peer-review data from Qualtrics</td></tr>
+<tr><td style="width: 25%;"><a href="preprocess_prediction_files.html">preprocess_prediction_files</a></td>
+<td>Preprocess Prediction Files</td></tr>
+<tr><td style="width: 25%;"><a href="preprocess_updated_prediction_files.html">preprocess_updated_prediction_files</a></td>
+<td>Performs QA on re-submitted out-of-sample prediction files</td></tr>
+<tr><td style="width: 25%;"><a href="probit_back.html">probit_back</a></td>
+<td>Back transform beta estimates for models with probit-link</td></tr>
+<tr><td style="width: 25%;"><a href="read_submission_data.html">read_submission_data</a></td>
+<td>Read out-of-sample-prediction analyst submission data</td></tr>
+<tr><td style="width: 25%;"><a href="rm_inf_na.html">rm_inf_na</a></td>
+<td>Removes infinite and NA values from a dataframe of standardised effects</td></tr>
+<tr><td style="width: 25%;"><a href="run_model_checks.html">run_model_checks</a></td>
+<td>Perform model checking on series of fitted models for different datasets, exclusion sets and estimate types</td></tr>
+<tr><td style="width: 25%;"><a href="square_back.html">square_back</a></td>
+<td>Back transform beta estimates for models with $x^2$-link</td></tr>
+<tr><td style="width: 25%;"><a href="square_root_back.html">square_root_back</a></td>
+<td>Back transform beta estimates or out-of-sample predictions from models whose response variable has been transformed by the square root</td></tr>
+<tr><td style="width: 25%;"><a href="standardise_response.html">standardise_response</a></td>
+<td>Standardise Response Variable</td></tr>
+<tr><td style="width: 25%;"><a href="subset_fns_yi.html">subset_fns_yi</a></td>
+<td>Subsetting Functions for yi analysis</td></tr>
+<tr><td style="width: 25%;"><a href="subset_fns_Zr.html">subset_fns_Zr</a></td>
+<td>Subsetting Functions for Zr analysis</td></tr>
+<tr><td style="width: 25%;"><a href="summarise_analyses_by_reviewer.html">summarise_analyses_by_reviewer</a></td>
+<td>Summarise analyses reviewed by reviewer</td></tr>
+<tr><td style="width: 25%;"><a href="summarise_analysis_types.html">summarise_analysis_types</a></td>
+<td>Summarise Analysis Types</td></tr>
+<tr><td style="width: 25%;"><a href="summarise_conclusions.html">summarise_conclusions</a></td>
+<td>Summarise counts of qualitative conclusions across all datasets</td></tr>
+<tr><td style="width: 25%;"><a href="summarise_conclusions_data.html">summarise_conclusions_data</a></td>
+<td>Count qualitative conclusions across all analyses for each dataset</td></tr>
+<tr><td style="width: 25%;"><a href="summarise_model_composition.html">summarise_model_composition</a></td>
+<td>Summarise Model Composition</td></tr>
+<tr><td style="width: 25%;"><a href="summarise_model_composition_data.html">summarise_model_composition_data</a></td>
+<td>Summarise model composition for a single dataframe of out of sample predictions or out or effect sizes</td></tr>
+<tr><td style="width: 25%;"><a href="summarise_reviews.html">summarise_reviews</a></td>
+<td>Summarise Peer-Reviews</td></tr>
+<tr><td style="width: 25%;"><a href="summarise_reviews_per_analysis.html">summarise_reviews_per_analysis</a></td>
+<td>Summarise reviews per each analysis</td></tr>
+<tr><td style="width: 25%;"><a href="summarise_sorensen_index.html">summarise_sorensen_index</a></td>
+<td>Summarise Mean Sorensen's Index Estimates</td></tr>
+<tr><td style="width: 25%;"><a href="summarise_sorensen_index_data.html">summarise_sorensen_index_data</a></td>
+<td>Summarise Sorensen's Mean Index Estimates for a dataframe</td></tr>
+<tr><td style="width: 25%;"><a href="summarise_variable_counts.html">summarise_variable_counts</a></td>
+<td>Summarise variable usage across analyses</td></tr>
+<tr><td style="width: 25%;"><a href="validate_predictions.html">validate_predictions</a></td>
+<td>Validate predictions conditioned on dataset</td></tr>
+<tr><td style="width: 25%;"><a href="validate_predictions_df_blue_tit.html">validate_predictions_df_blue_tit</a></td>
+<td>Validate out of sample predictions for blue tit dataset with pointblank package</td></tr>
+<tr><td style="width: 25%;"><a href="validate_predictions_df_euc.html">validate_predictions_df_euc</a></td>
+<td>Validate out of sample predictions for eucalytpus dataset with pointblank package</td></tr>
+<tr><td style="width: 25%;"><a href="Z_VZ_preds.html">Z_VZ_preds</a></td>
+<td>Calculate Z and VZ of out-of-sample predictions</td></tr>
+</table>
+</div></body></html>

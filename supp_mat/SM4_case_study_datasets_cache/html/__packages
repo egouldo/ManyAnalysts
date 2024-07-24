@@ -1,3 +1,10 @@
+base
+methods
+utils
+datasets
+grDevices
+graphics
+stats
 tidyverse
 ggplot2
 tibble
@@ -8,6 +15,5 @@ dplyr
 stringr
 forcats
 lubridate
-ManyAnalysts
-GGally
 ManyEcoEvo
+GGally
