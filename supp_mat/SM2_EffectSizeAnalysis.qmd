@@ -281,7 +281,12 @@ group_by(exclusion_set) %>%
                  conf.low = gt::md("95\\%CI")) %>% 
   gt::cols_merge(columns = starts_with("conf"), 
                  pattern = "[{1},{2}]") %>% 
-  gt::cols_move(columns = conf.low, after = std.error) 
+  gt::cols_move(columns = conf.low, after = std.error) %>% 
+   gt::tab_style(
+    style = list(gt::cell_text(transform = "capitalize"), 
+                 gt::cell_text(style = "italic")),
+    locations = gt::cells_body(columns = "dataset", rows = dataset == "eucalyptus")
+  ) 
 ```
 
 ```{r plot-forest-outlier-sm}
