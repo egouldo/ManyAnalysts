@@ -1566,7 +1566,7 @@ yi_multivar_singularity_convergence %>%
                   str_replace("id", "ID")),
          dataset = str_replace(dataset, "eucalyptus", "*Eucalyptus*")) %>% 
   group_by(dataset) %>% 
-  gt::gt() %>% 
+  gt::gt(rowname_col = "estimate_type") %>% 
   tab_style(
     style = list(
       cell_fill(color = scales::alpha("red", 0.6)),
@@ -1601,28 +1601,28 @@ Consequently we did not fit multivariate models on out-of-sample predictions for
 
 ```{r}
 #| label: tbl-BT-yi-multivar-summary
-#| tbl-cap: "Model summary statistic for non-singular, converging multivariate models fit to out-of-sample predictions for blue tit dataset"
+#| tbl-cap: "Model summary statistic for non-singular, converging multivariate models fit to out-of-sample predictions."
 yi_multivar_singularity_convergence %>% 
   select(-params) %>% 
-  filter(dataset == "blue tit", 
-         random_intercepts_1 == "reviewer_id") %>%
+  filter(SD_calc == TRUE) %>%
   mutate(broom_summary = 
            map(fitted_model, broom.mixed::glance), 
          performance_summary = 
            map(fitted_model, performance::performance)) %>% 
   unnest(c(performance_summary, 
            broom_summary), names_sep = "-") %>% 
-  select(dataset, estimate_type, 
-         contains(c("RMSE", "sigma",  "R2", "nobs", "ICC")), 
+  select(dataset, estimate_type, random_intercepts_1,
+         contains(c( "RMSE", "sigma",  "R2", "nobs", "ICC")), 
          -contains("AICc")) %>% 
   rename_with(~ str_remove(.x, "performance_summary-") %>%
                 str_remove("broom_summary-")) %>% 
   select(-sigma) %>% 
-  gt::gt() %>% 
-  gt::fmt(columns = function(x) rlang::is_bare_numeric(x),
-          fns = function(x) round(x, 3)) %>% 
+  relocate(nobs, .after = "ICC") %>% 
+  gt::gt(groupname_col = "dataset", rowname_col = "estimate_type") %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
-  gt::cols_label(R2_conditional = gt::md("$$R^{2}_\\text{Conditional}$$"),
+  gt::cols_label(estimate_type = "Prediction Scenario", 
+                 random_intercepts_1 = "Random Effect",
+                 R2_conditional = gt::md("$$R^{2}_\\text{Conditional}$$"),
                  R2_marginal = gt::md("$$R^{2}_\\text{Marginal}$$"),
                  Sigma = gt::md("$$\\sigma$$"),
                  dataset = "Dataset",
@@ -1632,6 +1632,12 @@ yi_multivar_singularity_convergence %>%
                 style = cell_text(style = "italic")) %>% 
   gt::cols_hide(dataset) %>% 
   gt_fmt_yi(columns = "estimate_type") %>% 
+  gt::fmt_scientific(columns = c("RMSE", "Sigma"),
+                     decimals = 2) %>%
+  gt::fmt_number(columns = c(gt::starts_with("R2"), "ICC"),
+                 decimals = 2) %>%
+  gt::tab_style(style = cell_text(style = "italic", transform = "capitalize"), 
+                locations = cells_row_groups(groups = "eucalyptus")) %>% 
   gt::as_raw_html()
 ```
 
@@ -1641,13 +1647,12 @@ yi_multivar_singularity_convergence %>%
 #| column: page-right
 
 yi_multivar_singularity_convergence %>% 
-  filter(dataset == "blue tit", 
-         random_intercepts_1 == "reviewer_id") %>% 
-  select(estimate_type, params) %>% 
+  filter(SD_calc == TRUE) %>% 
+  filter(random_intercepts_1 != "study_id" | dataset != "blue tit") %>% #rm eliminated modl
+  select(dataset, estimate_type, params) %>% 
   unnest(params) %>% 
   relocate(c(Effects, Group), .after = Parameter) %>% 
-  group_by() %>% 
-  gt::gt(rowname_col = "estimate_type") %>% 
+  gt::gt(rowname_col = "estimate_type", groupname_col = "dataset") %>% 
   gt::text_transform(fn = function(x) str_replace(x, "publishable_as_is", "Categorical Peer Rating") %>% 
                        str_replace(., "rate_analysis", "Continuous Peer Rating") %>% 
                        str_replace(., "mean_diversity_index", "Sorensen's Index") %>% 
@@ -1667,19 +1672,22 @@ yi_multivar_singularity_convergence %>%
       paste0("")
     }
   ) %>% 
-  gt::text_transform(locations = cells_body(columns = Group, rows = Group == "reviewer_id"),
+  gt::text_transform(locations = cells_body(columns = Group, rows = Group %in% c("reviewer_id", "study_id")),
                      fn = function(x){
                        str_replace(x, "_", " ") %>% 
                          Hmisc::capitalize() %>% 
                          str_replace("id", "ID")
                      }) %>% 
-  
   gt::cols_label(CI_low = gt::md("95\\%CI")) %>% 
   gt::cols_label(df_error = "df") %>% 
   gt::cols_merge(columns = starts_with("CI_"), 
                  pattern = "[{1},{2}]") %>% 
-  gt::cols_hide("CI")
+  gt::tab_style(style = cell_text(style = "italic", transform = "capitalize"), 
+                locations = cells_row_groups(groups = "eucalyptus")) %>% 
+  gt::cols_hide("CI") %>% 
   gt_fmt_yi(columns = "estimate_type") %>% 
+  gt::fmt_scientific(columns = c("Coefficient", "SE", "t", gt::contains("CI")), 
+                     decimals = 2)
 ```
 
 ## Model Summary Metrics for out-of-sample predictions $y_i$ {#sec-yi-summary}
@@ -1710,8 +1718,8 @@ tbl_data_yi_deviation_model_params <- all_yi_deviation_models %>%
   ) %>% 
   select(dataset, estimate_type, model_name, perf, mod_sum_stats) %>% 
   hoist(mod_sum_stats, "nobs") %>% 
-  hoist(perf, "R2", "R2_conditional", "R2_marginal", "ICC", "Sigma", "RMSE") %>% 
-  select(-perf, -mod_sum_stats) %>% 
+  unnest(cols = perf) %>% 
+  select(-mod_sum_stats) %>% 
   mutate(model_name = forcats::as_factor(model_name),
          model_name = forcats::fct_relevel(model_name, 
                                            c("box_cox_rating_cat", 
@@ -1734,12 +1742,11 @@ tbl_data_yi_deviation_model_params <- all_yi_deviation_models %>%
 #| tbl-cap: "Model summary metrics for models of Box-Cox transformed deviation from the mean $y_i$ estimate as a function of categorical peer-review rating, continuous peer-review rating, and Sorensen's index for blue tit and *Eucalyptus* analyses, and also for the inclusion of random effects for *Eucalyptus* analyses. Coefficient of determination, $R^2$, is reported for models of deviation as a function of Sorensen diversity scores and presence of random effects, while $R^{2}_\\text{Conditional}$, $R^{2}_\\text{Marginal}$ and the intra-class correlation (ICC) are reported for models of deviation as explained by peer-review ratings. For all models the residual standard deviation $\\sigma$, root mean squared error (RMSE) were calculated. The number of observations ($N_{Obs.}$) is displayed for reference."
 #| column: page-inset-right
 tbl_data_yi_deviation_model_params %>% 
+  select(!c(contains("AIC"), BIC)) %>% 
   dplyr::filter(dataset != "blue tit" | str_detect(model_name, "random", negate = TRUE)) %>% 
   gt::gt(rowname_col = "dataset") %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::sub_missing(missing_text = "") %>% 
-  gt::fmt(columns = function(x) rlang::is_bare_numeric(x),
-          fns = function(x) format(x, digits = 3)) %>% 
   gt::cols_label(dataset = "Dataset",
                  R2 = gt::md("$$R^2$$"),
                  R2_conditional = "$$R^{2}_\\text{Conditional}$$",
@@ -1759,7 +1766,20 @@ tbl_data_yi_deviation_model_params %>%
     }
   ) %>% 
   gt::tab_style(locations = gt::cells_stub(rows = str_detect(dataset, "Eucalyptus")),
-                style = cell_text(style = "italic"))
+                style = cell_text(style = "italic")) %>% 
+  gt::fmt_scientific(columns = c("R2", "RMSE", "Sigma"), 
+                     drop_trailing_zeros = T,
+                     decimals = 2) %>% 
+  gt::fmt_number(columns =  gt::contains(c("ICC")),  
+                 drop_trailing_zeros = T, 
+                 decimals = 3) %>% 
+  gt::fmt_number(columns =  gt::contains(c("R2_")),  
+                 drop_trailing_zeros = T, 
+                 decimals = 2) %>% 
+  gt::fmt_scientific(columns = c(gt::contains(("R2_marginal"))), 
+                     rows = str_detect(model_name, "continuous"),
+                     drop_trailing_zeros = T,
+                     decimals = 2) %>% gt_fmt_yi("estimate_type")
 ```
 
 ## Post-hoc analysis: checking the use of model weights in all models explaining deviation from the meta-analytic mean {#sec-post-hoc-weights-analysis}
@@ -1988,6 +2008,7 @@ all_models %>%
   replace_na(replace = list(estimate_means = FALSE)) %>% 
   group_by(dataset) %>% 
   gt::gt(rowname_col = "model_spec_weight") %>% #
+  gt::opt_stylize(style = 6, color = "gray") %>%
   gt::tab_stubhead(label = "Model Weight") %>%
   gt::tab_style(
     style = list(
@@ -2000,9 +2021,8 @@ all_models %>%
       cells_body(columns = "estimate_means", rows = estimate_means == FALSE)
     )
   ) %>%
-  gt::tab_style(style = cell_text(style = "italic"), 
+  gt::tab_style(style = cell_text(style = "italic", transform = "capitalize"), 
                 locations = cells_row_groups(groups = "eucalyptus")) %>% 
-  gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::cols_label(dataset = "Dataset",
                  singularity = "Singular Fit?",
                  convergence = "Model converged?",
@@ -2036,10 +2056,6 @@ all_models %>%
         str_replace("inv_folded_v", "Inverse folded variance")
     }
   ) %>%   
-  gt::tab_style(
-    style = gt::cell_text(transform = "capitalize"),
-    locations = gt::cells_row_groups()
-  ) %>% 
   gt::as_raw_html()
 ```
 
@@ -2052,6 +2068,7 @@ Using the inverse Box-Cox transformed variance for model weights resulted in the
 #| fig-cap: "Effect plots for each non-singular model that converged with estimable fixed effect group means for the *Eucalyptus* dataset."
 #| echo: false
 #| fig-width: 10
+#| fig-height: 10
 #| fig-pos: page
 modify_plot <- function(p, .y){
   p + 
@@ -2105,6 +2122,7 @@ model_means_results %>%
                                 "model_spec_random_effect"), sep = "\\.") %>%
   group_by(dataset) %>% 
   gt::gt(rowname_col = "model_spec_weight") %>% #
+  gt::opt_stylize(style = 6, color = "gray") %>%
   gt::tab_stubhead(label = "Model Weight") %>%
   gt::text_transform(
     locations = cells_stub(
@@ -2130,17 +2148,18 @@ model_means_results %>%
         str_replace("inv_folded_v", "Inverse folded variance")
     }
   ) %>%   
-  gt::tab_style(
-    style = gt::cell_text(transform = "capitalize"),
-    locations = gt::cells_row_groups()
-  ) %>% 
   gt::cols_label(model_spec_random_effect = "Random Effects",
                  PublishableAsIs = "Peer Rating",
                  CI_low = gt::md("95\\%CI")) %>% 
   gt::cols_merge(columns = starts_with("CI_"), 
                  pattern = "[{1},{2}]") %>% 
   gt::fmt_number(columns =  c("Mean", "SE", "CI_low", "CI_high"),
-                 decimals = 2)
+                 decimals = 2) %>% 
+  gt::tab_style(
+    style = list(gt::cell_text(transform = "capitalize"), 
+                 gt::cell_text(style = "italic")),
+    locations = gt::cells_row_groups(groups = "eucalyptus")
+  )
 
 ```
 
@@ -2182,17 +2201,17 @@ model_comparison_plots
 #| label: tbl-model-perf-metrics-weights-analysis
 #| tbl-cap: "Model performance metric values (non-normalised) for final subset of models considered in weights analysis. All models in final subset included random-effect of Reviewer ID. Metrics included $R^{2}_\\text{Conditional}$, $R^{2}_\\text{Marginal}$, Intra-Class Correlation, Root Mean Squared Error (RMSE), and the weighted AIC, corrected AIC and BIC."
 all_models %>% 
-    filter(model_spec != "inv_bc_var.RE_study" | dataset != "eucalyptus") %>% #rm nearly unidentifiable model
-    semi_join(estimate_means, 
-              by = join_by(dataset, model_spec)) %>% 
-    group_by(dataset) %>% 
-    summarise(model = set_names(model, model_spec) %>% list, 
-              results = map(model, 
-                            performance::compare_performance, 
-                            rank = F), 
-              results = set_names(results, 
-                                  unique(dataset)), 
-              .groups = "keep") %>% 
+  filter(model_spec != "inv_bc_var.RE_study" | dataset != "eucalyptus") %>% #rm nearly unidentifiable model
+  semi_join(estimate_means, 
+            by = join_by(dataset, model_spec)) %>% 
+  group_by(dataset) %>% 
+  summarise(model = set_names(model, model_spec) %>% list, 
+            results = map(model, 
+                          performance::compare_performance, 
+                          rank = F), 
+            results = set_names(results, 
+                                unique(dataset)), 
+            .groups = "keep") %>% 
   unnest(results) %>%
   select(-Model, -model) %>% 
   gt::gt() %>% 
@@ -2201,16 +2220,18 @@ all_models %>%
                  R2_marginal = gt::md("$$R^{2}_\\text{Marginal}$$"),
                  Sigma = gt::md("$$\\sigma$$"),
                  AICc = gt::md("$$AIC_c$$"),
-                 AICc_wt = gt::md("$$AIC_c$$ weight"),
-                 BIC_wt = "BIC weight",
-                 AIC_wt = gt::md("$$AIC$$ weight")) %>%
+                 AICc_wt = gt::md("$$AIC_c$$ (weight)"),
+                 BIC_wt = gt::md("$$BIC$$ (weight)"),
+                 AIC_wt = gt::md("$$AIC$$ (weight)"),
+                 AIC = gt::md("$$AIC$$"),
+                 BIC = gt::md("$$BIC$$")) %>%
   gt::fmt_number(columns =  !gt::contains(c("Name", "wt")),
                  rows = Name != "no_weights.RE_rev",
                  decimals = 2) %>%
   gt::fmt_scientific(columns = c(gt::contains(("R2")), "ICC", "BIC", "AIC", "RMSE", "Sigma", "AICc"),
                      drop_trailing_zeros = T,
                      decimals = 2) %>% 
-    gt::fmt_scientific(columns =  gt::contains(c("_wt")),  
+  gt::fmt_scientific(columns =  gt::contains(c("_wt")),  
                      rows = Name != "no_weights.RE_rev",
                      drop_trailing_zeros = T,
                      decimals = 2) %>%
