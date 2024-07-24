@@ -11,6 +11,8 @@ execute:
 bibliography: ../ms/references.bib
 number-sections: true
 tbl-cap-location: top
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r load-libs, include=TRUE,eval=TRUE,message=FALSE}
@@ -34,356 +36,46 @@ set.seed(1234)
 ```
 
 ```{r descriptive-munging-2, eval=TRUE,include=FALSE, eval=TRUE}
-blue_tit_data<-ManyEcoEvo[[2]][[1]]
-blue_tit_diversity<-ManyEcoEvo[[3]][[1]]
-eucalypt_data<-ManyEcoEvo[[2]][[2]]
-eucalypt_diversity<-ManyEcoEvo[[3]][[2]]
-Master<-bind_rows(blue_tit_data,eucalypt_data) #Full dataset
-Diversity<-bind_rows(blue_tit_diversity,eucalypt_diversity)
-Diversity$new<-Diversity$id_col
-Diversity<-Diversity %>% 
-  separate_wider_delim(new, "-", names = c("response_id", "submission_id","analysis_id","split_id"),too_many = "merge") %>%
-  mutate_at(c("submission_id","analysis_id","split_id"), as.numeric)
+# ----- Using complete objects in 'ManyEcoEvo' -----
 
-#make things numeric
-Master$num_fixed_variables<-as.numeric(Master$num_fixed_variables)
-Master$num_random_variables<-as.numeric(Master$num_random_variables)
-Master$sample_size<-as.numeric(Master$sample_size)
-Master$num_interactions<-as.numeric(Master$num_interactions)
-Master$Bayesian<-as.numeric(Master$Bayesian)
-Master$mixed_model<-as.numeric(Master$mixed_model)
-Master$lm<-ifelse(Master$linear_model=="linear",1,0)
-Master$glm<-ifelse(Master$linear_model=="generalised",1,0)
+Table1 <- # Teams, analyses and model types
+  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+  filter(subset_name != "all") %>% 
+  select(subset_name, model_type_summary) %>% 
+  unnest(cols = model_type_summary)
 
-#read in info about subset datasets
-#effect size analyses
+Table2 <- # model composition
+  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+    filter(subset_name != "all") %>% 
+    select(subset_name, model_term_summary) %>% 
+    unnest(cols = model_term_summary)
 
-effect_Ids <- read_csv( here::here("ms/effect_Ids.csv"))
-effect_Ids <- distinct(effect_Ids)
-effects <- right_join(Master, effect_Ids, by = c("id_col"))
+Table3 <-  # choice of variables
+  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+  filter(subset_name != "all") %>% 
+  select(subset_name, variable_count_summary ) %>% 
+  unnest(cols = variable_count_summary)
 
-
-
-#prediction analyses
-bothpredids <- read_csv(here::here("ms/predictions_Ids.csv"))
-bothpredids <- distinct(bothpredids)
-predictions <- left_join(bothpredids, Master, by = c("id_col"))
-
-
-##How many analyst teams and analyses per dataset
-#All analyses
-All_Analyses_Per_Team <- Master %>% 
-  count(dataset, TeamIdentifier, sort = TRUE)
-allgrouped <- group_by(All_Analyses_Per_Team,dataset)
-All_Total_Analyses <- summarise(allgrouped,
-                                totalanalyses=sum(n))
-All_Total_Analyses$subset <- rep("all",
-                                 nrow(All_Total_Analyses))
-
-All_Teams_Per_Dataset <-All_Analyses_Per_Team %>%  
-  count(dataset, sort = TRUE)
-All_Teams_Per_Dataset$subset <- rep("all",nrow(All_Teams_Per_Dataset))
-colnames(All_Teams_Per_Dataset)[2]<-"teams"
-#How many analyst teams total
-All_teams<-n_distinct(Master$TeamIdentifier) #146 
-
-#Effects eval
-Effect_Analyses_Per_Team<-effects %>% 
-  count(dataset, TeamIdentifier, sort = TRUE)
-effectgrouped <- group_by(Effect_Analyses_Per_Team,dataset)
-Effect_Total_Analyses <- summarise(effectgrouped,totalanalyses=sum(n))
-Effect_Total_Analyses$subset<-rep("effects",nrow(Effect_Total_Analyses))
-Effect_Teams_Per_Dataset <- Effect_Analyses_Per_Team%>%  count(dataset, sort = TRUE)
-colnames(Effect_Teams_Per_Dataset)[2] <- "teams"
-Effect_Teams_Per_Dataset$subset <- rep("effects",nrow(Effect_Teams_Per_Dataset))
-
-#How many analyst teams in effects analyses - pretty sure we wont need this
-Effect_teams<-n_distinct(effects$TeamIdentifier) #102
-
-#Predictions eval
-Pred_Analyses_Per_Team<-predictions%>%count(dataset, TeamIdentifier, sort = TRUE)
-predgrouped<-group_by(Pred_Analyses_Per_Team,dataset)
-Pred_Total_Analyses<-summarise(predgrouped,totalanalyses=sum(n))
-Pred_Total_Analyses$subset<-rep("predictions",nrow(Pred_Total_Analyses))
-Pred_Teams_Per_Dataset <-Pred_Analyses_Per_Team%>%  count(dataset, sort = TRUE)
-colnames(Pred_Teams_Per_Dataset)[2]<-"teams"
-Pred_Teams_Per_Dataset$subset<-rep("predictions",nrow(Pred_Teams_Per_Dataset))
-
-
-#How many analyst teams in predictions analyses - pretty sure we wont need this
-Pred_teams<-n_distinct(predictions$TeamIdentifier) #55
-
-##mean, sd, min, max number of different things##
-#All analyses
-masterdatasetgroup<-group_by(Master,dataset)
-AllMeanDataSummary<-summarise(masterdatasetgroup, 
-                          mean_fixed =round(mean(as.numeric(num_fixed_effects),na.rm=T),2), 
-                          sd_fixed=round(sd(as.numeric(num_fixed_effects),na.rm=T),2),
-                          min_fixed= min(as.numeric(num_fixed_effects),na.rm=T),
-                          max_fixed= max(as.numeric(num_fixed_effects),na.rm=T),
-                          mean_random =round(mean(as.numeric(num_random_effects),na.rm=T),2), 
-                          sd_random=round(sd(as.numeric(num_random_effects),na.rm=T),2),
-                          min_random= min(as.numeric(num_random_effects),na.rm=T),
-                          max_random= max(as.numeric(num_random_effects),na.rm=T),
-                          mean_samplesize =round(mean(sample_size,na.rm=T),2), 
-                          sd_samplesize=round(sd(sample_size,na.rm=T),2),
-                          min_samplesize= min(sample_size,na.rm=T),
-                          max_samplesize= max(sample_size,na.rm=T),
-                          mean_interactions =round(mean(num_interactions,na.rm=T),2), 
-                          sd_interactions=round(sd(num_interactions,na.rm=T),2),
-                          min_interactions= min(num_interactions,na.rm=T),
-                          max_interactions= max(num_interactions,na.rm=T))
-AllMeanDataSummary$subset<-rep("all",nrow(AllMeanDataSummary))
-
-AllBinaryDataSummary<-summarise(masterdatasetgroup, 
-                          sum_linear =sum(lm,na.rm=T), 
-                          sum_mixed= sum(mixed_model,na.rm=T),
-                          sum_Bayesian= sum(Bayesian,na.rm=T))
-AllBinaryDataSummary$subset<-rep("all",nrow(AllBinaryDataSummary))
-
-#Effects analyses
-effectsdatasetgroup<-group_by(effects,dataset)
-EffectsMeanDataSummary<-summarise(effectsdatasetgroup, 
-                          mean_fixed =round(mean(as.numeric(num_fixed_effects),na.rm=T),2), 
-                          sd_fixed=round(sd(as.numeric(num_fixed_effects),na.rm=T),2),
-                          min_fixed= min(as.numeric(num_fixed_effects),na.rm=T),
-                          max_fixed= max(as.numeric(num_fixed_effects),na.rm=T),
-                          mean_random =round(mean(as.numeric(num_random_effects),na.rm=T),2), 
-                          sd_random=round(sd(as.numeric(num_random_effects),na.rm=T),2),
-                          min_random= min(as.numeric(num_random_effects),na.rm=T),
-                          max_random= max(as.numeric(num_random_effects),na.rm=T),
-                          mean_samplesize =round(mean(sample_size,na.rm=T),2), 
-                          sd_samplesize=round(sd(sample_size,na.rm=T),2),
-                          min_samplesize= min(sample_size,na.rm=T),
-                          max_samplesize= max(sample_size,na.rm=T),
-                          mean_interactions =round(mean(num_interactions,na.rm=T),2), 
-                          sd_interactions=round(sd(num_interactions,na.rm=T),2),
-                          min_interactions= min(num_interactions,na.rm=T),
-                          max_interactions= max(num_interactions,na.rm=T))
-EffectsMeanDataSummary$subset<-rep("effects",nrow(EffectsMeanDataSummary))
-
-EffectsBinaryDataSummary<-summarise(effectsdatasetgroup, 
-                          sum_linear =sum(lm,na.rm=T), 
-                          sum_mixed= sum(mixed_model,na.rm=T),
-                          sum_Bayesian= sum(Bayesian,na.rm=T))
-
-EffectsBinaryDataSummary$subset<-rep("effects",nrow(EffectsBinaryDataSummary))
-
-
-#Predictions analyses
-
-predsdatasetgroup<-group_by(predictions,dataset)
-PredsMeanDataSummary<-summarise(predsdatasetgroup, 
-                          mean_fixed =round(mean(as.numeric(num_fixed_effects),na.rm=T),2), 
-                          sd_fixed=round(sd(as.numeric(num_fixed_effects),na.rm=T),2),
-                          min_fixed= min(as.numeric(num_fixed_effects),na.rm=T),
-                          max_fixed= max(as.numeric(num_fixed_effects),na.rm=T),
-                          mean_random =round(mean(as.numeric(num_random_effects),na.rm=T),2), 
-                          sd_random=round(sd(as.numeric(num_random_effects),na.rm=T),2),
-                          min_random= min(as.numeric(num_random_effects),na.rm=T),
-                          max_random= max(as.numeric(num_random_effects),na.rm=T),
-                          mean_samplesize =round(mean(sample_size,na.rm=T),2), 
-                          sd_samplesize=round(sd(sample_size,na.rm=T),2),
-                          min_samplesize= min(sample_size,na.rm=T),
-                          max_samplesize= max(sample_size,na.rm=T),
-                          mean_interactions =round(mean(num_interactions,na.rm=T),2), 
-                          sd_interactions=round(sd(num_interactions,na.rm=T),2),
-                          min_interactions= min(num_interactions,na.rm=T),
-                          max_interactions= max(num_interactions,na.rm=T))
-PredsMeanDataSummary$subset<-rep("predictions",nrow(PredsMeanDataSummary))
-
-PredsBinaryDataSummary<-summarise(predsdatasetgroup, 
-                          sum_linear =sum(lm,na.rm=T), 
-                          sum_mixed= sum(mixed_model,na.rm=T),
-                          sum_Bayesian= sum(Bayesian,na.rm=T))
-
-PredsBinaryDataSummary$subset<-rep("predictions",nrow(PredsBinaryDataSummary))
-
-#Join summary data
-Total_Analyses<-bind_rows(Pred_Total_Analyses,Effect_Total_Analyses,All_Total_Analyses) #join all subsets for number of analyses 
-Teams_Per_Dataset<-bind_rows(Pred_Teams_Per_Dataset,Effect_Teams_Per_Dataset,All_Teams_Per_Dataset)#join all subsets for number of teams 
-Team_Analyses<-full_join(Total_Analyses,Teams_Per_Dataset) #join team and analysis info for all subsets
-
-SubsetsMeanSummary<-bind_rows(PredsMeanDataSummary,EffectsMeanDataSummary,AllMeanDataSummary) #join  descriptive information means, sd, range
-long<-SubsetsMeanSummary %>%pivot_longer(
-    cols = mean_fixed:max_interactions,
-  names_to = c("operation", "variable"),
-  names_pattern = "(.*)_(.*)",
-  values_to = "value"
-)
-
-rewide<-long%>%pivot_wider(
-  names_from = operation, values_from = value)
-Table2<-rewide[order(rewide$dataset,rewide$variable,rewide$subset), ]
-Table2<-filter(Table2,subset!="all")
-
-
-
-
-SubsetsBinarySummary<-bind_rows(PredsBinaryDataSummary,EffectsBinaryDataSummary,AllBinaryDataSummary)#join  descriptive information from binary factors
-
-Table1<-full_join(Team_Analyses,SubsetsBinarySummary)
-Table1<-Table1[c(1,3,2,4,5,6,7)]
-Table1<-Table1[order(Table1$dataset,Table1$subset), ]
-Table1<-filter(Table1,subset!="all")
-
-#Number of analyses variables were used in
-diveffects<-right_join(Diversity,effect_Ids,by=c("id_col") ) #effect analysis subset of diversity data
-divpredictions<-right_join(Diversity,predictions,by=c("id_col")) #prediction analyses subset of diversity data
-
-AllColsums<-as.data.frame(colSums(!is.na(Diversity))) #calculate how many instances there are of each variable (column) for all data
-AllColsums<-rownames_to_column(AllColsums, var = "rowname")
-colnames(AllColsums)[2]<-"count"
-AllColsums$subset<-rep("all",nrow(AllColsums))
-EffectsColsums<-as.data.frame(colSums(!is.na(diveffects))) #as above, effects analyses
-EffectsColsums<-rownames_to_column(EffectsColsums, var = "rowname")
-colnames(EffectsColsums)[2]<-"count"
-EffectsColsums$subset<-rep("effects",nrow(EffectsColsums))
-PredsColsums<-as.data.frame(colSums(!is.na(divpredictions))) #as above, for predictions analyses
-PredsColsums<-rownames_to_column(PredsColsums, var = "rowname")
-colnames(PredsColsums)[2]<-"count"
-PredsColsums$subset<-rep("predictions",nrow(PredsColsums))
-
-WholeColsums<-bind_rows(AllColsums,EffectsColsums,PredsColsums)
-WholeColsums_wider<-pivot_wider(WholeColsums,names_from = subset, values_from = count)
-
-EucVariables<-WholeColsums_wider[c(55:112),] %>%
-  pivot_longer(
-    cols = all:predictions,
-  names_to = "subset",
-  values_to = "value"
-)
-EucVariables$dataset<-rep("eucalyptus",nrow(EucVariables))
-
-BTVariables<-WholeColsums_wider[c(3:54),] %>%pivot_longer(
-    cols = all:predictions,
-  names_to = "subset",
-  values_to = "value"
-)
-BTVariables$dataset<-rep("blue tit",nrow(BTVariables))
-
-
-AllVariables<-bind_rows(EucVariables,BTVariables)
-
-AllVariablesGrouped<-group_by(AllVariables,subset,dataset)
-Table3<-summarise(AllVariablesGrouped,
-                               mean=mean(value,na.rm=T),
-                               sd=sd(value,na.rm=T),
-                               min=min(value,na.rm=T),
-                               max=max(value,na.rm=T))
-Table3<-filter(Table3,subset!="all")
-
-#Conclusions analysis
-#All data
-#only want 1 per analyst team per dataset - not for each analysis they did. Filter to only include things with split_id_new = 1 and analysis_id_new=1
-ConclusionsAll<-filter(Master,split_id==1 & analysis_id==1)
-Allgroupconc<-group_by(ConclusionsAll,dataset,Conclusion)
-AllConcSummary<-summarise(Allgroupconc,  count =n())
-AllConcSummary<-filter(AllConcSummary,!is.na(Conclusion)&Conclusion!="CHECK") #remove instances where conclusions could not be ascertained 
-AllConcSummary$subset<-rep("all",nrow(AllConcSummary)) #identify the subset
-
-#Effects
-ConclusionEffects<-filter(effects,split_id==1 & analysis_id==1)
-Effectsgroupconc<-group_by(ConclusionEffects,dataset,Conclusion)
-EffectsConcSummary<-summarise(Effectsgroupconc,  count =n())
-EffectsConcSummary$subset<-rep("effects",nrow(EffectsConcSummary))
-
-#Predictions
-ConclusionPredictions<-filter(predictions,split_id==1 & analysis_id==1)
-Predictionsgroupconc<-group_by(ConclusionPredictions,dataset,Conclusion)
-PredictionsConcSummary<-summarise(Predictionsgroupconc,  count =n())
-PredictionsConcSummary$subset<-rep("predictions",nrow(PredictionsConcSummary))
-
-#Join all the conclusions together and make them presentable
-WholeConclusions<-bind_rows(AllConcSummary,EffectsConcSummary,PredictionsConcSummary)
-WholeConclusionsWide<-spread(WholeConclusions,Conclusion,count,fill=0)
-Table4<-WholeConclusionsWide[c(1,2,3,4,5,6,7,9,8)]
-
-
-
-#Sorensen Diversity Index Data
-BTSorensen<-ManyEcoEvo_results[[8]][[1]] #source blue tit sorensen data
-BTSorenseneffect<-inner_join(BTSorensen,effect_Ids) #subset to only include analyses included in the effects evaluation
-BTSorenseneffect$dataset<-rep("blue tit",nrow(BTSorenseneffect)) #add a column for dataset
-
-
-BTSorensenpreds<-inner_join(BTSorensen,predictions)#subset to only include analyses included in the predictions  evaluation
-BTSorensenpreds$dataset<-rep("blue tit",nrow(BTSorensenpreds))#add a column for subset
-Sorensenpred<-BTSorensenpreds #add dataframes to allow easy updating once euc pred data is available
-Sorensenpredgrouped<-group_by(Sorensenpred,dataset) #prepare to summarise
-
-
-
-EucSorensen<-ManyEcoEvo_results[[8]][[2]] #source eucalypt sorensen data
-EucSorenseneffect<-inner_join(EucSorensen,effect_Ids) #subset to only include analyses included in the effects evaluation
-EucSorenseneffect$dataset<-rep("eucalyptus",nrow(EucSorenseneffect))#add a column for dataset
-
-Sorenseneffect<-bind_rows(BTSorenseneffect,EucSorenseneffect) #join info from both datasets together
-Sorenseneffectgrouped<-group_by(Sorenseneffect,dataset) #group by dataset
-
-#summarise sorensen of effects data to find mean, sd, min, max
-SorenseneffectSummary<-summarise(Sorenseneffectgrouped,
-                                 mean=mean(mean_diversity_index,na.rm=T),
-                                 sd=sd(mean_diversity_index,na.rm=T),
-                                 min=min(mean_diversity_index,na.rm=T),
-                                 max=max(mean_diversity_index,na.rm=T)) 
-SorenseneffectSummary$subset<-rep("effects",nrow(SorenseneffectSummary)) #add a column identifying subset
-
-#summarise sorensen of predictions data to find mean, sd, min, max
-SorensenPredsSummary<-summarise(Sorensenpredgrouped,
-                                 mean=mean(mean_diversity_index,na.rm=T),
-                                 sd=sd(mean_diversity_index,na.rm=T),
-                                 min=min(mean_diversity_index,na.rm=T),
-                                 max=max(mean_diversity_index,na.rm=T))
-SorensenPredsSummary$subset<-rep("predictions",nrow(SorensenPredsSummary))
-
-SorensenSummary<-bind_rows(SorenseneffectSummary,SorensenPredsSummary)
-
-
-#Review descriptives
-ReviewData<-ManyEcoEvo_results %>% filter(exclusion_set == "complete", publishable_subset == "All") %>% ungroup %>% select(data, -dataset) %>% unnest(data) %>% select(ends_with("_id"), id_col, dataset, review_data) %>% unnest(review_data)
-
-#how many reviewers
-reviewers<-n_distinct(ReviewData$ReviewerId)
-
-#How many reviews per reviewer
-reviewer_grouped_reviews<-group_by(ReviewData,ReviewerId)
-ReviewerSummary<-summarise(reviewer_grouped_reviews,
-                         articles=n_distinct(response_id))
-
-meanreviewsbyreviewer<-round(mean(ReviewerSummary$articles),digits=2)
-minreviewsbyreviewer<-min(ReviewerSummary$articles)
-maxreviewsbyreviewer<-max(ReviewerSummary$articles)
-
-#How many reviews per article
-article_grouped_reviews<-group_by(ReviewData,dataset,response_id)
-ArticleReviewSummary1<-summarise(article_grouped_reviews,
-                         reviews=n_distinct(ReviewerId))
-article_grouped_reviews2<-group_by(ArticleReviewSummary1,dataset)
-ArticleReviewSummary2<-summarise(article_grouped_reviews2,
-                         mean=mean(reviews),
-                         sd=sd(reviews),
-                         min=min(reviews),
-                         max=max(reviews),
-                         sum=sum(reviews))
+var_names <- 
+    ManyEcoEvo::ManyEcoEvo %>% 
+    pull(diversity_data) %>% 
+    map(~ .x %>% select(-id_col, -dataset) 
+        %>% colnames) %>% 
+    enframe("dataset", "variable")
 ```
 
 ## Summary Statistics
 
 ### Number of analyses of different types
 
-As described in the summary statistics section of the manuscript, `r Table1[1,4]` teams submitted `r Table1[1,3]` $Z_r$ model estimates and `r Table1[2,4]` teams submitted `r Table1[2,3]` out of sample predictions for the blue tit dataset.
-Similarly, `r Table1[3,4]` submitted `r Table1[3,3]` $Z_r$ model estimates and `r Table1[4,4]` teams submitted `r Table1[4,3]` out of sample predictions for the *Eucalytpus* dataset.
-The majority of the blue tit analyses specified normal error distributions and were non-Bayesian mixed effects models.
-Analyses of the *Eucalyptus* dataset rarely specified normal error distributions, likely because the response variable was in the form of counts.
-Mixed effects models were also common for *Eucalytpus* analyses (@tbl-Table1).
+As described in the summary statistics section of the manuscript, `r Table1 %>% filter(dataset == "blue tit", subset_name == "effects") %>% pluck("teams")` teams submitted `r Table1 %>% filter(dataset == "blue tit", subset_name == "effects") %>% pluck("totalanalyses")` $Z_r$ model estimates and `r Table1 %>% filter(dataset == "blue tit", subset_name == "predictions") %>% pluck("teams")` teams submitted `r Table1 %>% filter(dataset == "blue tit", subset_name == "predictions") %>% pluck("totalanalyses")` $y_i$ predictions for the blue tit dataset. Similarly, `r Table1 %>% filter(dataset == "eucalyptus", subset_name == "effects") %>% pluck("teams")` submitted `r Table1 %>% filter(dataset == "eucalyptus", subset_name == "effects") %>% pluck("totalanalyses")` $Z_r$ model estimates and `r Table1 %>% filter(dataset == "eucalyptus", subset_name == "predictions") %>% pluck("teams")` teams submitted `r Table1 %>% filter(dataset == "eucalyptus", subset_name == "predictions") %>% pluck("totalanalyses")` $y_i$ predictions for the *Eucalytpus* dataset. The majority of the blue tit analyses specified normal error distributions and were non-Bayesian mixed effects models. Analyses of the *Eucalyptus* dataset rarely specified normal error distributions, likely because the response variable was in the form of counts. Mixed effects models were also common for *Eucalytpus* analyses (@tbl-Table1).
 
 ```{r}
 #| label: tbl-Table1
 #| tbl-cap: "Summary of the number of anaysis teams, total analyses, models with normal error distributions, mixed effects models, and models developed with Bayesian statistical methods for effect size analyses only ($Z_r$) and out-of-sample prediction only ($y_i$)."
 
-
 Table1 %>% 
+  rename(subset = subset_name) %>% 
   rename_with(~ str_remove(., "sum_")) %>% 
   group_by(dataset) %>% 
   gt::gt(rowname_col = "subset") %>% 
@@ -396,67 +88,69 @@ Table1 %>%
   gt::sub_values(columns = subset, values = c("effects"), 
                  replacement = gt::md("$$Z_r$$")) %>% 
   gt::sub_values(columns = subset, values = c("predictions"), 
-                  replacement = gt::md("$$y_i$$")) %>% 
-     gt::sub_values(columns = subset, values = c("all"), 
-                  replacement = gt::md("All analyses")) %>% 
+                 replacement = gt::md("$$y_i$$")) %>% 
+  gt::sub_values(columns = subset, values = c("all"), 
+                 replacement = gt::md("All analyses")) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::text_transform(fn = function(x) ifelse(x == "eucalyptus", 
                                              gt::md(paste("*Eucalyptus*")), x),
-                 locations = gt::cells_row_groups()) %>% 
+                     locations = gt::cells_row_groups()) %>% 
   gt::text_transform(fn = function(x) map(x, gt::md), 
                      locations = gt::cells_row_groups()) %>% 
+  gt::cols_move(teams,after = totalanalyses) %>% 
   gt::as_raw_html()
 ```
 
 ### Model composition
 
-The composition of models varied substantially (@tbl-Table2) in regards to the number of fixed and random effects, interaction terms and the number of data points used.
-For the blue tit dataset, models used up to `r Table2[1,7]` fixed effects, `r Table2[6,7]` random effects, and `r Table2[3,7]` interaction terms and had sample sizes ranging from `r Table2[7,6]` to `r Table2[7,7]` For the Eucalyptus dataset models had up to `r Table2[9,7]` fixed effects, `r Table2[13,7]` random effects, `r Table2[11,7]` interaction terms and sample sizes ranging from `r Table2[15,6]` to `r Table2[15,7]`.
+The composition of models varied substantially (@tbl-Table2) in regards to the number of fixed and random effects, interaction terms and the number of data points used. For the blue tit dataset, models used up to `r Table2 %>% filter(dataset == "blue tit", variable == "fixed") %>% pluck("max", max)` fixed effects, `r Table2 %>% filter(dataset == "blue tit", variable == "random") %>% pluck("max", max)` random effects, and `r Table2 %>% filter(dataset == "blue tit", variable == "interactions") %>% pluck("max", max)` interaction terms and had sample sizes ranging from `r Table2 %>% filter(dataset == "blue tit", variable == "samplesize") %>% pluck("min", min)` to `r Table2 %>% filter(dataset == "blue tit", variable == "samplesize") %>% pluck("max", max)`. For the *Eucalyptus* dataset models had up to `r Table2 %>% filter(dataset == "eucalyptus", variable == "fixed") %>% pluck("max", max)` fixed effects, `r Table2 %>% filter(dataset == "eucalyptus", variable == "random") %>% pluck("max", max)` random effects, `r Table2 %>% filter(dataset == "eucalyptus", variable == "interactions") %>% pluck("max", max)` interaction terms and sample sizes ranging from `r Table2 %>% filter(dataset == "eucalyptus", variable == "samplesize") %>% pluck("min", min)` to `r Table2 %>% filter(dataset == "eucalyptus", variable == "samplesize") %>% pluck("max", max)`.
 
 ```{r}
 #| label: tbl-Table2
 #| tbl-cap: "Mean, standard deviation and range of number of fixed and random variables and interaction terms used in models and sample size used. Repeated for effect size analyses only ($Z_r$) and out-of-sample prediction only ($y_i$)."
 
 Table2 %>% 
-  rename(SD = sd) %>%   
+  rename(SD = sd, subset = subset_name) %>%   
   group_by(variable) %>% 
   pivot_wider(
     names_from = dataset,
     names_sep = ".",
     values_from = c(mean, SD, min, max)
   ) %>% 
+  mutate(variable = case_when(variable == "samplesize" ~ "*N*",
+                              TRUE ~ variable)) %>% 
   gt::gt(rowname_col = "subset") %>% 
- gt::tab_spanner_delim(delim = ".") %>% 
-    gt::fmt_scientific(columns = c(contains("mean"), contains("SD")),
+  gt::row_group_order(groups = c("fixed", "random", "interactions", "*N*")) %>% 
+  gt::tab_spanner_delim(delim = ".") %>% 
+  gt::fmt_scientific(columns = c(contains("mean"), contains("SD")),
                      decimals = 2) %>% 
-   gt::cols_label_with(fn = Hmisc::capitalize) %>% 
-    gt::tab_style(
+  gt::cols_label_with(fn = Hmisc::capitalize) %>% 
+  gt::tab_style(
     style = gt::cell_text(transform = "capitalize"),
     locations = gt::cells_column_spanners()
   ) %>% 
-   gt::cols_label_with(c(contains("Eucalyptus")), 
-                       fn = ~ gt::md(paste0("*",.x, "*"))) %>% 
-    gt::sub_values(columns = subset, values = c("effects"), 
+  gt::cols_label_with(c(contains("Eucalyptus")), 
+                      fn = ~ gt::md(paste0("*",.x, "*"))) %>% 
+  gt::sub_values(columns = subset, values = c("effects"), 
                  replacement = gt::md("$$Z_r$$")) %>% 
-   gt::sub_values(columns = subset, values = c("predictions"), 
-                  replacement = gt::md("$$y_i$$")) %>% 
-     gt::sub_values(columns = subset, values = c("all"), 
-                  replacement = gt::md("All analyses")) %>% 
+  gt::sub_values(columns = subset, values = c("predictions"), 
+                 replacement = gt::md("$$y_i$$")) %>% 
+  gt::sub_values(columns = subset, values = c("all"), 
+                 replacement = gt::md("All analyses")) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::as_raw_html()
 ```
 
 ### Choice of variables
 
-The choice of variables also differed substantially among models (@tbl-Table3).
-The blue tit dataset had `r length(unique(BTVariables$rowname))` candidate variables, which were used in a mean of `r round(Table3[1,3],digits=2)` $Z_r$ analyses (range `r Table3[1,5]`- `r Table3[1,6]`). Similarly, the *Eucalyptus* dataset had `r length(unique(EucVariables$rowname))` candidate variables which were used in a mean of `r round(Table3[2,3],digits=2)` $Z_r$ analyses (range `r Table3[2,5]`-`r Table3[2,6]`).
+The choice of variables also differed substantially among analyses (@tbl-Table3) and some analysts constructed new variables that transformed or aggregated one or more existing variables. The blue tit dataset had a total of `r filter(var_names, dataset == "blue tit") %>% pluck("variable", 1, length)` candidate variables. These variables were included in a mean of `r filter(Table3, dataset == "blue tit", subset_name == "effects") %>% pluck("mean", \(x) round(x, digits = 2))` $Z_r$ analyses (range `r filter(Table3, dataset == "blue tit", subset_name == "effects") %>% pluck("min")`- `r filter(Table3, dataset == "blue tit", subset_name == "effects") %>% pluck("max")`). The *Eucalyptus* dataset had a total of `r filter(var_names, dataset == "eucalyptus") %>% pluck("variable", 1, length)` candidate variables. The variables in the *Eucalyptus* dataset were included in a mean of `r filter(Table3, dataset == "eucalyptus", subset_name == "effects") %>% pluck("mean", \(x) round(x, digits = 2))` $Z_r$ analyses (range `r filter(Table3, dataset == "eucalyptus", subset_name == "effects") %>% pluck("min")`-`r filter(Table3, dataset == "eucalyptus", subset_name == "effects") %>% pluck("max")`).
 
 ```{r}
 #| label: tbl-Table3
 #| tbl-cap: "Mean, SD, minimum and maximum number of analyses in which each variable was used, for effect size analyses only ($Z_r$), out-of-sample prediction only ($y_i$), using the full dataset."
 #table 3 - summary of mean, sd and range for the number of analyses in which each variable was used
 Table3 %>% 
-  rename(SD = sd) %>% 
+  rename(SD = sd, subset = subset_name) %>% 
   pivot_wider(
     names_from = dataset,
     names_sep = ".",
@@ -464,41 +158,35 @@ Table3 %>%
   ) %>% 
   ungroup %>% 
   gt::gt(rowname_col = "subset") %>% 
-    gt::tab_spanner_delim(delim = ".") %>% 
-    gt::fmt_scientific(columns = c(contains("mean"), contains("SD")),
+  gt::tab_spanner_delim(delim = ".") %>% 
+  gt::fmt_scientific(columns = c(contains("mean"), contains("SD")),
                      decimals = 2) %>% 
-   gt::cols_label_with(fn = Hmisc::capitalize) %>% 
-   gt::cols_label_with(c(contains("Eucalyptus")), fn = ~ gt::md(paste0("*",.x, "*"))) %>% 
-    gt::sub_values(columns = subset, values = c("effects"), 
+  gt::cols_label_with(fn = Hmisc::capitalize) %>% 
+  gt::cols_label_with(c(contains("Eucalyptus")), fn = ~ gt::md(paste0("*",.x, "*"))) %>% 
+  gt::sub_values(columns = subset, values = c("effects"), 
                  replacement = gt::md("$$Z_r$$")) %>% 
-   gt::sub_values(columns = subset, values = c("predictions"), 
-                  replacement = gt::md("$$y_i$$")) %>% 
-     gt::sub_values(columns = subset, values = c("all"), 
-                  replacement = gt::md("All analyses")) %>% 
+  gt::sub_values(columns = subset, values = c("predictions"), 
+                 replacement = gt::md("$$y_i$$")) %>% 
+  gt::sub_values(columns = subset, values = c("all"), 
+                 replacement = gt::md("All analyses")) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
-      tab_style(
-    style = cell_text(transform = "capitalize"),
-    locations = cells_column_spanners()
+  gt::tab_style(
+    style = gt::cell_text(transform = "capitalize"),
+    locations = gt::cells_column_spanners()
   )
 ```
 
 ## Effect Size Specification Analysis
 
-We used a specification curve [@simonsohn2015] to look for relationships between $Z_r$ values and several modeling decisions, including the choice of independent and dependent variable, transformation of the dependent variable, and other features of the models that produced those $Z_r$ values (@fig-specr-bt, @fig-specr-euc).
-Each effect can be matched to the model features that produced it by following a vertical line down the figure.
+We used a specification curve [@simonsohn2015] to look for relationships between $Z_r$ values and several modeling decisions, including the choice of independent and dependent variable, transformation of the dependent variable, and other features of the models that produced those $Z_r$ values (@fig-specr-bt, @fig-specr-euc). Each effect can be matched to the model features that produced it by following a vertical line down the figure.
 
 ### Blue tit
 
-We observed few clear trends in the blue tit specification curve (@fig-specr-bt).
-The clearest trend was for the independent variable 'contrast: reduced broods vs. unmanipulated broods' to produce weak or even positive relationships, but never strongly negative relationships.
-The biological interpretation of this pattern is that nestlings in reduced broods averaged similar growth to nestlings in unmanipulated broods, and sometimes the nestlings in reduced broods even grew less than the nestlings in unmanipulated broods.
-Therefore, it may be that competition limits nestling growth primarily when the number of nestlings exceeds the clutch size produced by the parents, and not in unmanipulated broods.
-The other relatively clear trend was that the strongest negative relationships were never based on the independent variable 'contrast: unmanipulated broods vs. enlarged broods'.
-These observations demonstrate the potential value of specification curves.
+We observed few clear trends in the blue tit specification curve (@fig-specr-bt). The clearest trend was for the independent variable 'contrast: reduced broods vs. unmanipulated broods' to produce weak or even positive relationships, but never strongly negative relationships. The biological interpretation of this pattern is that nestlings in reduced broods averaged similar growth to nestlings in unmanipulated broods, and sometimes the nestlings in reduced broods even grew less than the nestlings in unmanipulated broods. Therefore, it may be that competition limits nestling growth primarily when the number of nestlings exceeds the clutch size produced by the parents, and not in unmanipulated broods. The other relatively clear trend was that the strongest negative relationships were never based on the independent variable 'contrast: unmanipulated broods vs. enlarged broods'. These observations demonstrate the potential value of specification curves.
 
 ```{r calc_MA_mod_coefs-2, eval=TRUE, cache = FALSE, eval = TRUE, warning=FALSE, message = FALSE}
 # knitr::read_chunk(here::here("index.qmd"), labels = "calc_MA_mod_coefs")
-
+#TODO why is here??
 coefs_MA_mod <- bind_rows( ManyEcoEvo_viz %>%
                              filter(model_name == "MA_mod",
                                     exclusion_set == "complete",
@@ -506,7 +194,7 @@ coefs_MA_mod <- bind_rows( ManyEcoEvo_viz %>%
                            ManyEcoEvo_viz %>%
                              filter(model_name == "MA_mod",
                                     exclusion_set == "complete-rm_outliers",
-                                    expertise_subset == "All")
+                                    expertise_subset == "All") #TODO may need to recalculate
                            ) %>%
   hoist(tidy_mod_summary) %>%
   select(-starts_with("mod"), -ends_with("plot"), -estimate_type) %>%
@@ -691,9 +379,7 @@ cowplot::plot_grid(curve_bt, specs_bt, samp_size_hist_bt,
 
 ### *Eucalyptus*
 
-In the *Eucalyptus* specification curve, there are no strong trends (@fig-specr-euc).
-It is, perhaps, the case that choosing the dependent variable 'count of seedlings 0-0.5m high' corresponds to more positive results and choosing 'count of all *Eucalytpus* seedlings' might find more negative results.
-Choosing the independent variable 'sum of all grass types (with or without non-grass graminoids)' might be associated with more results close to zero consistent with the absence of an effect.
+In the *Eucalyptus* specification curve, there are no strong trends (@fig-specr-euc). It is, perhaps, the case that choosing the dependent variable 'count of seedlings 0-0.5m high' corresponds to more positive results and choosing 'count of all *Eucalytpus* seedlings' might find more negative results. Choosing the independent variable 'sum of all grass types (with or without non-grass graminoids)' might be associated with more results close to zero consistent with the absence of an effect.
 
 ```{r}
 #| label: fig-specr-euc
@@ -792,143 +478,4 @@ cowplot::plot_grid(curve_euc, specs_euc, samp_size_hist_euc,
           align = "v",
           rel_heights = c(1.5, 2.2, 0.8),
           axis = "rbl",labels = "AUTO") 
-```
-
-### Post-hoc analysis: Exploring the effect of removing analyses with poor peer-review ratings on heterogeneity
-
-The forest plots in @fig-all-forest-plots-Zr compare the distributions of $Z_r$ effects from our full set of analyses with the distributions of $Z_r$ effects from our post-hoc analyses which removed either analyses that were reviewed at least once as being 'unpublishable' or analyses that were reviewed at least once as being 'unpublishable' or requiring 'major revisions'.
-Removing these analyses from the blue tit data had little impact on the overall distribution of the results.
-For the *Eucalytpus* analyses, removing 'unpublishable' analyses meant dropping the extreme outlier 'Brooklyn-2-2-1' which made a substantial difference to the amount of observerd deviation from the meta-analytic mean.
-
-```{r}
-#| label: fig-all-forest-plots-Zr
-#| column: body-outset-right
-#| fig-cap: "Forest plots of meta-analytic estimated standardized effect sizes ($Z_r$, blue circles) and their 95% confidence intervals for each effect size included in the meta-analysis model. The meta-analytic mean effect size is denoted by a black triangle and a dashed vertical line, with error bars also representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0, indicating no relationship between the test variable and the response variable. The left side of each panel shows the analysis team names (anonymous arbitrary names assigned by us), each followed by three numbers. The first number is the submission ID (some analyst teams submitted results to us on >1 submission form), the second number is the analysis ID (some analyst teams included results of >1 analysis in a given submission), and the third number is the effect ID (some analysts submitted values for >1 effect per analysis). Thus, each row in each forest plot is uniquely identified, but it is possible to determine which effects come from which analyses and which analysis teams. The plots in the top row depict effects from analyses of blue tit data, and the bottom row plots depict effects from analyses of Eucalyptus data. The right-most plots depict all usable effect sizes. The plots on the left side exclude effects from analysis sets that received at least one rating of “unpublishable” from peer reviewers, and the plots in the middle exclude effects from analysis sets that received at least one rating of either “unpublishable” or “major revision” from peer reviewers."
-#| message: false
-#| echo: false
-#| fig-height: 14
-#| fig-width: 10
-# TeamIdentifier_lookup <-
-#   read_csv(
-#     here::here("data-raw/metadata_and_key_data/TeamIdentifierAnonymised.csv")
-#   )
-
-plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
-  if (MA_mean == FALSE){
-    data <- filter(data, Parameter != "overall")
-  }
-  
-  p <- ggplot(data, aes(y = estimate, 
-                        x =  term, 
-                        ymin = conf.low, 
-                        ymax = conf.high,
-                        shape = point_shape,
-                        colour = parameter_type)) +
-    geom_pointrange(fatten = 2) +
-    ggforestplot::theme_forest() +
-    theme(axis.line = element_line(linewidth = 0.10, 
-                                   colour = "black"),
-          axis.line.y = element_blank(),
-          text = element_text(family = "Helvetica")#,
-          # axis.text.y = element_blank()
-    ) +
-    guides(shape = "none", colour = "none") +
-    coord_flip() +
-    ylab(bquote(Standardised~Effect~Size~Z[r])) +
-    xlab(element_blank()) +
-    # scale_y_continuous(breaks = c(-4,-3,-2,-1,0,1),
-    # minor_breaks = seq(from = -4.5, to = 1.5, by = 0.5)) +
-    NatParksPalettes::scale_color_natparks_d("Glacier")
-  
-  if(intercept == TRUE){
-    p <- p + geom_hline(yintercept = 0)
-  }
-  if(MA_mean == TRUE){
-    p <- p + geom_hline(aes(yintercept = meta_analytic_mean), 
-                        data = data,
-                        colour = "#01353D", 
-                        linetype = "dashed")
-  }
-  
-  return(p)
-}
-
-publishable_subsets_forest_data <- 
-  ManyEcoEvo_viz %>% 
-  filter(model_name == "MA_mod") %>% 
-  filter(exclusion_set == "complete") %>% 
-  select(ends_with("set"), model) %>%  
-  mutate(plot_data = 
-           map(model, 
-               .f = 
-                 ~broom::tidy(.x, 
-                              conf.int = TRUE, 
-                              include_studies = TRUE) %>% 
-                 mutate(Parameter = 
-                          forcats::fct_reorder(term, estimate))),
-         meta_analytic_mean = 
-           map_dbl(plot_data, 
-                   ~ filter(.x, 
-                            Parameter == "overall") %>% 
-                     pull(estimate))) %>% 
-  select(dataset, 
-         publishable_subset, 
-         plot_data, 
-         meta_analytic_mean) %>% 
-  unnest(cols = c("plot_data")) %>% 
-  mutate(parameter_type = 
-           case_when(
-             str_detect(Parameter, "overall") ~ "mean",
-             TRUE ~ "study"))  %>% 
-  group_by(dataset, publishable_subset) %>%
-  dplyr::mutate(point_shape = 
-                  ifelse(stringr::str_detect(term, "overall"), 
-                         "diamond", 
-                         "circle")) 
-
-# publishable_subsets_forest_data <- 
-#   publishable_subsets_forest_data %>% 
-#   rename(id_col = term) %>% 
-#   group_by(type) %>%  
-#   group_split() %>% 
-#   set_names(., publishable_subsets_forest_data$type %>%  unique) %>% 
-#   # map_if(.x = ., names(.) == "study",
-#          # .f = ~ anonymise_teams(.x, TeamIdentifier_lookup)) %>% 
-#   bind_rows() %>% 
-#   rename(term = id_col)
-
-library(tidytext)
-
-tidy_overall_labeller <- . %>% 
-  str_split("_") %>% 
-  flatten_chr() %>% 
-  pluck(1)
-
-tidy_forest_labels <- Vectorize(tidy_overall_labeller)
-
-publishable_subsets_forest_data %>% 
-  group_by(dataset, publishable_subset) %>% 
-  mutate(term = case_when(term == "overall" ~ 
-                            paste(term, 
-                                  dataset, 
-                                  publishable_subset,
-                                  sep = "_"), 
-                          TRUE ~ term)) %>% 
-  arrange(across(.cols = c(type, estimate)),
-          .by_group = TRUE) %>% 
-  rowid_to_column() %>% 
-  mutate(term = reorder(term, rowid),
-         publishable_subset = 
-           case_when(publishable_subset == "All" ~ 
-                       "All analyses",
-                     publishable_subset == "data_flawed" ~ 
-                       "'Unpublishable'\nremoved",
-                     publishable_subset == "data_flawed_major" ~ 
-                       "'Unpublishable' &\n'Major Revisions'\nremoved",
-                     TRUE ~ "")) %>%  
-  plot_forest() +
-  scale_x_reordered(labels =  tidy_forest_labels) +
-  ggh4x::facet_nested(dataset ~ publishable_subset,
-                      independent = "y", 
-                      scales = "free")
 ```

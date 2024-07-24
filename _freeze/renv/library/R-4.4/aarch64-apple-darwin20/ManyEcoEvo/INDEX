@@ -1,0 +1,182 @@
+Z_VZ_preds              Calculate Z and VZ of out-of-sample predictions
+anonymise_teams         Anonymise ManyEcoEvo Data
+apply_VZ_exclusions     Apply VZ exclusion to a data-frame containing
+                        list-columns of yi subsets
+apply_sorensen_calc     Applies the sorensen diversity index
+                        calculation to variable diversity dataset
+apportion_heterogeneity_ml
+                        Apportion heterogeneity of a multi-level
+                        meta-analytic model
+assign_transformation_type
+                        Assign back-transformation type to be applied
+                        to analysis point-estimates
+augment_prediction_data
+                        Augment analyst out-of-sample prediction data
+                        according to the outcome of pointblank
+                        interrogation
+back_transform_response_vars_yi
+                        Back Transform Response Variables - yi
+box_cox_transform       Box-cox transform absolute deviation from the
+                        meta-analytic mean scores
+calc_I2_ml              Calculate I2 for a multilevel meta-analytic
+                        model
+calculate_deviation_score
+                        Calculate deviation from meta-analytic mean
+calculate_sorensen_diversity_index
+                        Calculate mean sorensen diversity index values
+                        for an analyst dataset
+capwords                Capitalise Words
+clean_response_transformation
+                        Clean response transformation variable
+compare_ml_MA           Compare two fitted multi-level models
+compute_MA_inputs       Compute meta-analysis inputs for a
+                        nested-dataframe containing different
+                        datasets/subsets of analyst data
+compute_metaanalysis_inputs
+                        Compute all metaanalysis inputs for different
+                        types of estimates
+conversion              Conditionally apply back-transformation
+conversion_2            Conditionally apply back-transformation
+convert_predictions     Convert Predictions
+count_analyses_variables_used
+                        Count number of analyses each variable is used
+count_binary_coded_features
+                        Summarise binary coded features of analyses
+count_teams_analyses    Summarise number of analyst teams and total
+                        analyses per dataset
+cube_back               Back transform beta estimates for models with
+                        $x^3$-link
+divide_back             Back transform beta estimates or out-of-sample
+                        predictions from models whose response variable
+                        has been divided by some number
+est_to_zr               Convert estimate to Zr
+exclude_extreme_VZ      Exclude extreme values of VZ from a dataframe
+                        of standardised predictions
+fit_boxcox_ratings_cat
+                        Fit model of boxcox deviation scores as
+                        function of continuous ratings
+fit_boxcox_ratings_cont
+                        Fit model of boxcox deviation scores as
+                        function of continuous ratings
+fit_boxcox_ratings_ord
+                        Fit model of boxcox deviation scores as
+                        function of continuous ratings
+fit_metafor_mv          Fit Multivariate Metaregression using metafoR
+fit_metafor_mv_reduced
+                        Fit reduced multivariate metaregression model
+fit_metafor_uni         Fit univariate meta-analysis with metafor
+fit_sorensen_glm        Fit univariate glm of deviation scores on
+                        sorensen diversity index
+fit_uni_mixed_effects   Fit univariate glm of deviation scores on
+                        random effects inclusion
+generate_collinearity_subset
+                        Generate Collinearity Data Subset
+generate_exclusion_subsets
+                        Generate subsets of analyst data based on
+                        different exclusion criteria
+generate_expertise_subsets
+                        Generate Expertise Data Subsets
+generate_outlier_subsets
+                        Generate Outlier Subsets for ManyEcoEvo
+                        datasets
+generate_rating_subsets
+                        Generate subsets of ManyEcoEvo Data based on
+                        Peer Review Ratings
+generate_yi_subsets     Generate subsets of out-of-sample predictions
+                        data by 'estimate_type' for multiple analysis
+                        datasets.
+get_MA_fit_stats        Extract meta-analytic statistics like I^2, etc.
+get_diversity_data      Get Diversity Data
+gg_forest               Forestplot with ggplot2
+i2_ml                   i2_ml
+identity_back           Back transform beta estimates for models with
+                        identity-link
+inverse_back            Back transform beta estimates for models with
+                        $1/x$ link
+log_back                Back transform beta estimates for models with
+                        log-link
+log_transform           log transform response-scale yi estimates
+logit_back              Back transform beta estimates for models with
+                        logit-link
+make_param_table        Make paramater table
+make_viz                Make visualisations wrapper function
+meta_analyse_datasets   Meta-analyses multiple datasets or subsets of
+                        datasets of analyst data
+named_group_split       Split data frame by groups and name elements
+plot_cont_rating_effects
+                        Plot Marginal Effects for Numeric Rating Model
+plot_effects_diversity
+                        Marginal Effects Plot of Diversity Index Model
+plot_model_means_box_cox_cat
+                        plot_model_means_box_cox_cat
+plot_model_means_orchard
+                        plot_model_means_orchard
+power_back              Back transform beta estimates for models with
+                        power-link
+pred_to_Z               Standardize Out-Of-Sample Predictions
+prepare_ManyEcoEvo      Prepare ManyEcoEvo raw dataset
+prepare_ManyEcoEvo_yi   Prepare ManyEcoEvo raw dataset for
+                        out-of-sample predictions
+prepare_diversity_raw   Prepare diversity index data
+prepare_response_variables
+                        Prepare response variable data for nested
+                        ManyEcoEvo dataset
+prepare_response_variables_yi
+                        Prepare response variable data for nested
+                        ManyEcoEvo dataset - out of sample predictions
+                        only
+prepare_review_data     Prepare peer-review data from Qualtrics
+preprocess_prediction_files
+                        Preprocess Prediction Files
+preprocess_updated_prediction_files
+                        Performs QA on re-submitted out-of-sample
+                        prediction files
+probit_back             Back transform beta estimates for models with
+                        probit-link
+read_submission_data    Read out-of-sample-prediction analyst
+                        submission data
+rm_inf_na               Removes infinite and NA values from a dataframe
+                        of standardised effects
+run_model_checks        Perform model checking on series of fitted
+                        models for different datasets, exclusion sets
+                        and estimate types
+square_back             Back transform beta estimates for models with
+                        $x^2$-link
+square_root_back        Back transform beta estimates or out-of-sample
+                        predictions from models whose response variable
+                        has been transformed by the square root
+standardise_response    Standardise Response Variable
+subset_fns_Zr           Subsetting Functions for Zr analysis
+subset_fns_yi           Subsetting Functions for yi analysis
+summarise_analyses_by_reviewer
+                        Summarise analyses reviewed by reviewer
+summarise_analysis_types
+                        Summarise Analysis Types
+summarise_conclusions   Summarise counts of qualitative conclusions
+                        across all datasets
+summarise_conclusions_data
+                        Count qualitative conclusions across all
+                        analyses for each dataset
+summarise_model_composition
+                        Summarise Model Composition
+summarise_model_composition_data
+                        Summarise model composition for a single
+                        dataframe of out of sample predictions or out
+                        or effect sizes
+summarise_reviews       Summarise Peer-Reviews
+summarise_reviews_per_analysis
+                        Summarise reviews per each analysis
+summarise_sorensen_index
+                        Summarise Mean Sorensen's Index Estimates
+summarise_sorensen_index_data
+                        Summarise Sorensen's Mean Index Estimates for a
+                        dataframe
+summarise_variable_counts
+                        Summarise variable usage across analyses
+validate_predictions    Validate predictions conditioned on dataset
+validate_predictions_df_blue_tit
+                        Validate out of sample predictions for blue tit
+                        dataset with pointblank package
+validate_predictions_df_euc
+                        Validate out of sample predictions for
+                        eucalytpus dataset with pointblank package

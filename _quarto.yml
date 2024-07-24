@@ -1,5 +1,6 @@
 project:
   type: book
+  # lib-dir: "renv/library/R-4.4/aarch64-apple-darwin20/"
   render:
      - "!internal/"
      - "!outputs/"
@@ -14,6 +15,7 @@ book:
     - supp_mat/SM2_EffectSizeAnalysis.qmd
     - supp_mat/SM3_ExplainingDeviation.qmd
     - supp_mat/SM4_case_study_datasets.qmd
+  page-navigation: true
   sidebar: false
   favicon: 'inst/hex_keys/ManyEcoEvoHex.jpg'
   google-analytics: 
@@ -39,7 +41,20 @@ format:
       hypothesis: false
     citations-hover: true
     crossrefs-hover: true
-    toc: false
+    toc: true
+    html-math-method: mathjax
+    include-in-header:
+      - text: |
+          <script>
+          window.MathJax = {
+            loader: {
+              load: ['[tex]/physics'] // extensions to load
+            },
+            tex: {
+              packages: {'[+]': ['physics']},
+            }
+          };
+          </script>
 
   
     # toc-location: left
