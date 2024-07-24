@@ -168,24 +168,24 @@ plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE){
 
 create_model_workflow <- function(outcome, fixed_effects, random_intercepts){
   # https://community.rstudio.com/t/programmatically-generate-formulas-for-lmer/8575
-  
+  # 
   # ---- roxygen example ----
-  # test_dat <- ManyEcoEvo_results$effects_analysis[[1]]  %>% 
-  # unnest(review_data) %>% 
-  #   select(study_id, 
-  #          starts_with("box_cox_abs_dev"), 
-  #          RateAnalysis, 
+  # test_dat <- ManyEcoEvo_results$effects_analysis[[1]]  %>%
+  # unnest(review_data) %>%
+  #   select(study_id,
+  #          starts_with("box_cox_abs_dev"),
+  #          RateAnalysis,
   #          PublishableAsIs,
   #          ReviewerId,
   #          box_cox_var)
   # 
-  # test_dat <- test_dat %>% 
+  # test_dat <- test_dat %>%
   #   janitor::clean_names() %>%
-  #   mutate_if(is.character, factor) %>% 
+  #   mutate_if(is.character, factor) %>%
   #   mutate(weight = importance_weights(1/test_dat$box_cox_var))
-  # create_model_workflow("box_cox_abs_deviation_score_estimate", 
-  #                       "publishable_as_is", 
-  #                       random_intercepts = c("study_id")) %>% 
+  # create_model_workflow("box_cox_abs_deviation_score_estimate",
+  #                       "publishable_as_is",
+  #                       random_intercepts = c("study_id")) %>%
   #   fit(test_dat)
   
   # ---- Define random effects constructor function ----
@@ -208,8 +208,8 @@ create_model_workflow <- function(outcome, fixed_effects, random_intercepts){
   workflow_formula <-  workflow() %>%
     add_variables(outcomes = outcome,
                   predictors =  all_of(c(fixed_effects, random_intercepts))) %>%
-    add_model(model, formula = model_formula) %>% 
-    add_case_weights(weight)
+    add_model(model, formula = model_formula) #%>% 
+  # add_case_weights(weight)
   
   return(workflow_formula)
   
@@ -467,7 +467,7 @@ Analyses of singularity and convergence are presented throughout this document u
 
 ### Effect Sizes $Z_r$ {#sec-Zr-deviation-ratings}
 
-For models of deviation explained by categorical peer ratings, including random effects for both the effect ID and the reviewer ID resulted in models with singular fit for both blue tit and *Eucalyptus* datasets (@tbl-explore-Zr-deviation-random-effects-structure).
+For models of deviation explained by categorical peer ratings, including random effects for both the effect ID and the reviewer ID resulted in models with singular fit, or that failed to converge, for both blue tit and *Eucalyptus* datasets (@tbl-explore-Zr-deviation-random-effects-structure).
 For the *Eucalyptus* dataset, when a random effect was included for Reviewer ID only, the model passed the check with `performance::check_singularity()`, however, the SD and CI could not be estimated by `parameters::model_parameters()` with a warning stating this was likely due to singular fit.
 When fitting models of deviation explained by categorical peer ratings, we consequently included a random effect for Reviewer ID only (See @tbl-deviation-rating-estimates).
 
@@ -559,10 +559,6 @@ all_model_fits <-
          exclusion_set == "complete") %>% 
   mutate(effects_analysis = 
            map(effects_analysis, 
-               mutate, 
-               weight = importance_weights(1/box_cox_var)), #TODO issue #27 REMOVE weights!!
-         effects_analysis = 
-           map(effects_analysis, 
                ~ .x %>% 
                  unnest(review_data) %>% 
                  select(study_id, 
@@ -570,8 +566,7 @@ all_model_fits <-
                         RateAnalysis, 
                         PublishableAsIs,
                         ReviewerId,
-                        box_cox_var,
-                        weight) %>% 
+                        box_cox_var) %>% 
                  janitor::clean_names() %>%
                  mutate_if(is.character, factor) 
            ),
@@ -824,8 +819,8 @@ yi_singularity_convergence_sorensen_mixed_mod <-
 ```
 
 We fitted the same deviation models on the out-of-sample-predictions dataset that we fitted for the effect-size dataset. 
-However, while all models of deviation explained by categorical peer-ratings converged, the following datasets and estimate types suffered from singular fit: `r yi_convergence_singularity %>% filter(singularity == TRUE, str_detect(model_name, "categorical")) %>% unite("singular_models", dataset, estimate_type, sep = " - ") %>% pull(singular_models) %>% paste0(collapse = ", ")` (@tbl-yi-deviation-ratings-convergence-singularity).
-Models of deviation explained by *continuous* ratings all converged, however models for the `r yi_convergence_singularity %>% filter(convergence == FALSE, str_detect(model_name, "continuous")) %>% unite("non_converged", dataset, estimate_type, sep = " - ") %>% pull(non_converged) %>% paste0(collapse = ", ")` out-of-sample predictions model fit was singular.
+However, while all models of deviation explained by categorical peer-ratings converged, the following datasets and estimate types suffered from singular fit: `r yi_convergence_singularity %>% filter(singularity == TRUE, str_detect(model_name, "categorical")) %>% unite("singular_models", dataset, estimate_type, sep = " - ") %>% pull(singular_models) %>% paste0(collapse = ", ") %>%  str_replace("y25", "$y_{25}$") %>%  str_replace("y50", "$y_{50}$") %>%  str_replace("y75", "$y_{75}$") %>% str_replace("eucalyptus", "*Eucalyptus*")` (@tbl-yi-deviation-ratings-convergence-singularity).
+Models of deviation explained by *continuous* ratings all converged, however models for the `r yi_convergence_singularity %>% filter(convergence == FALSE, str_detect(model_name, "continuous")) %>% unite("non_converged", dataset, estimate_type, sep = " - ") %>% pull(non_converged) %>% paste0(collapse = ", ") %>%  str_replace("y25", "$y_{25}$") %>%  str_replace("y50", "$y_{50}$") %>%  str_replace("y75", "$y_{75}$") %>% str_replace("eucalyptus", "*Eucalyptus*")` out-of-sample predictions model fit was singular.
 Similarly to the effect-size ($Z_r$) dataset, SD and CI could not be estimated for random effects in some models (@tbl-yi-deviation-ratings-convergence-singularity), consequently we interpreted this to mean the models had singular fit (See @sec-Zr-deviation-ratings). 
 Results of all deviation models are therefore presented only for models with non-singular fit, and that converged (@tbl-yi-deviation-ratings-convergence-singularity).
 
