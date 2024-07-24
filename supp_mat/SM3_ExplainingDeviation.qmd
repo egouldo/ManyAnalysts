@@ -628,10 +628,10 @@ Zr_singularity_convergence %>%
          dataset = case_when(dataset == "eucalyptus" ~ Hmisc::capitalize(dataset), TRUE ~ dataset)) %>% 
   group_by(dataset) %>% 
   gt::gt() %>% 
-    gt::text_transform(
+  gt::text_transform(
     locations = cells_body(
-    columns = fixed_effects,
-    rows = random_intercepts_1 != "Reviewer ID"
+      columns = fixed_effects,
+      rows = random_intercepts_1 != "Reviewer ID"
     ),
     fn = function(x){
       paste0("")
