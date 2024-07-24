@@ -228,7 +228,7 @@ plot_model_means_box_cox_cat <- function(dat,
                               new_order)
   )
   
-  if(back_transform == TRUE){
+  if (back_transform == TRUE) {
     dat <- dat %>% 
       mutate(box_cox_abs_deviation_score_estimate = 
                sae::bxcx(unique(dat$lambda),
@@ -270,7 +270,7 @@ plot_model_means_box_cox_cat <- function(dat,
     see::theme_modern() +
     theme(axis.text.x = element_text(angle = 90))
   
-  if(back_transform == TRUE){
+  if (back_transform == TRUE) {
     p <- p + 
       labs(x = "Categorical Peer Review Rating", 
            y = "Absolute Deviation from\n Meta-Anaytic Mean Zr") 
