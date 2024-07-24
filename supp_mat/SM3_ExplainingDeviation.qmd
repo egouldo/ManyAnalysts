@@ -758,6 +758,7 @@ MA_yi_summary_stats <- # ALL ON logged RESPONSE SCALE for EUC, standardized resp
 #| warning: false
 #| error: true
 #| echo: false
+#| results: 'hide'
 
 euc_yi_results <- 
   ManyEcoEvo::make_viz(deviation_models_yi_euc)
