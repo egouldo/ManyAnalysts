@@ -3965,7 +3965,7 @@ There was no relationship between random-effect inclusion and deviation from met
 #| message: false
 #| warning: false
 #| echo: false
-#| fig-cap: "Violin plot of mean Box-Cox transformed deviation from meta-analytic mean as a function of random-effects inclusion in *Eucalyptus* analyses. '1' indicates random-effects were included in analyst's model, while 0 indicates no random-effects were included. White points for each group of analyses denote model-estimated marginal mean deviation, and error bars denote 95% CI of the estimate. "
+#| fig-cap: "Violin plot of mean Box-Cox transformed deviation from meta-analytic mean as a function of random-effects inclusion in *Eucalyptus* analyses. White point for each group of analyses denotes model-estimated marginal mean deviation, and error bars denote 95% CI of the estimate. "
 
 #TODO move function to R/ and document roxygen
 plot_model_means_RE <- function(data, variable, predictor_means) {
