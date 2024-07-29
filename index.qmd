@@ -2061,13 +2061,13 @@ This is because the same t-statistic value will be obtained by the same sample s
 We see this by first examining the formula for the standard error, SE for variance, ($\tau^{2}$) or SE($\tau^{2}$) assuming normality in an underlying distribution of effect sizes [@knight2000]:
 
 $$
-SE({{τ}^2})=\sqrt{\frac{{t}^4}{n-1}}
+SE({{\tau}^2})=\sqrt{\frac{{2\tau}^4}{n-1}}
 $$ {#eq-SE-tau}
 
 and then rearranging the above formula to show how the t-statistic is independent of $\tau^2$, as seen below.
 
 $$
-t=\frac{{τ}^2}{SE({{τ}^2})}=\sqrt{\frac{n-1}{2}}
+t=\frac{{\tau}^2}{SE({{\tau}^2})}=\sqrt{\frac{n-1}{2}}
 $$ {#eq-t-tau}
 
 We then find a minimum n = 12 according to this formula.
