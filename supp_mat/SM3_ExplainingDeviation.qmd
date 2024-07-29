@@ -277,13 +277,8 @@ possibly_check_convergence <- possibly(performance::check_convergence,
 possibly_check_singularity <- possibly(performance::check_singularity,
                                        otherwise = NA)
 
-# Define glm model checknig fun (my pr to performance:: https://github.com/easystats/performance/pull/605)
-check_convergence._glm <- function(x, ...){
-  isTRUE(x$fit$converged)
-}
-
-possibly_check_convergence_glm <- possibly(check_convergence._glm, 
-                                           otherwise = NA)
+possibly_check_convergence <- possibly(performance::check_convergence,
+                                       otherwise = NA)
 
 # define plotting fun for walk plotting
 plot_continuous_rating <- function(plot_data){
@@ -785,7 +780,7 @@ yi_singularity_convergence_sorensen_mixed_mod <-
   mutate(singularity = 
            map_lgl(model, possibly_check_singularity),
          convergence = 
-           map_lgl(model, possibly_check_convergence_glm),
+           map_lgl(model, possibly_check_convergence),
          params = map(model, parameters::parameters),
          dataset = 
            case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
