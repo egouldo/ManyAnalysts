@@ -44,17 +44,6 @@ gt_fmt_yi <- function(gt_tbl, columns, ...) {
 
 
 ```{r define-fns, eval = TRUE}
-#TODO turn into own function and pull out of nested targets function and rm here
-fit_MA_mv <- function(effects_analysis, Z_colname, VZ_colname, estimate_type){
-  Zr <- effects_analysis %>%  pull({{Z_colname}})
-  VZr <- effects_analysis %>%  pull({{VZ_colname}})
-  mod <- ManyEcoEvo::fit_metafor_mv(estimate = Zr, 
-                                    variance = VZr, 
-                                    estimate_type = estimate_type, 
-                                    data = effects_analysis)
-  return(mod)
-}
-
 plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
   if(MA_mean == FALSE){
     data <- filter(data, study_id != "overall")
@@ -398,7 +387,7 @@ raw_mod_data_logged <-
 mod_data_logged <- raw_mod_data_logged %>% 
   mutate(MA_mod = 
            map(data, 
-               ~fit_MA_mv(.x, mean_log, std.error_log, "yi")))
+               ~ ManyEcoEvo::fit_MA_mv(.x, mean_log, std.error_log, "yi")))
 
 deviation_models_yi_euc <- 
   raw_mod_data_logged %>% 

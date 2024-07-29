@@ -717,17 +717,6 @@ plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE, y_zoom = numer
   print(p)
 }
 
-# TODO put into R/ and build into package to call!
-fit_MA_mv <- function(effects_analysis, Z_colname, VZ_colname, estimate_type){
-  Zr <- effects_analysis %>%  pull({{Z_colname}})
-  VZr <- effects_analysis %>%  pull({{VZ_colname}})
-  mod <- ManyEcoEvo::fit_metafor_mv(estimate = Zr, 
-                        variance = VZr, 
-                        estimate_type = estimate_type, 
-                        data = effects_analysis)
-  return(mod)
-}
-
 back_transformed_predictions <- 
   ManyEcoEvo_yi %>% 
   dplyr::mutate(data = 
@@ -765,7 +754,11 @@ raw_mod_data_logged <-
 mod_data_logged <- raw_mod_data_logged %>% 
   mutate(MA_mod = 
            map(data, 
-               ~fit_MA_mv(.x, mean_log, std.error_log, "yi")))
+               ~ ManyEcoEvo::fit_MA_mv(effects_analysis = .x,  
+                                      Z_colname = mean_log, 
+                                      VZ_colname = std.error_log,
+                                      estimate_type =  "yi"))
+         )
 
 
 plot_data_logged <- mod_data_logged %>% 
