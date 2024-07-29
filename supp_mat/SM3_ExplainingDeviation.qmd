@@ -1796,7 +1796,7 @@ $$
 \mu_{\text{folded}} &= \sigma \sqrt{\frac{2}{\pi}} \exp\left(-\frac{\mu^2}{2 \sigma^2}\right) + \mu \left(1 - 2 \times \boldsymbol{\phi}\left(-\frac{\mu}{\sigma}; 0,1\right)\right) \\
 \text{SE}_\text{folded} &= \sqrt{\mu^2 + \sigma^2 - \mu_{\text{folded}}^2} \\
 \text{VAR}_\text{folded} &= \text{SE}_\text{folded}^2 \\
-VAR_{\text{Box-Cox}} &= \text{VAR}_\text{folded} \times \left(\lambda \mu_{\text{folded}}^{\lambda - 1}\right)^2
+\text{VAR}_\text{Box-Cox} &= \text{VAR}_\text{folded} \times \left(\lambda \mu_{\text{folded}}^{\lambda - 1}\right)^2
 \end{aligned}
 $$ {#eq-folded-variance}
 
