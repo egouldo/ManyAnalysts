@@ -146,14 +146,14 @@
     },
     "ManyEcoEvo": {
       "Package": "ManyEcoEvo",
-      "Version": "2.0.0",
+      "Version": "2.1.0",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "egouldo",
       "RemoteRepo": "ManyEcoEvo",
-      "RemoteRef": "main",
-      "RemoteSha": "f0dd6ebedbdca7e4da2e9ae6ea5982b6eb38a2a8",
+      "RemoteRef": "v2.1.0",
+      "RemoteSha": "0e2ff66d38ea275357788db708167f19c3d8f5d4",
       "Remotes": "daniel1noble/orchaRd, NightingaleHealth/ggforestplot",
       "Requirements": [
         "R",
@@ -176,7 +176,7 @@
         "tidyr",
         "tidyselect"
       ],
-      "Hash": "55dddab07b5490a427740234a794a7b2"
+      "Hash": "f4aa6580442cd12c837dfb3f4ea36bdb"
     },
     "Matrix": {
       "Package": "Matrix",
