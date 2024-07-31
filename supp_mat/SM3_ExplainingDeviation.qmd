@@ -1321,7 +1321,7 @@ multivar_performance_tidy <- multivar_mods %>%
 ```
 
 The multivariate models did a poor job of explaining how different from the meta-analytic mean each analysis would be.
-For the blue tit analyses the $R^{2}$ value for the whole model was `r round(bt_multivar_mod_R[2],2)` and for the fixed effects component was `r round (bt_multivar_mod_R[1],2)`, and the residual standard deviation for the model was `r round(bt_multivar_mod_sigma,2)`.
+For the blue tit analyses the $R^{2}$ value for the whole model was `r round_pluck(bt_multivar_mod_R, "R2_conditional")` and for the fixed effects component was `r round_pluck(bt_multivar_mod_R, "R2_marginal")`, and the residual standard deviation for the model was `r round(bt_multivar_mod_sigma,2)`.
 Further, all of the fixed effects had 95% confidence intervals that overlaped 0.
 This evidence is all consistent with none of the predictor variables in this model (continuous review rating, categorical review rating, distinctiveness of variables included) having any meaningful effect on how far $Z_r$ estimates fell from the meta-analytic mean for the blue tit analyses.
 The pattern is largely similar for the *Eucalyptus* multivariate analysis, in which $R^{2}$ for the whole model was `r round(euc_multivar_mod_R[2],2)` and for the fixed effects component was `r round (euc_multivar_mod_R[1],2)`, and the residual standard deviation for the model was `r round(euc_multivar_mod_sigma,2)`.
