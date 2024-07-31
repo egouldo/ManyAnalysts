@@ -72,7 +72,7 @@ As described in the summary statistics section of the manuscript, `r Table1 %>% 
 
 ```{r}
 #| label: tbl-Table1
-#| tbl-cap: "Summary of the number of anaysis teams, total analyses, models with normal error distributions, mixed effects models, and models developed with Bayesian statistical methods for effect size analyses only ($Z_r$) and out-of-sample prediction only ($y_i$)."
+#| tbl-cap: "Summary of the number of analysis teams, total analyses, models with normal error distributions, mixed effects models, and models developed with Bayesian statistical methods for effect size analyses only ($Z_r$) and out-of-sample prediction only ($y_i$)."
 
 Table1 %>% 
   rename(subset = subset_name) %>% 
