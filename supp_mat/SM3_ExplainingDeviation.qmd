@@ -1239,39 +1239,6 @@ patchwork::wrap_plots(yi_deviation_RE_plots, byrow = TRUE) +
 ```{r}
 #| label: multivariate-models-mod-summary
 
-fit_multivar_wrap <- function(data_tbl, ..., env = rlang::caller_env()){
-  f1 <- rlang::new_formula(expr(box_cox_abs_deviation_score_estimate), 
-                           expr(RateAnalysis + 
-                                  PublishableAsIs + 
-                                  mean_diversity_index + 
-                                  (1 | ReviewerId)), env = env)
-  
-  f2 <- rlang::new_formula(expr(box_cox_abs_deviation_score_estimate), 
-                           expr(RateAnalysis + 
-                                  PublishableAsIs + 
-                                  mean_diversity_index + 
-                                  mixed_model +
-                                  (1 | ReviewerId)), env = env)
-  
-  pass_threshold <- 
-    data_tbl %>% 
-    count(mixed_model) %>% 
-    pointblank::test_col_vals_gte(n, 5)
-  
-  if (pass_threshold == TRUE) {
-    cli::cli_alert_info("Model with random effects included")
-  } else (
-    cli::cli_alert_info("Model with random effects excluded")
-  )
-  #TODO MAKE SURE GIVES CORRECT EX
-  f <- if (pass_threshold) f2 else f1 # MAKE SURE RETURNS APPROPIRATELY
-  
-  mod <- inject(lme4::lmer(!!f, data = data_tbl, ...))
-  
-  return(mod)
-  
-}
-
 filter_vars <- rlang::exprs(exclusion_set == "complete",
                             expertise_subset == "All",
                             publishable_subset == "All",
