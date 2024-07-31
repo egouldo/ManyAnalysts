@@ -1245,16 +1245,9 @@ filter_vars <- rlang::exprs(exclusion_set == "complete",
                             collinearity_subset == "All")
 
 multivar_mods <- 
-  ManyEcoEvo_results %>% 
-  dplyr::filter(!!!filter_vars) %>% 
-  group_by(dataset) %>% 
-  select(dataset, effects_analysis) %>% 
-  mutate(effects_analysis = map(effects_analysis, ~ .x %>% 
-                                  unnest(review_data))) %>% 
-  mutate(model = map(effects_analysis, fit_multivar_wrap)) %>%
-  mutate(model_perf = map(model, performance::model_performance)) %>% 
-  mutate(model_params = map(model, parameters::parameters)) %>% 
-  hoist(model_perf, "R2_conditional", "R2_marginal", "Sigma")
+  ManyEcoEvo::ManyEcoEvo_viz %>% 
+  dplyr::filter(!!!filter_vars, model_name == "MA_mod_mv") %>% 
+  hoist(mod_fit_stats, "R2_conditional", "R2_marginal", "Sigma")
 
 bt_multivar_mod_R <- 
   multivar_mods %>% 
