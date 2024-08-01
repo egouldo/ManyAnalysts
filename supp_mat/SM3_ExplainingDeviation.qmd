@@ -969,7 +969,7 @@ subfigcaps <- yi_cont_plot_data %>%
   pull(plot_name)
 
 fig_cap_yi_deviation_cont_rating <- 
-  paste0("Scatterplots exaining Box-Cox transfored deviation fro the eta-analytic mean for $y_i$ estimates as a function of continuous ratings. Note that higher (less negative) values of the deviation score result from greater deviation from the meta-analytic mean.", subfigcaps %>% 
+  paste0("Scatterplots explaining Box-Cox transformed deviation from the meta-analytic mean for $y_i$ estimates as a function of continuous ratings. Note that higher (less negative) values of the deviation score result from greater deviation from the meta-analytic mean.", subfigcaps %>% 
            paste0(paste0(paste0("**", LETTERS[1:4], "**", sep = ""), sep = ": "), ., collapse = ", "), ".")
 ```
 
