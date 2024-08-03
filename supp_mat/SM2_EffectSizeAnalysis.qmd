@@ -583,7 +583,7 @@ For the blue tit dataset, we created a subset of analyses that excluded effects 
 
 ```{r}
 #| label: fig-forest-plot-Zr-collinear-rm-subset
-#| fig-cap: "Forest plot of meta-analytic estimated effect-sizes $Z_{r}$, standard error and 95% confidence intervals of Blue tit analyses with highly collinear analyses removed. The meta-analytic mean for the reduced subset is denoted by the black triangle, and a dashed vertical line, with error bars representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0."
+#| fig-cap: "Forest plot of meta-analytic estimated effect-sizes $Z_{r}$, standard error and 95% confidence intervals of blue tit analyses with highly collinear analyses removed. The meta-analytic mean for the reduced subset is denoted by the black triangle, and a dashed vertical line, with error bars representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0."
 #| fig-height: 6
 #| echo: true
 
