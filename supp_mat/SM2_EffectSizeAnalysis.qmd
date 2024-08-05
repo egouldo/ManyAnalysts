@@ -841,7 +841,7 @@ mod_data_logged <- raw_mod_data_logged %>%
            map(data, 
                ~ ManyEcoEvo::fit_MA_mv(effects_analysis = .x,  
                                       Z_colname = mean_log, 
-                                      VZ_colname = std.error_log,
+                                      VZr_colname = std.error_log,
                                       estimate_type =  "yi"))
          )
 
