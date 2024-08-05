@@ -777,6 +777,7 @@ plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE, y_zoom = numer
   if(intercept == TRUE){
     p <- p + geom_hline(yintercept = 0)
   }
+  
   if(MA_mean == TRUE){
     p <- p +
       geom_hline(aes(yintercept = plot_data %>%
@@ -811,7 +812,6 @@ back_transformed_predictions <-
   prepare_response_variables_yi(estimate_type = "yi",
                                 param_table = ManyEcoEvo:::analysis_data_param_tables) %>% 
   generate_yi_subsets()
-
 
 raw_mod_data_logged <- 
   back_transformed_predictions %>% 
