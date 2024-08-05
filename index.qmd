@@ -2190,8 +2190,11 @@ We used the square of the SE associated with predicted values as the sampling va
 
 ::: {.callout-note appearance="simple"}
 **Preregistration Deviation:** Because analysts of blue tit data chose different dependent variables on different scales, after transforming out-of-sample values to the original scales, we standardized all values as z scores ('standard scores') to put all dependent variables on the same scale and make them comparable.
-This involved taking each relevant value on the original scale (whether a predicted point estimate or a SE associated with that estimate) and subtracting the value in question from the mean value of that dependent variable derived from the full dataset and then dividing this difference by the standard deviation, SD, corresponding to the mean from the full dataset.
+This involved taking each relevant value on the original scale (whether a predicted point estimate or a SE associated with that estimate) and subtracting the value in question from the mean value of that dependent variable derived from the full dataset and then dividing this difference by the standard deviation, SD, corresponding to the mean from the full dataset (@eq-Z-VZ).
 Thus, all our out-of-sample prediction values from the blue tit data are from a distribution with the mean of 0 and SD of 1.
+
+Note that we were unable to standardise some analyst-constructed variables, so these analyses were excluded from the final out-of-sample estimates meta-analysis, see @sec-excluded-yi for details and explanation.
+
 We did not add this step for the *Eucalyptus* data because (a) all responses were on the same scale (counts of *Eucalyptus* stems) and were thus comparable and (b) these data, with many zeros and high skew, are poorly suited for z scores.
 :::
 
