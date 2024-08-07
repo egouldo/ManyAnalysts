@@ -24,6 +24,7 @@ library(performance)
 library(broom.mixed)
 library(gt)
 library(lme4)
+library(parameters) #must be loaded directly else parameters fail
 library(MuMIn)
 library(ManyEcoEvo)
 library(tidymodels)
