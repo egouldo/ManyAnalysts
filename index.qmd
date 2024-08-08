@@ -2522,7 +2522,7 @@ Analysts produced `r filter(total_usable_effects, dataset == "blue tit") %>% plu
 Analysts produced `r filter(total_usable_effects, dataset == "eucalyptus") %>% pluck("n")` distinct effects meeting our criteria for inclusion for the *Eucalyptus* dataset.
 Excluded analyses and effects either did not answer our specified biological questions, were submitted with insufficient information for inclusion in our meta-analyses, or were incompatible with production of our effect size(s).
 We expected cases of this final scenario (incompatible analyses), for instance we cannot extract a $Z_r$ from random forest models, which is why we analyzed two distinct types of effects, $Z_r$ and out-of-sample.
-Effects included in only a subset of our meta-analyses provided sufficient information for inclusion in only that subset (see @tbl-Table1).
+Some effects only provided sufficient information for a subset of analyses and were only included in that subset.
 For both datasets, most submitted analyses incorporated mixed effects.
 Submitted analyses of the blue tit dataset typically specified normal error and analyses of the *Eucalyptus* dataset typically specified a non-normal error distribution (@tbl-Table1).
 
