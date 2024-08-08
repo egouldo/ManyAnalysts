@@ -1789,7 +1789,7 @@ As we describe in @box-weight-deviation, for models of deviation from the meta-a
 ::: {.callout-note appearance="simple"}
 # Model Weight Calculation Details
 
-We intended to use the invariance of the Box-Cox transformed deviation scores as model weights in our models of deviation from the meta-analytic mean. The variance of the Box-Cox transformation scores is calculated using the delta method ([@eq-folded-variance] and [@lst-variance-box-cox]). 
+We intended to use the invariance of the Box-Cox transformed deviation scores as model weights in our models of deviation from the meta-analytic mean. The variance of the Box-Cox transformation scores is calculated using the delta method ([@eq-folded-variance]). 
 
 $$
 \begin{aligned}
