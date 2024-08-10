@@ -1004,17 +1004,17 @@ ManyEcoEvo_yi_viz %>%
   semi_join(
     {bind_rows(yi_singularity_convergence_sorensen_mixed_mod, 
                yi_convergence_singularity) %>% 
-        filter(singularity == FALSE, convergence == TRUE, SD_calc == TRUE) },
+        filter(singularity == FALSE, 
+               convergence == TRUE, 
+               SD_calc == TRUE | is.na(SD_calc)) },
     by = join_by("dataset", "estimate_type", "model_name")
   ) %>% 
-  select(dataset, estimate_type, model_name, model) %>% 
-  mutate(tbl_output = map(model, parameters::parameters)
-  ) %>% 
+  select(dataset, estimate_type, model_name, model, model_params) %>% 
   select(dataset, 
          estimate_type,
          model_name, 
-         tbl_output) %>% 
-  unnest(tbl_output) %>% 
+         model_params) %>% 
+  unnest(model_params) %>% 
   mutate(dataset = case_when(str_detect(dataset, "eucalyptus") ~ "*Eucalyptus*",
                              TRUE ~ dataset),
          Group = case_when(Group == "study_id" ~ "Effect ID",
@@ -1030,7 +1030,8 @@ ManyEcoEvo_yi_viz %>%
   arrange(desc(model_name), 
           dataset, estimate_type) %>%
   select(-CI) %>% 
-  dplyr::filter(dataset != "blue tit" | str_detect(model_name, "random", negate = TRUE)) %>% 
+  dplyr::filter(dataset != "blue tit" | str_detect(model_name, "random", 
+                                                   negate = TRUE)) %>% 
   gt::gt(rowname_col = "dataset") %>% 
   gt::fmt(columns = "p",
           fns = function(x) gtsummary::style_pvalue(x)) %>% 
