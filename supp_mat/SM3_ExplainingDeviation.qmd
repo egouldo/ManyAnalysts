@@ -1729,7 +1729,7 @@ tbl_data_yi_deviation_model_params %>%
 
 ## Post-hoc analysis: checking the use of model weights in all models explaining deviation from the meta-analytic mean {#sec-post-hoc-weights-analysis}
 
-As we describe in @box-weight-deviation, for models of deviation from the meta-analytic mean effect-size, we had intended to use the inverse variance of the Box-Cox transformed deviation from the meta-analytic mean as model weights. Unfortunately using our intended weights specification resulted in invalid transformed response variables for some models whereby extreme outliers were weighted more heavily (two orders of magnitude) than other effect sizes, which caused both issues in the estimated model parameters as well as convergence issues, in particular for models analysing the effect of categorical peer-review rating on deviation from the meta-analytic mean. 
+As we describe in @nte-box-weight-deviation, for models of deviation from the meta-analytic mean effect-size, we had intended to use the inverse variance of the Box-Cox transformed deviation from the meta-analytic mean as model weights. Unfortunately using our intended weights specification resulted in invalid transformed response variables for some models whereby extreme outliers were weighted more heavily (two orders of magnitude) than other effect sizes, which caused both issues in the estimated model parameters as well as convergence issues, in particular for models analysing the effect of categorical peer-review rating on deviation from the meta-analytic mean. 
 
 ::: {.callout-note appearance="simple"}
 # Model Weight Calculation Details
