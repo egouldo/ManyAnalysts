@@ -2279,6 +2279,7 @@ Absolute deviation scores were Box-Cox transformed using the `step_box_cox()` fu
 
 ```{r eqn-boxcox-ratings-bt, results = 'asis', eval = FALSE, echo = FALSE}
 # Ratings Continuous blue tit
+data(ManyEcoEvo_viz)
 ManyEcoEvo_viz %>% 
   filter(str_detect(model_name, "box_cox_rating"),
          str_detect(model_name, "_no_int", negate = TRUE),
@@ -2429,6 +2430,7 @@ The full manuscript, including further analysis and presentation of results is w
 # Results
 
 ```{r descriptive-munging, eval=TRUE,include=TRUE, echo = FALSE, message=FALSE, warning=FALSE}
+data(ManyEcoEvo_study_summary)
 
 filter_vars_main_analysis <- rlang::exprs(estimate_type == "Zr", 
                                           exclusion_set == "complete", 
@@ -2442,7 +2444,7 @@ filter_vars_main_no_est <- rlang::exprs(exclusion_set == "complete",
                                           collinearity_subset == "All")
 
 total_usable_analyses <- 
-  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+  ManyEcoEvo_study_summary %>% 
   filter(subset_name != "all") %>% 
   unnest(data) %>% 
   select(dataset, TeamIdentifier, submission_id, analysis_id) %>% 
@@ -2452,7 +2454,7 @@ total_usable_analyses <-
   janitor::adorn_totals()
 
 total_usable_effects <- 
-  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+  ManyEcoEvo_study_summary %>% 
   filter(subset_name != "all") %>% 
   unnest(data) %>% 
   select(dataset, TeamIdentifier, submission_id, analysis_id, split_id) %>% 
@@ -2462,33 +2464,35 @@ total_usable_effects <-
   janitor::adorn_totals()
 
 Table2 <- # model composition
-  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+  ManyEcoEvo_study_summary %>% 
     filter(subset_name != "all") %>% 
     select(subset_name, model_term_summary) %>% 
     unnest(cols = model_term_summary)
 
 Table4 <- # Conclusions analysis
-  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+  ManyEcoEvo_study_summary %>% 
   filter(subset_name == "all") %>% 
   pluck("conclusions_summary", 1)
 
 Table1 <- # Teams, analyses and model types
-  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+  ManyEcoEvo_study_summary %>% 
   filter(subset_name != "all") %>% 
   select(subset_name, model_type_summary) %>% 
   unnest(cols = model_type_summary)
 
 # Sorensen Analysis
 SorensenSummary <- 
-  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+  ManyEcoEvo_study_summary %>% 
   filter(subset_name != "all") %>% 
   select(subset_name, sorensen_summary) %>% 
   unnest(cols = sorensen_summary)
 
 ## ----- Review Summaries -----
 
+data(ManyEcoEvo_results)
+
 ReviewData <- 
-  ManyEcoEvo::ManyEcoEvo_results %>% 
+  ManyEcoEvo_results %>% 
   ungroup %>% 
   filter(!!!filter_vars_main_analysis) %>% 
   select(data, -dataset) %>% 
@@ -2521,14 +2525,14 @@ ArticleReviewSummary <-
 reviewers <- ReviewData %>% n_distinct("ReviewerId")
 
 # How many reviews per reviewer
-mean_reviews_by_reviewer <- round(mean(ReviewerSummary$articles), digits=2)
+mean_reviews_by_reviewer <- round(mean(ReviewerSummary$articles), digits = 2)
 min_reviews_by_reviewer <- min(ReviewerSummary$articles)
 max_reviews_by_reviewer <- max(ReviewerSummary$articles)
 ```
 
 ## Summary Statistics
 
-In total, `r ManyEcoEvo::ManyEcoEvo_study_summary %>% filter(subset_name == "all") %>% pluck("n_teams") + 28` analyst teams, comprising 246 analysts, contributed `r total_usable_analyses %>% filter(dataset == "blue tit") %>% pluck("n") + total_usable_analyses %>% filter(dataset == "eucalyptus") %>% pluck("n")` usable analyses (compatible with our meta-analyses and provided with all information needed for inclusion) of the two datasets examined in this study which yielded `r filter(total_usable_effects, dataset == "blue tit") %>% pluck("n")+filter(total_usable_effects, dataset == "eucalyptus") %>% pluck("n")` effects.
+In total, `r ManyEcoEvo_study_summary %>% filter(subset_name == "all") %>% pluck("n_teams") + 28` analyst teams, comprising 246 analysts, contributed `r total_usable_analyses %>% filter(dataset == "blue tit") %>% pluck("n") + total_usable_analyses %>% filter(dataset == "eucalyptus") %>% pluck("n")` usable analyses (compatible with our meta-analyses and provided with all information needed for inclusion) of the two datasets examined in this study which yielded `r filter(total_usable_effects, dataset == "blue tit") %>% pluck("n")+filter(total_usable_effects, dataset == "eucalyptus") %>% pluck("n")` effects.
 Analysts produced `r filter(total_usable_effects, dataset == "blue tit") %>% pluck("n")` distinct effects that met our criteria for inclusion in at least one of our meta-analyses for the blue tit dataset.
 Analysts produced `r filter(total_usable_effects, dataset == "eucalyptus") %>% pluck("n")` distinct effects meeting our criteria for inclusion for the *Eucalyptus* dataset.
 Excluded analyses and effects either did not answer our specified biological questions, were submitted with insufficient information for inclusion in our meta-analyses, or were incompatible with production of our effect size(s).
@@ -2595,6 +2599,7 @@ Table4 %>%
 ### Standardized Effect Sizes ($Z_r$)
 
 ```{r calc_MA_mod_coefs, eval=TRUE,include=TRUE, echo = FALSE}
+data("ManyEcoEvo_viz")
 coefs_MA_mod <- bind_rows( ManyEcoEvo_viz %>% 
                              filter(model_name == "MA_mod") %>% 
                              filter(exclusion_set == "complete"),
@@ -2809,6 +2814,9 @@ euc_forest
 ### Out-of-sample predictions $y_{i}$
 
 ```{r define-plot-forest-function, echo = FALSE, message=FALSE, warning=FALSE}
+data("ManyEcoEvo_yi")
+data("ManyEcoEvo_yi_results")
+
 plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
   if(MA_mean == FALSE){
     data <- filter(data, study_id != "overall")
@@ -3355,19 +3363,22 @@ N_outliers_Zr_euc <- sample_size_euc_Zr %>%
   filter(term %in% min_outlier_euc) %>% 
    arrange(desc(sample_size))
 
+data("euc_data")
 
 ```
 
 The outlier *Eucalyptus* $Z_r$ values were striking and merited special examination.
 The three negative outliers had very low sample sizes were based on either small subsets of the dataset or, in one case, extreme aggregation of data.
-The outliers associated with small subsets had sample sizes ($n=$ `r N_outliers_Zr_euc$sample_size %>% paste0(collapse = ", ")`) that were less than half of the total possible sample size of `r nrow(ManyEcoEvo::euc_data)`.
-The case of extreme aggregation involved averaging all values within each of the `r n_distinct(ManyEcoEvo::euc_data, "Property")` sites in the dataset.
+The outliers associated with small subsets had sample sizes ($n=$ `r N_outliers_Zr_euc$sample_size %>% paste0(collapse = ", ")`) that were less than half of the total possible sample size of `r nrow(euc_data)`.
+The case of extreme aggregation involved averaging all values within each of the `r n_distinct(euc_data, "Property")` sites in the dataset.
 
 ```{r}
 #| label: bt-Zr-outliers
 #| echo: false
 #| warning: false
 #| message: false
+
+rm(euc_data)
 
 max_outlier_bt <- bt_complete_data %>% 
   filter(type == "study") %>% 
@@ -3698,9 +3709,9 @@ ManyEcoEvo_viz %>%
                      locations = gt::cells_row_groups()) %>% 
   gt::as_raw_html()
 
-p_cat_bt_tidy<-broom.mixed::tidy(ManyEcoEvo::ManyEcoEvo_results$sorensen_glm[[1]],conf.int=T,conf.level=0.95)
+p_cat_bt_tidy<-broom.mixed::tidy(ManyEcoEvo_results$sorensen_glm[[1]],conf.int=T,conf.level=0.95)
 
-p_cat_euc_tidy<-broom.mixed::tidy(ManyEcoEvo::ManyEcoEvo_results$sorensen_glm[[2]],conf.int=T,conf.level=0.95)
+p_cat_euc_tidy<-broom.mixed::tidy(ManyEcoEvo_results$sorensen_glm[[2]],conf.int=T,conf.level=0.95)
 ```
 
 ## Deviation Scores as explained by Reviewer Ratings

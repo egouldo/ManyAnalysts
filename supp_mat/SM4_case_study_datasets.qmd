@@ -23,6 +23,8 @@ library(ManyEcoEvo)
 library(GGally)
 set.seed(1234)
 source(here::here("utils.R"))
+data("euc_data")
+data("blue_tit_data")
 ```
 
 Pairwise-correlation plots for the *Eucalyptus* and blue tit case-study data provided to analysts are shown in @fig-ggpairs-eucalyptus and @fig-ggpairs-bt, respectively. Plots were created with R package `GGally` [@GGally].
@@ -37,7 +39,7 @@ Pairwise-correlation plots for the *Eucalyptus* and blue tit case-study data pro
 #| fig-width: 20
 #| fig-height: 20
 
-ManyEcoEvo::euc_data %>%
+euc_data %>%
   select(where(is_double),
          -Date, 
          -`Quadrat no`,
@@ -59,7 +61,7 @@ ManyEcoEvo::euc_data %>%
 #| fig-height: 15
 #| eval: true
 
-ManyEcoEvo::blue_tit_data %>%
+blue_tit_data %>%
   naniar::replace_with_na_all(condition = ~ .x == ".") %>% 
   mutate(across(c(contains("_ring"), 
                   rear_nest_trt, 
