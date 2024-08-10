@@ -18,7 +18,7 @@ the R package `ManyEcoEvo::`, located at
     in this repository locally on your machine (see
     [renv::](https://rstudio.github.io/renv/index.html) for details).
     Follow the prompts, and if `ManyEcoEvo::` does not install, install
-    it with: \`devtools::install_github(“egouldo/ManyEcoEvo”).
+    it with: `devtools::install_github(“egouldo/ManyEcoEvo”)`.
 4.  In the console, run `quarto::quarto_render()`, output will be
     created in `_book/index.html`.
 

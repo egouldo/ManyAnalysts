@@ -5,6 +5,7 @@ format: html
 editor: visual
 number-sections: true
 code-fold: true
+pre-render: "utils.R"
 execute:
   freeze: auto  # re-render only when source changes
 ---
@@ -16,6 +17,7 @@ library(tidyverse)
 library(performance)
 library(broom.mixed)
 library(gt)
+library(gtExtras)
 library(lme4)
 library(MuMIn)
 library(ManyEcoEvo)
@@ -23,6 +25,7 @@ library(ggrepel)
 library(glue)
 library(gluedown)
 set.seed(1234)
+source(here::here("utils.R"))
 ```
 
 ```{r}
@@ -32,8 +35,10 @@ set.seed(1234)
 #| warning: false
 #| message: false
 
+data(ManyEcoEvo_results)
+
 ManyEcoEvo_results <- 
-  ManyEcoEvo::ManyEcoEvo_results %>% 
+  ManyEcoEvo_results %>% 
   mutate(effects_analysis = 
            map(effects_analysis, 
                rename, 
@@ -116,6 +121,8 @@ The forest plots in @fig-all-forest-plots-Zr compare the distributions of $Z_r$ 
 #| fig-height: 14
 #| fig-width: 10
 # TeamIdentifier_lookup <- read_csv(here::here("data-raw/metadata_and_key_data/TeamIdentifierAnonymised.csv"))
+
+data(ManyEcoEvo_viz)
 
 plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
   if (MA_mean == FALSE){
@@ -583,7 +590,7 @@ For the blue tit dataset, we created a subset of analyses that excluded effects 
 
 ```{r}
 #| label: fig-forest-plot-Zr-collinear-rm-subset
-#| fig-cap: "Forest plot of meta-analytic estimated effect-sizes $Z_{r}$, standard error and 95% confidence intervals of Blue tit analyses with highly collinear analyses removed. The meta-analytic mean for the reduced subset is denoted by the black triangle, and a dashed vertical line, with error bars representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0."
+#| fig-cap: "Forest plot of meta-analytic estimated effect-sizes $Z_{r}$, standard error and 95% confidence intervals of blue tit analyses with highly collinear analyses removed. The meta-analytic mean for the reduced subset is denoted by the black triangle, and a dashed vertical line, with error bars representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0."
 #| fig-height: 6
 #| echo: true
 
@@ -645,6 +652,8 @@ ManyEcoEvo_viz %>%
 #| echo: false
 #| message: false
 
+data(ManyEcoEvo)
+
 # Constructed Variables Included in the ManyAnalysts meta-analysis
 ManyEcoEvo_constructed_vars <-
   tribble(~response_variable_name,
@@ -691,13 +700,14 @@ n_teams_w_dropped_analyses <-
   n_distinct("TeamIdentifier")
 ```
 
-We standardized the $y_i$ estimates for the blue tit analyses using the population mean and standard deviations of the relevant response variable for that analysis as shown in @eq-Z-VZ using the function `ManyEcoEvo::Z_VZ_preds()`. We used the mean and standard deviation of the relevant dataset from the full analysis set as our 'population' parameters.
+We standardized the $y_i$ estimates for the blue tit analyses using the population mean and standard deviations of the relevant response variable for that analysis as shown in @eq-Z-VZ using the function `ManyEcoEvo::Z_VZ_preds()`. Note that this is NOT the same process as Z-transforming the effect sizes. We used the mean and standard deviation of the relevant raw datasets as our 'population' parameters.
 
 $$
-Z_i = \frac{\hat{y}_i - \mu}{\text{SD}} \\
-{\text{VAR}}_{Z_i} = \frac{{SE}_{\hat{y}_i}}{{SD}}
+Z_j = \frac{\mu_i-\bar{x}_j}{\text{SD}_j} \\
+{\text{VAR}}_{Z_j} = \frac{{SE}_{\mu_i}}{{SD_j}}
 $$ {#eq-Z-VZ}
 
+Where $\mu$ is the population parameter taken from our original dataset for variable $i$, and $\bar[x]$ and $SD$ are the out of sample point estimate values supplied for analysis $j$. Note that for the response variables that were scaled and centered, or else mean-centred before model fitting, we do not need to standardise because these are already on the Z-scale. In doing so we make the assumption that analysts' data subsetting will have little effect on the outcomes.
 For some analyses of the blue tit dataset, analysts constructed their own unique response variables, which meant we needed to also construct these variables in order to calculate the population parameters. Unfortunately we were not able to re-construct all variables used by the analysts, as we were unable to reproduce the exact dataset required for their re-construction. Included and excluded constructed variables are illustrated in @tbl-constructed-var-exclusions. A total of `r n_dropped_analyses` were excluded from out-of-sample meta-analysis, from `r n_teams_w_dropped_analyses`, including the following analysis identifiers: `r pull(excluded_yi_constructed, id_col) %>% gluedown::md_code() %>% glue::glue_collapse(", ",last = " and ")`.
 
 ```{r}
@@ -715,11 +725,12 @@ all_constructed_vars %>%
   ) %>% 
   dplyr::filter(dataset != "eucalyptus") %>% # not excluded as standardisation not needed
   dplyr::mutate(included_in_yi = ifelse(isTRUE(included_in_yi),"check", "xmark")) %>% 
-  gt::gt() %>% 
+  gt::gt(caption = gt::md("Analyst-constructed variables and whether they are included in our meta-analyses of out-of-sample predictions, $y\\_i$")) %>% 
   gt::cols_label(response_variable_name = "Constructed Variable",
                  included_in_yi = gt::md("Included in $y\\_i$ meta-analysis?")) %>% 
   gtExtras::gt_fa_column(included_in_yi) %>% 
-  gt::cols_hide("dataset")
+  gt::cols_hide("dataset") %>% 
+  gt::as_raw_html()
 
 ```
 
@@ -733,6 +744,8 @@ Below is the non-truncated version of @fig-euc-yi-forest-plot showing a forest p
 #| fig-height: 8
 #| echo: true
 #| message: false
+
+data("ManyEcoEvo_yi")
 
 plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE, y_zoom = numeric(2L)){
   if(MA_mean == FALSE){

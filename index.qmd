@@ -1884,6 +1884,7 @@ google-scholar: true
 editor: 
   markdown: 
     wrap: sentence
+pre-render: utils.R
 ---
 
 ```{r load-libs, include=FALSE,eval=TRUE,message=FALSE, echo=FALSE}
@@ -1905,9 +1906,6 @@ library(tidymodels) #todo consider porting the extract_fit_engine into the ManyE
 library(grateful)
 library(modelbased)
 set.seed(1234)
-
-# Helper Funs
-round_pluck <- function(data, x){pluck(data, x, \(y) round(y, 2))}
 ```
 
 # Introduction
@@ -2009,7 +2007,9 @@ We have mass and tarsus length data from 3720 individual chicks divided among 16
 The full list of variables included in the dataset is publicly available (<https://osf.io/hdv8m>), along with the data (<https://osf.io/qjzby>).
 
 ::: {.callout-note appearance="simple"}
-**Additional Explanation:** Shortly after beginning to recruit analysts, several analysts noted a small set of related errors in the blue tit dataset.
+## Additional Explanation: 
+
+Shortly after beginning to recruit analysts, several analysts noted a small set of related errors in the blue tit dataset.
 We corrected the errors, replaced the dataset on our OSF site, and emailed the analysts on 19 April 2020 to instruct them to use the revised data.
 The email to analysts is available here (<https://osf.io/4h53z>).
 The errors are explained in that email.
@@ -2050,7 +2050,7 @@ All analysts and reviewers were offered the opportunity to share co-authorship o
 All analysts signed \[digitally\] a consent (ethics) document (<https://osf.io/xyp68/>) approved by the Whitman College Institutional Review Board prior to being allowed to participate.
 
 ::: {.callout-note appearance="simple"}
-**Preregistration Deviation:**
+## Preregistration Deviation:
 
 Due to the large number of recruited analysts and reviewers and the anticipated challenges of receiving and integrating feedback from so many authors, we limited analyst and reviewer participation in the production of the final manuscript to an invitation to call attention to serious problems with the manuscript draft.
 :::
@@ -2080,13 +2080,13 @@ For the evolutionary ecology dataset that question was "To what extent is the gr
 They also were asked to upload their analysis files (including the dataset as they formatted it for analysis and their analysis code \[if applicable\]) and a detailed journal-ready statistical methods section.
 
 ::: {.callout-note appearance="simple"}
-**Additional Explanation:** 
+## Additional Explanation:
 
 As is common in many studies in ecology and evolutionary biology, the datasets we provided contained many variables, and the research questions we provided could be addressed by our datasets in many different ways. For instance, volunteer analysts had to choose the dependent (response) variable and the independent variable, and make numerous other decisions about which variables and data to use and how to structure their model.
 :::
 
 ::: {.callout-note appearance="simple"}
-**Preregistration Deviation:**
+## Preregistration Deviation:
 
 We originally planned to have analysts complete a single survey (<https://osf.io/neyc7/>), but after we evaluated the results of that survey, we realized we would need a second survey (<https://osf.io/8w3v5/>) to adequately collect the information we needed to evaluate heterogeneity of results (step 5).
 We provided a set of detailed instructions with the follow-up survey, and these instructions are publicly available and can be found within the following files (blue tit: <https://osf.io/kr2g9>, *Eucalyptus*: <https://osf.io/dfvym>).
@@ -2122,7 +2122,7 @@ After providing the final review, the reviewer was simultaneously provided with 
 The invitation to revise the original ratings was as follows: "If, now that you have seen all the analyses you are reviewing, you wish to revise your ratings of any of these analyses, you may do so now." The text box was prefaced with this prompt: "Please explain your choice to revise (or not to revise) your ratings."
 
 ::: {.callout-note appearance="simple"}
-**Additional explanation:** Unregistered analysis.
+## Additional explanation: Unregistered analysis.
 
 To determine how consistent peer reviewers were in their ratings, we assessed inter-rater reliability among reviewers for both the categorical and quantitative ratings combining blue tit and *Eucalyptus* data using Krippendorff's alpha for ordinal and continuous data respectively.
 This provides a value that is between -1 (total disagreement between reviewers) and 1 (total agreement between reviewers).
@@ -2148,7 +2148,7 @@ However, adjusted $df$ can be estimated, for example, using the Satterthwaite ap
 For analyses using either LMMs or GLMMs that do not produce ${df}_S$ we planned to obtain ${df}_S$ by rerunning the same (G)LMMs using the `lmer()` or `glmer()` function in the *lmerTest* package in R [@kuznetsova2017; @base].
 
 ::: {.callout-note appearance="simple"}
-**Preregistration Deviation:**
+## Preregistration Deviation:
 
 Rather than re-run these analyses ourselves, we sent a follow-up survey (referenced above under "Primary data analyses") to analysts and asked them to follow our instructions for producing this information.
 The instructions are publicly available and can be found within the following files (blue tit: <https://osf.io/kr2g9>, *Eucalyptus*: <https://osf.io/dfvym>).
@@ -2172,7 +2172,9 @@ To accomplish this, we derived a point estimate (out-of-sample predicted value) 
 We originally described these three values as associated with the 25th percentile, median, and 75th percentile of the independent variable and any covariates.
 
 ::: {.callout-note appearance="simple"}
-**Preregistration Deviation:** The original description of the out-of-sample specifications did not account for the facts that (a) some variables are not distributed in a way that allowed division in percentiles and that (b) variables could be either positively or negatively correlated with the dependent variable.
+## Preregistration Deviation:
+
+The original description of the out-of-sample specifications did not account for the facts that (a) some variables are not distributed in a way that allowed division in percentiles and that (b) variables could be either positively or negatively correlated with the dependent variable.
 We provide a more thorough description here: We derived three point-estimates (out-of-sample predicted values) for the dependent variable of interest; one for each of three values of our primary independent variable that we specified.
 We also specified values for all other variables that could have been included as independent variables in analysts' models so that we could derive the predicted values from a fully specified version of any model produced by analysts.
 For all potential independent variables, we selected three values or categories.
@@ -2189,7 +2191,9 @@ All values (predictions) were first transformed to the original scale along with
 We used the square of the SE associated with predicted values as the sampling variance in the meta-analyses described below, and we planned to analyze these predicted values in exactly the same ways as we analyzed $Z_r$ in the following analyses.
 
 ::: {.callout-note appearance="simple"}
-**Preregistration Deviation:** Because analysts of blue tit data chose different dependent variables on different scales, after transforming out-of-sample values to the original scales, we standardized all values as z scores ('standard scores') to put all dependent variables on the same scale and make them comparable.
+## Preregistration Deviation: 
+
+Because analysts of blue tit data chose different dependent variables on different scales, after transforming out-of-sample values to the original scales, we standardized all values as z scores ('standard scores') to put all dependent variables on the same scale and make them comparable.
 This involved taking each relevant value on the original scale (whether a predicted point estimate or a SE associated with that estimate) and subtracting the value in question from the mean value of that dependent variable derived from the full dataset and then dividing this difference by the standard deviation, SD, corresponding to the mean from the full dataset (@eq-Z-VZ).
 Thus, all our out-of-sample prediction values from the blue tit data are from a distribution with the mean of 0 and SD of 1.
 
@@ -2221,7 +2225,9 @@ Our goal here was to visualize and quantify the degree of variation among analys
 We did not test for statistical significance.
 
 ::: {.callout-note appearance="simple"}
-**Additional explanation:** Our use of $I^{2}$ to quantify heterogeneity violates an important assumption, but this violation does not invalidate our use of $I^{2}$ as a metric of how much heterogeneity can derive from analytical decisions.
+## Additional explanation:
+
+Our use of $I^{2}$ to quantify heterogeneity violates an important assumption, but this violation does not invalidate our use of $I^{2}$ as a metric of how much heterogeneity can derive from analytical decisions.
 In standard meta-analysis, the statistic $I^{2}$ quantifies the proportion of variance that is greater than we would expect if differences among estimates were due to sampling error alone [@rosenberg2013].
 However, it is clear that this interpretation does not apply to our value of $I^{2}$ because $I^{2}$ assumes that each estimate is based on an independent sample (although these analyses can account for non-independence via hierarchical modelling), whereas all our effects were derived from largely or entirely overlapping subsets of the same dataset.
 Despite this, we believe that $I^{2}$ remains a useful statistic for our purposes.
@@ -2242,8 +2248,8 @@ All these analyses were general linear (mixed) models.
 These analyses were secondary to our estimation of variation in effect sizes described above.
 We wished to quantify relationships among variables, but we had no a priori expectation of effect size and made no dichotomous decisions about statistical significance.
 
-::: {#box-weight-deviation .callout-note appearance="simple"}
-**Additional Explanation:** 
+::: {#nte-box-weight-deviation .callout-note appearance="simple"}
+## Additional Explanation:
 
 In our meta-analyses based on Box-Cox transformed deviation scores, we leave these deviation scores unweighted. 
 This is consistent with our registration, which did not mention weighting these scores. However, the fact that we did not mention weighting the scores was actually an error: we had intended to weight them, as is standard in meta-analysis, using the inverse variance of the Box-Cox transformed deviation scores [@eq-folded-variance].
@@ -2273,6 +2279,7 @@ Absolute deviation scores were Box-Cox transformed using the `step_box_cox()` fu
 
 ```{r eqn-boxcox-ratings-bt, results = 'asis', eval = FALSE, echo = FALSE}
 # Ratings Continuous blue tit
+data(ManyEcoEvo_viz)
 ManyEcoEvo_viz %>% 
   filter(str_detect(model_name, "box_cox_rating"),
          str_detect(model_name, "_no_int", negate = TRUE),
@@ -2293,7 +2300,7 @@ Both of these analyses (1: 1-100 ratings as the fixed effect, 2: categorical rat
 Each of the four responses ($Z_r$, $y_{25th}$, $y_{50th}$, $y_{75th}$) were to be compared once to the initial ratings provided by the peer reviewers, and again based on the revised ratings provided by the peer reviewers.
 
 ::: {.callout-note appearance="simple"}
-**Preregistration Deviation:**
+## Preregistration Deviation:
 
 1.  We planned to include random effects of both analysis identity and reviewer identity in these models comparing reviewer ratings with deviation scores.
     However, after we received the analyses, we discovered that a subset of analyst teams had either conducted multiple analyses and/or identified multiple effects per analysis as answering the target question.
@@ -2324,7 +2331,7 @@ $$
 $$ {#eq-deviation}
 
 ::: {.callout-note appearance="simple"}
-**Additional explanation:**
+## Additional explanation:
 
 When we planned this analysis, we anticipated that analysts would identify a single primary effect from each model, so that each model would appear in the analysis only once.
 Our expecation was incorrect because some analysts identified \>1 effect per analysis, but we still chose to specify our model as registered and not use a random effect.
@@ -2364,14 +2371,14 @@ For instance, this means that in the case of the data on blue tit chick growth, 
 Also, as described above, any analysis that could not produce an effect that could be converted to a signed $Z_r$ was excluded from analyses of $Z_r$.
 
 ::: {.callout-note appearance="simple"}
-**Preregistration Deviation:**
+## Preregistration Deviation:
 
 Some analysts had difficulty implementing our instructions to derive the out-of-sample predictions, and in some cases (especially for the *Eucalyptus* data), they submitted predictions with implausibly extreme values.
 We believed these values were incorrect and thus made the conservative decision to exclude out-of-sample predictions where the estimates were \> 3 standard deviations from the mean value from the full dataset.
 :::
 
 ::: {.callout-note appearance="simple"}
-**Additional explanation:** We conducted several unregistered analyses.
+## Additional explanation: We conducted several unregistered analyses.
 
 **1. Evaluating model fit.**
 
@@ -2388,7 +2395,9 @@ To explore this question, we removed the highest two and lowest two values of $Z
 
 To help understand the possible role of the quality of analyses in driving the heterogeneity we observed among estimates of $Z_r$, we created forest plots and recalculated our heterogeneity estimates after removing all effects from analysis teams that had received at least one rating of "deeply flawed and unpublishable" and then again after removing all effects from analysis teams with at least one rating of either "deeply flawed and unpublishable" or "publishable with major revisions".
 We also used self-identified levels of statistical expertise to examine heterogeneity when we retained analyses only from analysis teams that contained at least one member who rated themselves as "highly proficient" or "expert" (rather than "novice" or "moderately proficient") in conducting statistical analyses in their research area in our intake survey.
+
 Additionally, to assess potential impacts of highly collinear predictor variables on estimates of $Z_r$ in blue tit analyses, we created forest plots (@fig-forest-plot-Zr-collinear-rm-subset) and recalculated our heterogeneity estimates after we removed analyses that contained the brood count after manipulation and the highly correlated (correlation of 0.89, @fig-ggpairs-bt) brood count at day 14. This removal included the one effect based on a model that contained both these variables and a third highly correlated variable, the estimate of number of chicks fledged (the only model that included the estimate of number of chicks fledged). We did not conduct a similar analysis for the *Eucalyptus* dataset because there were no variables highly collinear with the primary predictors (grass cover variables) in that dataset (@fig-ggpairs-eucalyptus). 
+
 
 **3. Exploring possible impacts of lower quality estimates of degrees of freedom.**
 
@@ -2398,7 +2407,7 @@ We therefore conducted a second set of (more conservative) meta-analyses that ex
 :::
 
 ::: {.callout-note appearance="simple"}
-**Additional explanation:** Best practices in many-analysts research.
+## Additional explanation: Best practices in many-analysts research.
 
 After we initiated our project, a paper was published outlining best practices in many-analysts studies [@aczel2021].
 Although we did not have access to this document when we implemented our project, our study complies with these practices nearly completely.
@@ -2410,7 +2419,9 @@ The one exception is that although we requested analysis code from analysts, we 
 We planned for analysts and initiating authors to discuss the limitations, results, and implications of the study and collaborate on writing the final manuscript for review as a stage-2 Registered Report.
 
 ::: {.callout-note appearance="simple"}
-**Preregistration Deviation:** As described above, due to the large number of recruited analysts and reviewers and the anticipated challenges of receiving and integrating feedback from so many authors, we limited analyst and reviewer participation in the production of the final manuscript to an invitation to call attention to serious problems with the manuscript draft.
+## Preregistration Deviation: 
+
+As described above, due to the large number of recruited analysts and reviewers and the anticipated challenges of receiving and integrating feedback from so many authors, we limited analyst and reviewer participation in the production of the final manuscript to an invitation to call attention to serious problems with the manuscript draft.
 :::
 
 We built an R package, `ManyEcoEvo` to conduct the analyses described in this study [@ManyEcoEvo], which can be downloaded from [https://github.com/egouldo/ManyEcoEvo/](https://github.com/egouldo/ManyEcoEvo) to reproduce our analyses or replicate the analyses described here using alternate datasets. Data cleaning and preparation of analysis-data, as well as the analysis, is conducted in R [@base] reproducibly using the `targets` package [@targets]. This data and analysis pipeline is stored in the `ManyEcoEvo` package repository and its outputs are made available to users of the package when the library is loaded. 
@@ -2421,6 +2432,7 @@ The full manuscript, including further analysis and presentation of results is w
 # Results
 
 ```{r descriptive-munging, eval=TRUE,include=TRUE, echo = FALSE, message=FALSE, warning=FALSE}
+data(ManyEcoEvo_study_summary)
 
 filter_vars_main_analysis <- rlang::exprs(estimate_type == "Zr", 
                                           exclusion_set == "complete", 
@@ -2434,7 +2446,7 @@ filter_vars_main_no_est <- rlang::exprs(exclusion_set == "complete",
                                           collinearity_subset == "All")
 
 total_usable_analyses <- 
-  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+  ManyEcoEvo_study_summary %>% 
   filter(subset_name != "all") %>% 
   unnest(data) %>% 
   select(dataset, TeamIdentifier, submission_id, analysis_id) %>% 
@@ -2444,7 +2456,7 @@ total_usable_analyses <-
   janitor::adorn_totals()
 
 total_usable_effects <- 
-  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+  ManyEcoEvo_study_summary %>% 
   filter(subset_name != "all") %>% 
   unnest(data) %>% 
   select(dataset, TeamIdentifier, submission_id, analysis_id, split_id) %>% 
@@ -2454,33 +2466,35 @@ total_usable_effects <-
   janitor::adorn_totals()
 
 Table2 <- # model composition
-  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+  ManyEcoEvo_study_summary %>% 
     filter(subset_name != "all") %>% 
     select(subset_name, model_term_summary) %>% 
     unnest(cols = model_term_summary)
 
 Table4 <- # Conclusions analysis
-  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+  ManyEcoEvo_study_summary %>% 
   filter(subset_name == "all") %>% 
   pluck("conclusions_summary", 1)
 
 Table1 <- # Teams, analyses and model types
-  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+  ManyEcoEvo_study_summary %>% 
   filter(subset_name != "all") %>% 
   select(subset_name, model_type_summary) %>% 
   unnest(cols = model_type_summary)
 
 # Sorensen Analysis
 SorensenSummary <- 
-  ManyEcoEvo::ManyEcoEvo_study_summary %>% 
+  ManyEcoEvo_study_summary %>% 
   filter(subset_name != "all") %>% 
   select(subset_name, sorensen_summary) %>% 
   unnest(cols = sorensen_summary)
 
 ## ----- Review Summaries -----
 
+data(ManyEcoEvo_results)
+
 ReviewData <- 
-  ManyEcoEvo::ManyEcoEvo_results %>% 
+  ManyEcoEvo_results %>% 
   ungroup %>% 
   filter(!!!filter_vars_main_analysis) %>% 
   select(data, -dataset) %>% 
@@ -2513,19 +2527,19 @@ ArticleReviewSummary <-
 reviewers <- ReviewData %>% n_distinct("ReviewerId")
 
 # How many reviews per reviewer
-mean_reviews_by_reviewer <- round(mean(ReviewerSummary$articles), digits=2)
+mean_reviews_by_reviewer <- round(mean(ReviewerSummary$articles), digits = 2)
 min_reviews_by_reviewer <- min(ReviewerSummary$articles)
 max_reviews_by_reviewer <- max(ReviewerSummary$articles)
 ```
 
 ## Summary Statistics
 
-In total, `r ManyEcoEvo::ManyEcoEvo_study_summary %>% filter(subset_name == "all") %>% pluck("n_teams") + 28` analyst teams, comprising 246 analysts, contributed `r total_usable_analyses %>% filter(dataset == "Total") %>% pluck("n")` usable analyses (compatible with our meta-analyses and provided with all information needed for inclusion) of the two datasets examined in this study which yielded `r filter(total_usable_effects, dataset == "Total") %>% pluck("n")` effects.
+In total, `r ManyEcoEvo_study_summary %>% filter(subset_name == "all") %>% pluck("n_teams") + 28` analyst teams, comprising 246 analysts, contributed `r total_usable_analyses %>% filter(dataset == "blue tit") %>% pluck("n") + total_usable_analyses %>% filter(dataset == "eucalyptus") %>% pluck("n")` usable analyses (compatible with our meta-analyses and provided with all information needed for inclusion) of the two datasets examined in this study which yielded `r filter(total_usable_effects, dataset == "blue tit") %>% pluck("n")+filter(total_usable_effects, dataset == "eucalyptus") %>% pluck("n")` effects.
 Analysts produced `r filter(total_usable_effects, dataset == "blue tit") %>% pluck("n")` distinct effects that met our criteria for inclusion in at least one of our meta-analyses for the blue tit dataset.
 Analysts produced `r filter(total_usable_effects, dataset == "eucalyptus") %>% pluck("n")` distinct effects meeting our criteria for inclusion for the *Eucalyptus* dataset.
 Excluded analyses and effects either did not answer our specified biological questions, were submitted with insufficient information for inclusion in our meta-analyses, or were incompatible with production of our effect size(s).
 We expected cases of this final scenario (incompatible analyses), for instance we cannot extract a $Z_r$ from random forest models, which is why we analyzed two distinct types of effects, $Z_r$ and out-of-sample.
-Effects included in only a subset of our meta-analyses provided sufficient information for inclusion in only that subset (see @tbl-Table1).
+Some effects only provided sufficient information for a subset of analyses and were only included in that subset.
 For both datasets, most submitted analyses incorporated mixed effects.
 Submitted analyses of the blue tit dataset typically specified normal error and analyses of the *Eucalyptus* dataset typically specified a non-normal error distribution (@tbl-Table1).
 
@@ -2535,8 +2549,8 @@ The average number of interaction terms was much larger for the blue tit models 
 Blue tit models also contained more random effects (mean `r Table2 %>% filter(dataset == "blue tit", variable == "random", subset_name == "effects") %>% round_pluck("mean")` $\pm$ `r Table2 %>% filter(dataset == "blue tit", variable == "random", subset_name == "effects") %>% round_pluck("sd")` SD, range: `r Table2 %>% filter(dataset == "blue tit", variable == "random", subset_name == "effects") %>% pluck("min")` to `r Table2 %>% filter(dataset == "blue tit", variable == "random", subset_name == "effects") %>% pluck("max")`) than *Eucalyptus* models (mean `r Table2 %>% filter(dataset == "eucalyptus", variable == "random", subset_name == "effects") %>% round_pluck("mean")` $\pm$ `r Table2 %>% filter(dataset == "eucalyptus", variable == "random", subset_name == "effects") %>% round_pluck("sd")` SD, range: `r Table2 %>% filter(dataset == "eucalyptus", variable == "random", subset_name == "effects") %>% pluck("min")` to `r Table2 %>% filter(dataset == "eucalyptus", variable == "random", subset_name == "effects") %>% pluck("max")`).
 The maximum possible sample size in the blue tit dataset (3720 nestlings) was an order of magnitude larger than the maximum possible in the *Eucalyptus* dataset (`r Table2 %>% filter(dataset == "eucalyptus", variable == "samplesize", subset_name == "effects") %>% pluck("max")` plots), and the means and standard deviations of the sample size used to derive the effects eligible for our study were also an order of magnitude greater for the blue tit dataset (mean `r Table2 %>% filter(dataset == "blue tit", variable == "samplesize", subset_name == "effects") %>% round_pluck("mean")` $\pm$ `r Table2 %>% filter(dataset == "blue tit", variable == "samplesize", subset_name == "effects") %>% round_pluck("sd")` SD, range: `r Table2 %>% filter(dataset == "blue tit", variable == "samplesize", subset_name == "effects") %>% pluck("min")` to `r Table2 %>% filter(dataset == "blue tit", variable == "samplesize", subset_name == "effects") %>% pluck("min")`) relative to the *Eucalyptus* models (mean `r Table2 %>% filter(dataset == "eucalyptus", variable == "samplesize", subset_name == "effects") %>% round_pluck("mean")` $\pm$ `r Table2 %>% filter(dataset == "eucalyptus", variable == "samplesize", subset_name == "effects") %>% round_pluck("sd")` SD, range: `r Table2 %>% filter(dataset == "eucalyptus", variable == "samplesize", subset_name == "effects") %>% pluck("min")` to `r Table2 %>% filter(dataset == "eucalyptus", variable == "samplesize", subset_name == "effects") %>% pluck("max")`).
 However, the standard deviation in sample size from the *Eucalyptus* models was heavily influenced by a few cases of dramatic sub-setting (described below).
-Approximately three quarters of *Eucalyptus* models used sample sizes within 3$\%$of the maximum.
-In contrast, fewer than 20$\%$of blue tit models relied on sample sizes within 3$\%$of the maximum, and approximately 50$\%$of blue tit models relied on sample sizes 29$\%$or more below the maximum.
+Approximately three quarters of *Eucalyptus* models used sample sizes within 3$\%$ of the maximum.
+In contrast, fewer than 20$\%$ of blue tit models relied on sample sizes within 3$\%$ of the maximum, and approximately 50$\%$ of blue tit models relied on sample sizes 29$\%$ or more below the maximum.
 
 Analysts provided qualitative descriptions of the conclusions of their analyses.
 Each analysis team provided one conclusion per dataset.
@@ -2587,6 +2601,7 @@ Table4 %>%
 ### Standardized Effect Sizes ($Z_r$)
 
 ```{r calc_MA_mod_coefs, eval=TRUE,include=TRUE, echo = FALSE}
+data("ManyEcoEvo_viz")
 coefs_MA_mod <- bind_rows( ManyEcoEvo_viz %>% 
                              filter(model_name == "MA_mod") %>% 
                              filter(exclusion_set == "complete"),
@@ -2698,7 +2713,7 @@ sort(u, decreasing = TRUE)[2L]}
 
 Although the majority (`r bt_complete_data %>% filter(estimate < 0, type == "study") %>% nrow()` of `r filter(Table1, dataset == "blue tit", subset_name == "effects") %>% pluck("totalanalyses")`) of the usable $Z_r$ effects from the blue tit dataset found nestling growth decreased with sibling competition, and the meta-analytic mean $\bar{Z_r}$ (Fisher's transformation of the correlation coefficient) was convincingly negative (`r filter(coefs_MA_mod, dataset == "blue tit", !!!filter_vars_main_no_est) %>% round_pluck("estimate")` $\pm$ `r filter(coefs_MA_mod, dataset == "blue tit", !!!filter_vars_main_no_est) %>% mutate(interval = estimate - conf.low) %>% round_pluck("interval")` 95$\%$CI), there was substantial variability in the strength and the direction of this effect.
 $Z_r$ ranged from `r filter(bt_complete_data, type == "study") %>% pluck("estimate", min) %>% round(2)` to `r filter(bt_complete_data, type == "study") %>% pluck("estimate", max) %>% round(2)`, and approximately continuously from `r filter(bt_complete_data, type == "study") %>% pluck("estimate", small2) %>% round(2)` to `r filter(bt_complete_data, type == "study") %>% pluck("estimate", large2) %>% round(2)` ( @fig-forest-plots-Zr-1 and @tbl-effects-params), and of the `r filter(bt_complete_data, estimate < 0, type == "study") %>% nrow()` effects with negative slopes, `r filter(bt_complete_data, estimate < 0, conf.high < 0, type == "study") %>% nrow()` had confidence intervals exluding 0.
-Of the `r filter(bt_complete_data, estimate >0, type == "study") %>% nrow()` with positive slopes indicating increased nestling growth in the presence of more siblings, `r filter(bt_complete_data, estimate >0, conf.low > 0, type == "study") %>% nrow()` had confidence intervals excluding zero (@fig-forest-plots-Zr A).
+Of the `r filter(bt_complete_data, estimate >0, type == "study") %>% nrow()` with positive slopes indicating increased nestling growth in the presence of more siblings, `r filter(bt_complete_data, estimate >0, conf.low > 0, type == "study") %>% nrow()` had confidence intervals excluding zero (@fig-forest-plots-Zr-1).
 
 Meta-analysis of the *Eucalyptus* dataset also showed substantial variability in the strength of effects as measured by $Z_r$, and unlike with the blue tits, a notable lack of consistency in the direction of effects (@fig-forest-plots-Zr-2, @tbl-effects-params).
 $Z_r$ ranged from `r filter(complete_euc_data, type == "study") %>% pluck("estimate", min) %>% round(2)` (@fig-specr-euc), indicating a strong tendency for reduced *Eucalyptus* seedling success as grass cover increased, to `r complete_euc_data %>% filter(type == "study") %>% pluck("estimate", max) %>% round(2)`, indicating the opposite.
@@ -2801,6 +2816,9 @@ euc_forest
 ### Out-of-sample predictions $y_{i}$
 
 ```{r define-plot-forest-function, echo = FALSE, message=FALSE, warning=FALSE}
+data("ManyEcoEvo_yi")
+data("ManyEcoEvo_yi_results")
+
 plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
   if(MA_mean == FALSE){
     data <- filter(data, study_id != "overall")
@@ -3179,14 +3197,14 @@ euc_MA_summ_stats <- zr_heterogeneity %>% filter(dataset == "eucalyptus", data_s
 We quantified both absolute ($\tau^{2}$) and relative ($I^{2}$) heterogeneity resulting from analytical variation.
 Both measures suggest that substantial variability among effect sizes was attributable to the analytical decisions of analysts.
 
-The total absolute level of variance beyond what would typically be expected due to sampling error, $\tau^{2}$ (@tbl-effects-heterogeneity), among all usable blue tit effects was `r round(bt_MA_summ_stats$I2_Total,3)` and for *Eucalyptus* effects was `r round(euc_MA_summ_stats$I2_Total,2)`.
+The total absolute level of variance beyond what would typically be expected due to sampling error, $\tau^{2}$ (@tbl-effects-heterogeneity), among all usable blue tit effects was `r round(bt_MA_summ_stats$tau_total, digits = 2)` and for *Eucalyptus* effects was `r round(euc_MA_summ_stats$tau_total, digits = 2)`.
 This is similar to or exceeding the median value (0.105) of $\tau^{2}$ found across 31 recent meta-analyses [calculated from the data in @yang2023].
 The similarity of our observed values to values from meta-analyses of different studies based on different data suggest the potential for a large portion of heterogeneity to arise from analytical decisions.
 For further discussion of interpretation of $\tau^{2}$ in our study, please consult discussion of *post hoc* analyses below.
 
 ```{r}
 #| label: tbl-effects-heterogeneity
-#| tbl-cap: 'Heterogeneity in the estimated effects $Z_r$ for meta-analyses of: the full dataset, as well as from post hoc analyses wherein analyses with outliers are removed, analyses with effects from analysis teams with at least one "unpublishable" rating are excluded, analyses receiving at least one "major revisions" rating or worse excluded, analyses from teams with at least one analyst self-rated as "highly proficient" or "expert" in statistical analysis are included, and (blue tit only) the dataset excluding effects from analyses that included the pair of highly collinear predictors. ${\\tau}_\\text{Team}^{2}$ is the absolute heterogeneity for the random effect `Team`. ${\\tau}_\\text{effectID}^{2}$ is the absolute heterogeneity for the random effect `effectID` nested under `Team`. `effectID` is the unique identifier assigned to each individual statistical effect submitted by an analysis team. We nested `effectID` within analysis team identity (`Team`) because analysis teams often submitted >1 statistical effect, either because they considered >1 model or because they derived >1 effect per model, especially when a model contained a factor with multiple levels that produced >1 contrast. ${\\tau}_\\text{Total}^{2}$ is the total absolute heterogeneity. ${I}_\\text{Total}^{2}$ is the proportional heterogeneity; the proportion of the variance among effects not attributable to sampling error, ${I}_\\text{Team}^{2}$ is the subset of the proportional heterogeneity due to differences among `Teams` and ${I}_\\text{Team, effectID}^{2}$ is subset of the proportional heterogeneity attributable to among-`effectID` differences.'
+#| tbl-cap: 'Heterogeneity in the estimated effects $Z_r$ for meta-analyses of: the full dataset, as well as from post hoc analyses wherein analyses with outliers are removed, analyses with effects from analysis teams with at least one "unpublishable" rating are excluded, analyses receiving at least one "major revisions" rating or worse excluded, analyses from teams with at least one analyst self-rated as "highly proficient" or "expert" in statistical analysis are included, and (blue tit only) analyses that did not included the pair of highly collinear predictors together. ${\\tau}_\\text{Team}^{2}$ is the absolute heterogeneity for the random effect `Team`. ${\\tau}_\\text{effectID}^{2}$ is the absolute heterogeneity for the random effect `effectID` nested under `Team`. `effectID` is the unique identifier assigned to each individual statistical effect submitted by an analysis team. We nested `effectID` within analysis team identity (`Team`) because analysis teams often submitted >1 statistical effect, either because they considered >1 model or because they derived >1 effect per model, especially when a model contained a factor with multiple levels that produced >1 contrast. ${\\tau}_\\text{Total}^{2}$ is the total absolute heterogeneity. ${I}_\\text{Total}^{2}$ is the proportional heterogeneity; the proportion of the variance among effects not attributable to sampling error, ${I}_\\text{Team}^{2}$ is the subset of the proportional heterogeneity due to differences among `Teams` and ${I}_\\text{Team, effectID}^{2}$ is subset of the proportional heterogeneity attributable to among-`effectID` differences.'
 #| echo: false
 
 zr_heterogeneity %>% 
@@ -3262,7 +3280,7 @@ We are limited in our interpretation of $\tau^{2}$ for these estimates because, 
 
 ```{r tbl-yi-heterogeneity, message = FALSE, results = 'asis', echo = FALSE}
 #| label: tbl-yi-heterogeneity
-#| tbl-cap: "Heterogeneity among the out-of-sample predictions ${y}_{i}$ for both blue tit and *Eucalyptus* datasets. ${\\tau}_\\text{Team}^{2}$ is the absolute heterogeneity for the random effect `Team`. ${\\tau}_\\text{effectID}^{2}$ is the absolute heterogeneity for the random effect `effectID` nested under `Team`. `effectID` is the unique identifier assigned to each individual statistical effect submitted by an analysis team. We nested `effectID` within analysis team identity (`Team`) because analysis teams often submitted >1 statistical effect, either because they considered >1 model or because they derived >1 effect per model, especially when a model contained a factor with multiple levels that produced >1 contrast. ${\\tau}_\\textTtotal}^{2}$ is the total absolute heterogeneity. ${I}_\\text{Total}^{2}$ is the proportional heterogeneity; the proportion of the variance among effects not attributable to sampling error, ${I}_\\text{Team}^{2}$ is the subset of the proportional heterogeneity due to differences among `Teams` and ${I}_\\text{Team,effectID}^{2}$ is subset of the proportional heterogeneity attributable to among-`effectID` differences."
+#| tbl-cap: "Heterogeneity among the out-of-sample predictions ${y}_{i}$ for both blue tit and *Eucalyptus* datasets. ${\\tau}_\\text{Team}^{2}$ is the absolute heterogeneity for the random effect `Team`. ${\\tau}_\\text{effectID}^{2}$ is the absolute heterogeneity for the random effect `effectID` nested under `Team`. `effectID` is the unique identifier assigned to each individual statistical effect submitted by an analysis team. We nested `effectID` within analysis team identity (`Team`) because analysis teams often submitted >1 statistical effect, either because they considered >1 model or because they derived >1 effect per model, especially when a model contained a factor with multiple levels that produced >1 contrast. ${\\tau}_\\text{Total}^{2}$ is the total absolute heterogeneity. ${I}_\\text{Total}^{2}$ is the proportional heterogeneity; the proportion of the variance among effects not attributable to sampling error, ${I}_\\text{Team}^{2}$ is the subset of the proportional heterogeneity due to differences among `Teams` and ${I}_\\text{Team,effectID}^{2}$ is subset of the proportional heterogeneity attributable to among-`effectID` differences."
 ManyEcoEvo_yi_results %>% 
   filter(exclusion_set == "complete", 
          dataset == "blue tit") %>% 
@@ -3347,19 +3365,22 @@ N_outliers_Zr_euc <- sample_size_euc_Zr %>%
   filter(term %in% min_outlier_euc) %>% 
    arrange(desc(sample_size))
 
+data("euc_data")
 
 ```
 
 The outlier *Eucalyptus* $Z_r$ values were striking and merited special examination.
 The three negative outliers had very low sample sizes were based on either small subsets of the dataset or, in one case, extreme aggregation of data.
-The outliers associated with small subsets had sample sizes ($n=$ `r N_outliers_Zr_euc$sample_size %>% paste0(collapse = ", ")`) that were less than half of the total possible sample size of `r nrow(ManyEcoEvo::euc_data)`.
-The case of extreme aggregation involved averaging all values within each of the `r n_distinct(ManyEcoEvo::euc_data, "Property")` sites in the dataset.
+The outliers associated with small subsets had sample sizes ($n=$ `r N_outliers_Zr_euc$sample_size %>% paste0(collapse = ", ")`) that were less than half of the total possible sample size of `r nrow(euc_data)`.
+The case of extreme aggregation involved averaging all values within each of the `r n_distinct(euc_data, "Property")` sites in the dataset.
 
 ```{r}
 #| label: bt-Zr-outliers
 #| echo: false
 #| warning: false
 #| message: false
+
+rm(euc_data)
 
 max_outlier_bt <- bt_complete_data %>% 
   filter(type == "study") %>% 
@@ -3422,7 +3443,7 @@ Thus, effects at the extremes of the distribution were much stronger contributor
 
 ```{r}
 #| label: tbl-effects-params
-#| tbl-cap: 'Estimated mean value of the standardised correlation coefficient, $Z_r$, along with its standard error and 95$\\%$confidence intervals. We re-computed the meta-analysis for different post-hoc subsets of the data: All eligible effects, removal of effects from blue tit analyses that contained highly collinear predictor variables, removal of effects from analysis teams that received at least one peer rating of "deeply flawed and unpublishable", removal of any effects from analysis teams that received at least one peer rating of either "deeply flawed and unpublishable" or "publishable with major revisions", inclusion of only effects from analysis teams that included at least one member who rated themselves as "highly proficient" or "expert" at conducting statistical analyses in their research area.'
+#| tbl-cap: 'Estimated mean value of the standardised correlation coefficient, $Z_r$, along with its standard error and 95$\\%$confidence intervals. We re-computed the meta-analysis for different post-hoc subsets of the data: All eligible effects, removal of effects from blue tit analyses that contained a pair of highly collinear predictor variables, removal of effects from analysis teams that received at least one peer rating of "deeply flawed and unpublishable", removal of any effects from analysis teams that received at least one peer rating of either "deeply flawed and unpublishable" or "publishable with major revisions", inclusion of only effects from analysis teams that included at least one member who rated themselves as "highly proficient" or "expert" at conducting statistical analyses in their research area.'
 #| echo: false
 effectsparams <- ManyEcoEvo_viz %>% 
     dplyr::filter(estimate_type == "Zr", 
@@ -3624,7 +3645,7 @@ modelfitstats %>%
 
 ```{r}
 #| label: tbl-deviation-rating-estimates 
-#| tbl-cap: "Parameter estimates from models of Box-Cox transformed deviation scores as a function of continuous and categorical peer ratings, Sorensen scores, and the inclusion of random effects. Standard Errors (SE), 95% confidence intervals (95% CI) are reported for all estimates, while t values, degrees of freedom and p-values are presented for fixed-effects. Note that positive parameter estimates mean that as the predictor variable increases, so does the absolute value of the deviation from the meta-analytic mean."
+#| tbl-cap: "Parameter estimates from models of Box-Cox transformed deviation scores from the mean $Z_r$ as a function of continuous and categorical peer ratings, Sorensen scores, and the inclusion of random effects. Standard Errors (SE), 95% confidence intervals (95% CI) are reported for all estimates, while t values, degrees of freedom and p-values are presented for fixed-effects. Note that positive parameter estimates mean that as the predictor variable increases, so does the absolute value of the deviation from the meta-analytic mean."
 #| echo: false
 #| message: false
 
@@ -3690,9 +3711,9 @@ ManyEcoEvo_viz %>%
                      locations = gt::cells_row_groups()) %>% 
   gt::as_raw_html()
 
-p_cat_bt_tidy<-broom.mixed::tidy(ManyEcoEvo::ManyEcoEvo_results$sorensen_glm[[1]],conf.int=T,conf.level=0.95)
+p_cat_bt_tidy<-broom.mixed::tidy(ManyEcoEvo_results$sorensen_glm[[1]],conf.int=T,conf.level=0.95)
 
-p_cat_euc_tidy<-broom.mixed::tidy(ManyEcoEvo::ManyEcoEvo_results$sorensen_glm[[2]],conf.int=T,conf.level=0.95)
+p_cat_euc_tidy<-broom.mixed::tidy(ManyEcoEvo_results$sorensen_glm[[2]],conf.int=T,conf.level=0.95)
 ```
 
 ## Deviation Scores as explained by Reviewer Ratings
@@ -3733,7 +3754,7 @@ alpha_result_ordinal <- review_data %>%
   irr::kripp.alpha(method = "ordinal")
 ```
 
-We obtained reviews from `r reviewers` reviewers who reviewed analyses for a mean of `r mean_reviews_by_reviewer` (range `r min_reviews_by_reviewer` - `r max_reviews_by_reviewer`) analysis teams.
+We obtained reviews from 153 reviewers who reviewed analyses for a mean of `r mean_reviews_by_reviewer` (range `r min_reviews_by_reviewer` - `r max_reviews_by_reviewer`) analysis teams.
 Analyses of the blue tit dataset received a total of `r filter(ArticleReviewSummary, dataset == "blue tit") %>% pluck("sum")` reviews, each was reviewed by a mean of `r filter(ArticleReviewSummary, dataset == "blue tit") %>% round_pluck("mean")` (SD `r filter(ArticleReviewSummary, dataset == "blue tit") %>% round_pluck("sd")`, range `r filter(ArticleReviewSummary, dataset == "blue tit") %>% pluck("min")`-`r filter(ArticleReviewSummary, dataset == "blue tit") %>% pluck("max")`) reviewers.
 Analyses of the *Eucalyptus* dataset received a total of `r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% pluck("sum")` reviews, each was reviewed by a mean of `r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% pluck("mean")` (SD `r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% round_pluck("sd")`, range `r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% pluck("min")`-`r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% pluck("max")`) reviewers.
 We tested for inter-rater-reliability to examine how similarly reviewers reviewed each analysis and found approximately no agreement among reviewers.
@@ -3960,7 +3981,7 @@ There was no relationship between random-effect inclusion and deviation from met
 #| message: false
 #| warning: false
 #| echo: false
-#| fig-cap: "Violin plot of mean Box-Cox transformed deviation from meta-analytic mean as a function of random-effects inclusion in *Eucalyptus* analyses. '1' indicates random-effects were included in analyst's model, while 0 indicates no random-effects were included. White points for each group of analyses denote model-estimated marginal mean deviation, and error bars denote 95% CI of the estimate. "
+#| fig-cap: "Violin plot of mean Box-Cox transformed deviation from meta-analytic mean as a function of random-effects inclusion in *Eucalyptus* analyses. White point for each group of analyses denotes model-estimated marginal mean deviation, and error bars denote 95% CI of the estimate. "
 
 #TODO move function to R/ and document roxygen
 plot_model_means_RE <- function(data, variable, predictor_means) {
