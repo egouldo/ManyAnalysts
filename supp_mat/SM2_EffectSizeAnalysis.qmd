@@ -700,13 +700,14 @@ n_teams_w_dropped_analyses <-
   n_distinct("TeamIdentifier")
 ```
 
-We standardized the $y_i$ estimates for the blue tit analyses using the population mean and standard deviations of the relevant response variable for that analysis as shown in @eq-Z-VZ using the function `ManyEcoEvo::Z_VZ_preds()`. We used the mean and standard deviation of the relevant dataset from the full analysis set as our 'population' parameters.
+We standardized the $y_i$ estimates for the blue tit analyses using the population mean and standard deviations of the relevant response variable for that analysis as shown in @eq-Z-VZ using the function `ManyEcoEvo::Z_VZ_preds()`. Note that this is NOT the same process as Z-transforming the effect sizes. We used the mean and standard deviation of the relevant raw datasets as our 'population' parameters.
 
 $$
-Z_i = \frac{\hat{y}_i - \mu}{\text{SD}} \\
-{\text{VAR}}_{Z_i} = \frac{{SE}_{\hat{y}_i}}{{SD}}
+Z_j = \frac{\mu_i-\bar{x}_j}{\text{SD}_j} \\
+{\text{VAR}}_{Z_j} = \frac{{SE}_{\mu_i}}{{SD_j}}
 $$ {#eq-Z-VZ}
 
+Where $\mu$ is the population parameter taken from our original dataset for variable $i$, and $\bar[x]$ and $SD$ are the out of sample point estimate values supplied for analysis $j$. Note that for the response variables that were scaled and centered, or else mean-centred before model fitting, we do not need to standardise because these are already on the Z-scale. In doing so we make the assumption that analysts' data subsetting will have little effect on the outcomes.
 For some analyses of the blue tit dataset, analysts constructed their own unique response variables, which meant we needed to also construct these variables in order to calculate the population parameters. Unfortunately we were not able to re-construct all variables used by the analysts, as we were unable to reproduce the exact dataset required for their re-construction. Included and excluded constructed variables are illustrated in @tbl-constructed-var-exclusions. A total of `r n_dropped_analyses` were excluded from out-of-sample meta-analysis, from `r n_teams_w_dropped_analyses`, including the following analysis identifiers: `r pull(excluded_yi_constructed, id_col) %>% gluedown::md_code() %>% glue::glue_collapse(", ",last = " and ")`.
 
 ```{r}
