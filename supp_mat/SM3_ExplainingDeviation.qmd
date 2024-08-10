@@ -5,6 +5,7 @@ code-fold: true
 number-sections: true
 execute:
   freeze: false  # re-render only when source changes
+pre-render: "utils.R"
 bibliography: 
   - ../ms/references.bib
   - ../ms/grateful-refs.bib
@@ -32,15 +33,7 @@ library(multilevelmod)
 library(rlang)
 
 set.seed(1234)
-
-gt_fmt_yi <- function(gt_tbl, columns, ...) {
-  gt_tbl %>% 
-    gt::fmt(!!columns, 
-            fns = function(x) str_replace(x, "y25", gt::md("$$y_{25}$$")) %>% 
-              str_replace("y50", gt::md("$$y_{50}$$")) %>%
-              str_replace("y75", gt::md("$$y_{75}$$")),
-            ...)
-}
+source(here::here("utils.R"))
 ```
 
 

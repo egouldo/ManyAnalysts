@@ -7,6 +7,7 @@ code-fold: true
 execute:
   freeze: false  # re-render only when source changes
 toc: false
+pre-render: "utils.R"
 bibliography: 
   - ../ms/references.bib
   - ../ms/grateful-refs.bib
@@ -21,6 +22,7 @@ library(tidyverse)
 library(ManyEcoEvo)
 library(GGally)
 set.seed(1234)
+source(here::here("utils.R"))
 ```
 
 Pairwise-correlation plots for the *Eucalyptus* and blue tit case-study data provided to analysts are shown in @fig-ggpairs-eucalyptus and @fig-ggpairs-bt, respectively. Plots were created with R package `GGally` [@GGally].

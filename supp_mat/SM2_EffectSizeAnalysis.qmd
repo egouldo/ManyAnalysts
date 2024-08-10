@@ -5,6 +5,7 @@ format: html
 editor: visual
 number-sections: true
 code-fold: true
+pre-render: "utils.R"
 execute:
   freeze: auto  # re-render only when source changes
 ---
@@ -23,6 +24,7 @@ library(ggrepel)
 library(glue)
 library(gluedown)
 set.seed(1234)
+source(here::here("utils.R"))
 ```
 
 ```{r}

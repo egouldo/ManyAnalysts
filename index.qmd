@@ -1884,6 +1884,7 @@ google-scholar: true
 editor: 
   markdown: 
     wrap: sentence
+pre-render: utils.R
 ---
 
 ```{r load-libs, include=FALSE,eval=TRUE,message=FALSE, echo=FALSE}
@@ -1905,9 +1906,6 @@ library(tidymodels) #todo consider porting the extract_fit_engine into the ManyE
 library(grateful)
 library(modelbased)
 set.seed(1234)
-
-# Helper Funs
-round_pluck <- function(data, x){pluck(data, x, \(y) round(y, 2))}
 ```
 
 # Introduction

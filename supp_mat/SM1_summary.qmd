@@ -13,6 +13,7 @@ number-sections: true
 tbl-cap-location: top
 editor_options: 
   chunk_output_type: console
+pre-render: "utils.R"
 ---
 
 ```{r load-libs, include=TRUE,eval=TRUE,message=FALSE}
@@ -32,6 +33,7 @@ library(ggh4x)
 library(showtext)
 
 set.seed(1234)
+source(here::here("utils.R"))
 # extrafont::font_install("Lato")
 ```
 
