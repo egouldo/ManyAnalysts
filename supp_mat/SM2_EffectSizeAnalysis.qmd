@@ -17,6 +17,7 @@ library(tidyverse)
 library(performance)
 library(broom.mixed)
 library(gt)
+library(gtExtras)
 library(lme4)
 library(MuMIn)
 library(ManyEcoEvo)
@@ -723,11 +724,12 @@ all_constructed_vars %>%
   ) %>% 
   dplyr::filter(dataset != "eucalyptus") %>% # not excluded as standardisation not needed
   dplyr::mutate(included_in_yi = ifelse(isTRUE(included_in_yi),"check", "xmark")) %>% 
-  gt::gt() %>% 
+  gt::gt(caption = gt::md("Analyst-constructed variables and whether they are included in our meta-analyses of out-of-sample predictions, $y\\_i$")) %>% 
   gt::cols_label(response_variable_name = "Constructed Variable",
                  included_in_yi = gt::md("Included in $y\\_i$ meta-analysis?")) %>% 
   gtExtras::gt_fa_column(included_in_yi) %>% 
-  gt::cols_hide("dataset")
+  gt::cols_hide("dataset") %>% 
+  gt::as_raw_html()
 
 ```
 
