@@ -5,6 +5,7 @@ code-fold: true
 number-sections: true
 execute:
   freeze: false  # re-render only when source changes
+pre-render: "utils.R"
 bibliography: 
   - ../ms/references.bib
   - ../ms/grateful-refs.bib
@@ -32,15 +33,8 @@ library(multilevelmod)
 library(rlang)
 
 set.seed(1234)
-
-gt_fmt_yi <- function(gt_tbl, columns, ...) {
-  gt_tbl %>% 
-    gt::fmt(!!columns, 
-            fns = function(x) str_replace(x, "y25", gt::md("$$y_{25}$$")) %>% 
-              str_replace("y50", gt::md("$$y_{50}$$")) %>%
-              str_replace("y75", gt::md("$$y_{75}$$")),
-            ...)
-}
+source(here::here("utils.R"))
+data("ManyEcoEvo_yi")
 ```
 
 
@@ -348,8 +342,11 @@ Consequently, each dataset has its own unique value of $\lambda$, and therefore 
 #| fig-height: 8
 #| message: false
 
+data(ManyEcoEvo_yi_results)
+data(ManyEcoEvo_results)
+
 back_transformed_predictions <- 
-  ManyEcoEvo::ManyEcoEvo_yi %>% 
+  ManyEcoEvo_yi %>% 
   dplyr::mutate(data = 
                   purrr::map(data, 
                              ~ dplyr::filter(.x,
@@ -516,7 +513,7 @@ model_vars <-
 all_model_fits <- 
   model_vars %>% 
   cross_join(., 
-             {ManyEcoEvo::ManyEcoEvo_results %>% 
+             {ManyEcoEvo_results %>% 
                  select(dataset, 
                         exclusion_set, 
                         estimate_type, 
@@ -525,7 +522,7 @@ all_model_fits <-
                         collinearity_subset == "All") %>% 
                  ungroup %>% 
                  select(-expertise_subset, -collinearity_subset)}) %>% 
-  left_join(., {ManyEcoEvo::ManyEcoEvo_results %>% 
+  left_join(., {ManyEcoEvo_results %>% 
       select(dataset, 
              exclusion_set, 
              estimate_type, 
@@ -655,6 +652,8 @@ Zr_singularity_convergence %>%
 #| warning: false
 #| message: false
 
+data(ManyEcoEvo_yi_results)
+
 plot_data_logged <- mod_data_logged %>% 
   mutate(tidy_mod = map(.x = MA_mod,
                         ~broom::tidy(.x,
@@ -673,7 +672,7 @@ MA_yi_summary_stats <- # ALL ON logged RESPONSE SCALE for EUC, standardized resp
   nest(tidy_mod = -estimate_type) %>% 
   mutate(dataset = "eucalyptus") %>% 
   bind_rows({
-    ManyEcoEvo::ManyEcoEvo_yi_results %>% 
+    ManyEcoEvo_yi_results %>% 
       ungroup() %>% 
       filter(exclusion_set == "complete", dataset == "blue tit") %>% 
       select(dataset, estimate_type, MA_mod, effects_analysis, -exclusion_set) %>% 
@@ -742,6 +741,8 @@ MA_yi_summary_stats <- # ALL ON logged RESPONSE SCALE for EUC, standardized resp
 
 euc_yi_results <- 
   ManyEcoEvo::make_viz(deviation_models_yi_euc)
+
+data(ManyEcoEvo_yi_viz)
 
 yi_convergence_singularity <- 
   ManyEcoEvo_yi_viz %>% 
@@ -813,6 +814,7 @@ Results of all deviation models are therefore presented only for models with non
 ```{r}
 #| label: tbl-yi-deviation-ratings-convergence-singularity
 #| tbl-cap: "Singularity and convergence checking for models of deviation in out-of-sample-predictions $y_i$ explained by peer-ratings."
+#| 
 yi_convergence_singularity %>% 
   select(-params) %>% 
   group_by(model_name) %>% 
@@ -1080,7 +1082,7 @@ All models fitted without problem.
 #| message: false
 #| warning: false
 yi_sorensen_plot_data <- 
-  ManyEcoEvo::ManyEcoEvo_yi_viz %>% 
+  ManyEcoEvo_yi_viz %>% 
   filter(exclusion_set == "complete", 
          dataset == "blue tit",
          str_detect(model_name, "sorensen_glm")) %>% 
@@ -1239,6 +1241,7 @@ patchwork::wrap_plots(yi_deviation_RE_plots, byrow = TRUE) +
 
 ```{r}
 #| label: multivariate-models-mod-summary
+data(ManyEcoEvo_viz)
 
 filter_vars <- rlang::exprs(exclusion_set == "complete",
                             expertise_subset == "All",
@@ -1246,7 +1249,7 @@ filter_vars <- rlang::exprs(exclusion_set == "complete",
                             collinearity_subset == "All")
 
 multivar_mods <- 
-  ManyEcoEvo::ManyEcoEvo_viz %>% 
+  ManyEcoEvo_viz %>% 
   dplyr::filter(!!!filter_vars, model_name == "MA_mod_mv") %>% 
   hoist(mod_fit_stats, "R2_conditional", "R2_marginal", "Sigma")
 
@@ -1432,7 +1435,6 @@ all_model_fits_multivar <-
          effects_analysis = 
            map(effects_analysis, 
                ~ .x %>% 
-                 unnest(review_data) %>% 
                  select(study_id, 
                         starts_with("box_cox_abs_dev"), 
                         RateAnalysis, 
