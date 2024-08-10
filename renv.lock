@@ -146,15 +146,11 @@
     },
     "ManyEcoEvo": {
       "Package": "ManyEcoEvo",
-      "Version": "2.1.0",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteUsername": "egouldo",
-      "RemoteRepo": "ManyEcoEvo",
-      "RemoteRef": "v2.1.0",
-      "RemoteSha": "0e2ff66d38ea275357788db708167f19c3d8f5d4",
+      "Version": "2.3.0",
+      "Source": "Local",
       "Remotes": "daniel1noble/orchaRd, NightingaleHealth/ggforestplot",
+      "RemoteType": "local",
+      "RemoteUrl": "/Users/elliotgould/Documents/GitHub/ManyEcoEvo_2.3.0.tar.gz",
       "Requirements": [
         "R",
         "betapart",
@@ -176,7 +172,7 @@
         "tidyr",
         "tidyselect"
       ],
-      "Hash": "f4aa6580442cd12c837dfb3f4ea36bdb"
+      "Hash": "edeab19f0c1a65484a021805563d4be1"
     },
     "Matrix": {
       "Package": "Matrix",
@@ -451,9 +447,9 @@
     },
     "bayestestR": {
       "Package": "bayestestR",
-      "Version": "0.13.2",
+      "Version": "0.14.0.2",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "https://easystats.r-universe.dev",
       "Requirements": [
         "R",
         "datawizard",
@@ -463,7 +459,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "4a6a2eebe2db1dfb1c792c4ed91e73dc"
+      "Hash": "b52bd606aceefe77322b341f96696f2c"
     },
     "beeswarm": {
       "Package": "beeswarm",
@@ -892,9 +888,9 @@
     },
     "correlation": {
       "Package": "correlation",
-      "Version": "0.8.4",
+      "Version": "0.8.5.1",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "https://easystats.r-universe.dev",
       "Requirements": [
         "R",
         "bayestestR",
@@ -904,7 +900,7 @@
         "parameters",
         "stats"
       ],
-      "Hash": "d8bd29a9abda6eed9aaab3ba5769f231"
+      "Hash": "3ae4d288f3314e6d24b63724ecb26de7"
     },
     "corrplot": {
       "Package": "corrplot",
@@ -989,7 +985,7 @@
     },
     "datawizard": {
       "Package": "datawizard",
-      "Version": "0.11.0",
+      "Version": "0.12.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -998,7 +994,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "b99dd5378fefe0f87f44fd1723b9c71e"
+      "Hash": "4070785c656b9ded5d0ed5db387a96d5"
     },
     "dbplyr": {
       "Package": "dbplyr",
@@ -1232,7 +1228,7 @@
     },
     "effectsize": {
       "Package": "effectsize",
-      "Version": "0.8.8",
+      "Version": "0.8.9",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1245,7 +1241,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "6709e156cf7869d95d8fd6e365337d2c"
+      "Hash": "7aceb5e07b6d48171c6b56714cc305ea"
     },
     "ellipsis": {
       "Package": "ellipsis",
@@ -2036,6 +2032,28 @@
       ],
       "Hash": "03009c105dfae79460b8eb9d8cf791e4"
     },
+    "gtExtras": {
+      "Package": "gtExtras",
+      "Version": "0.5.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "commonmark",
+        "dplyr",
+        "fontawesome",
+        "ggplot2",
+        "glue",
+        "gt",
+        "htmltools",
+        "knitr",
+        "paletteer",
+        "rlang",
+        "scales"
+      ],
+      "Hash": "654cdd2db0d2d1c2ab4ae8ee8af63168"
+    },
     "gtable": {
       "Package": "gtable",
       "Version": "0.3.5",
@@ -2316,16 +2334,16 @@
     },
     "insight": {
       "Package": "insight",
-      "Version": "0.20.1",
+      "Version": "0.20.2.11",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "https://easystats.r-universe.dev",
       "Requirements": [
         "R",
         "methods",
         "stats",
         "utils"
       ],
-      "Hash": "9e968fb16772af41ca88ac3d51b09743"
+      "Hash": "bbbc1df2ee1faed9e4745019fbb09d42"
     },
     "ipred": {
       "Package": "ipred",
@@ -3035,6 +3053,20 @@
       ],
       "Hash": "94355af60a14c04da0d79972a1165bc3"
     },
+    "paletteer": {
+      "Package": "paletteer",
+      "Version": "1.6.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "prismatic",
+        "rematch2",
+        "rlang",
+        "rstudioapi"
+      ],
+      "Hash": "ac364dee7ff8277fb4144fcc1e26302f"
+    },
     "parallelly": {
       "Package": "parallelly",
       "Version": "1.37.1",
@@ -3049,9 +3081,9 @@
     },
     "parameters": {
       "Package": "parameters",
-      "Version": "0.21.7",
+      "Version": "0.22.1.7",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "https://easystats.r-universe.dev",
       "Requirements": [
         "R",
         "bayestestR",
@@ -3062,7 +3094,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "9f8ce76f256b193e1536c827c7adc125"
+      "Hash": "1bf7ea65b98b136e87ad9c09e6d46c51"
     },
     "parsnip": {
       "Package": "parsnip",
@@ -3142,9 +3174,9 @@
     },
     "performance": {
       "Package": "performance",
-      "Version": "0.12.0",
+      "Version": "0.12.2",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "https://easystats.r-universe.dev",
       "Requirements": [
         "R",
         "bayestestR",
@@ -3153,7 +3185,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "dc72bffc62740d81375f740223e8dc19"
+      "Hash": "6d0d9762077b82869a0ea9b17787b01e"
     },
     "permute": {
       "Package": "permute",
@@ -3350,6 +3382,19 @@
         "R"
       ],
       "Hash": "6b01fc98b1e86c4f705ce9dcfd2f57c7"
+    },
+    "prismatic": {
+      "Package": "prismatic",
+      "Version": "1.1.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "farver",
+        "grDevices",
+        "graphics"
+      ],
+      "Hash": "51967d2e55a523791ae22832e86209ae"
     },
     "processx": {
       "Package": "processx",
@@ -3924,9 +3969,9 @@
     },
     "see": {
       "Package": "see",
-      "Version": "0.8.4",
+      "Version": "0.8.5",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "https://easystats.r-universe.dev",
       "Requirements": [
         "R",
         "bayestestR",
@@ -3942,7 +3987,7 @@
         "performance",
         "stats"
       ],
-      "Hash": "3d2fd0b72314499e6af4fd20d39309dc"
+      "Hash": "bf62c13d7444a645fa6cfb7a54cdcdd3"
     },
     "selectr": {
       "Package": "selectr",
