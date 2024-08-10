@@ -694,7 +694,7 @@ n_teams_w_dropped_analyses <-
 We standardized the $y_i$ estimates for the blue tit analyses using the population mean and standard deviations of the relevant response variable for that analysis as shown in @eq-Z-VZ using the function `ManyEcoEvo::Z_VZ_preds()`. Note that this is NOT the same process as Z-transforming the effect sizes. We used the mean and standard deviation of the relevant raw datasets as our 'population' parameters.
 
 $$
-Z_i = \frac{\mu_i-/bar{x}}{\text{SD}} 
+Z_i = \frac{\mu_i-\bar{x}}{\text{SD}} 
 $$ {#eq-Z-VZ}
 
 Where $\mu$ is the population parameter taken from our original dataset for variable $i$, and $\bar[x]$ and $SD$ are the out of sample point estimate values supplied for analysis $j$. Note that for the response variables that were scaled and centered, or else mean-centred before model fitting, we do not need to standardise because these are already on the Z-scale. In doing so we make the assumption that analysts' data subsetting will have little effect on the outcomes.
