@@ -5,6 +5,7 @@ code-fold: true
 number-sections: true
 execute:
   freeze: false  # re-render only when source changes
+pre-render: "utils.R"
 bibliography: 
   - ../ms/references.bib
   - ../ms/grateful-refs.bib
@@ -32,15 +33,8 @@ library(multilevelmod)
 library(rlang)
 
 set.seed(1234)
-
-gt_fmt_yi <- function(gt_tbl, columns, ...) {
-  gt_tbl %>% 
-    gt::fmt(!!columns, 
-            fns = function(x) str_replace(x, "y25", gt::md("$$y_{25}$$")) %>% 
-              str_replace("y50", gt::md("$$y_{50}$$")) %>%
-              str_replace("y75", gt::md("$$y_{75}$$")),
-            ...)
-}
+source(here::here("utils.R"))
+data("ManyEcoEvo_yi")
 ```
 
 
@@ -348,8 +342,11 @@ Consequently, each dataset has its own unique value of $\lambda$, and therefore 
 #| fig-height: 8
 #| message: false
 
+data(ManyEcoEvo_yi_results)
+data(ManyEcoEvo_results)
+
 back_transformed_predictions <- 
-  ManyEcoEvo::ManyEcoEvo_yi %>% 
+  ManyEcoEvo_yi %>% 
   dplyr::mutate(data = 
                   purrr::map(data, 
                              ~ dplyr::filter(.x,
@@ -516,7 +513,7 @@ model_vars <-
 all_model_fits <- 
   model_vars %>% 
   cross_join(., 
-             {ManyEcoEvo::ManyEcoEvo_results %>% 
+             {ManyEcoEvo_results %>% 
                  select(dataset, 
                         exclusion_set, 
                         estimate_type, 
@@ -525,7 +522,7 @@ all_model_fits <-
                         collinearity_subset == "All") %>% 
                  ungroup %>% 
                  select(-expertise_subset, -collinearity_subset)}) %>% 
-  left_join(., {ManyEcoEvo::ManyEcoEvo_results %>% 
+  left_join(., {ManyEcoEvo_results %>% 
       select(dataset, 
              exclusion_set, 
              estimate_type, 
@@ -655,6 +652,8 @@ Zr_singularity_convergence %>%
 #| warning: false
 #| message: false
 
+data(ManyEcoEvo_yi_results)
+
 plot_data_logged <- mod_data_logged %>% 
   mutate(tidy_mod = map(.x = MA_mod,
                         ~broom::tidy(.x,
@@ -673,7 +672,7 @@ MA_yi_summary_stats <- # ALL ON logged RESPONSE SCALE for EUC, standardized resp
   nest(tidy_mod = -estimate_type) %>% 
   mutate(dataset = "eucalyptus") %>% 
   bind_rows({
-    ManyEcoEvo::ManyEcoEvo_yi_results %>% 
+    ManyEcoEvo_yi_results %>% 
       ungroup() %>% 
       filter(exclusion_set == "complete", dataset == "blue tit") %>% 
       select(dataset, estimate_type, MA_mod, effects_analysis, -exclusion_set) %>% 
@@ -742,6 +741,8 @@ MA_yi_summary_stats <- # ALL ON logged RESPONSE SCALE for EUC, standardized resp
 
 euc_yi_results <- 
   ManyEcoEvo::make_viz(deviation_models_yi_euc)
+
+data(ManyEcoEvo_yi_viz)
 
 yi_convergence_singularity <- 
   ManyEcoEvo_yi_viz %>% 
@@ -813,6 +814,7 @@ Results of all deviation models are therefore presented only for models with non
 ```{r}
 #| label: tbl-yi-deviation-ratings-convergence-singularity
 #| tbl-cap: "Singularity and convergence checking for models of deviation in out-of-sample-predictions $y_i$ explained by peer-ratings."
+#| 
 yi_convergence_singularity %>% 
   select(-params) %>% 
   group_by(model_name) %>% 
@@ -954,7 +956,7 @@ subfigcaps <- yi_cont_plot_data %>%
   pull(plot_name)
 
 fig_cap_yi_deviation_cont_rating <- 
-  paste0("Scatterplots exaining Box-Cox transfored deviation fro the eta-analytic mean for $y_i$ estimates as a function of continuous ratings. Note that higher (less negative) values of the deviation score result from greater deviation from the meta-analytic mean.", subfigcaps %>% 
+  paste0("Scatterplots explaining Box-Cox transformed deviation from the meta-analytic mean for $y_i$ estimates as a function of continuous ratings. Note that higher (less negative) values of the deviation score result from greater deviation from the meta-analytic mean.", subfigcaps %>% 
            paste0(paste0(paste0("**", LETTERS[1:4], "**", sep = ""), sep = ": "), ., collapse = ", "), ".")
 ```
 
@@ -981,9 +983,13 @@ patchwork::wrap_plots(yi_cont_plots,heights = 4, byrow = TRUE) +
 ManyEcoEvo_yi_viz %>%
   filter(exclusion_set == "complete", 
          dataset == "blue tit",
-         model_name %nin% c("MA_mod", "box_cox_rating_cat_no_int")) %>% 
-  bind_rows({euc_yi_results %>% 
-      filter(model_name %nin% c("MA_mod", "box_cox_rating_cat_no_int"))}) %>% 
+         model_name %nin% c("MA_mod",
+                            "box_cox_rating_cat_no_int",
+                            "MA_mod_mv")) %>% 
+  bind_rows({
+    euc_yi_results %>% 
+      filter(model_name %nin% c("box_cox_rating_cat_no_int", "MA_mod", "MA_mod_mv"))
+  }) %>% 
   mutate( dataset = case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
                               TRUE ~ dataset),
           model_name = forcats::as_factor(model_name) %>% 
@@ -991,24 +997,26 @@ ManyEcoEvo_yi_viz %>%
                                    "box_cox_rating_cont", 
                                    "sorensen_glm", 
                                    "uni_mixed_effects")) %>% 
-            forcats::fct_recode(`Deviation explained by categorical ratings` = "box_cox_rating_cat",
-                                `Deviation explained by continuous ratings` = "box_cox_rating_cont",
-                                `Deviation explained by Sorensen's index` =  "sorensen_glm",
-                                `Deviation explained by inclusion of random effects` =  "uni_mixed_effects")) %>% 
+            forcats::fct_recode(
+              `Deviation explained by categorical ratings` = "box_cox_rating_cat",
+              `Deviation explained by continuous ratings` = "box_cox_rating_cont",
+              `Deviation explained by Sorensen's index` =  "sorensen_glm",
+              `Deviation explained by inclusion of random effects` =  "uni_mixed_effects")
+  ) %>% 
   semi_join(
     {bind_rows(yi_singularity_convergence_sorensen_mixed_mod, 
                yi_convergence_singularity) %>% 
-        filter(singularity == FALSE, convergence == TRUE, SD_calc == TRUE) },
+        filter(singularity == FALSE, 
+               convergence == TRUE, 
+               SD_calc == TRUE | is.na(SD_calc)) },
     by = join_by("dataset", "estimate_type", "model_name")
   ) %>% 
-  select(dataset, estimate_type, model_name, model) %>% 
-  mutate(tbl_output = map(model, parameters::parameters)
-  ) %>% 
+  select(dataset, estimate_type, model_name, model, model_params) %>% 
   select(dataset, 
          estimate_type,
          model_name, 
-         tbl_output) %>% 
-  unnest(tbl_output) %>% 
+         model_params) %>% 
+  unnest(model_params) %>% 
   mutate(dataset = case_when(str_detect(dataset, "eucalyptus") ~ "*Eucalyptus*",
                              TRUE ~ dataset),
          Group = case_when(Group == "study_id" ~ "Effect ID",
@@ -1024,7 +1032,8 @@ ManyEcoEvo_yi_viz %>%
   arrange(desc(model_name), 
           dataset, estimate_type) %>%
   select(-CI) %>% 
-  dplyr::filter(dataset != "blue tit" | str_detect(model_name, "random", negate = TRUE)) %>% 
+  dplyr::filter(dataset != "blue tit" | str_detect(model_name, "random", 
+                                                   negate = TRUE)) %>% 
   gt::gt(rowname_col = "dataset") %>% 
   gt::fmt(columns = "p",
           fns = function(x) gtsummary::style_pvalue(x)) %>% 
@@ -1080,7 +1089,7 @@ All models fitted without problem.
 #| message: false
 #| warning: false
 yi_sorensen_plot_data <- 
-  ManyEcoEvo::ManyEcoEvo_yi_viz %>% 
+  ManyEcoEvo_yi_viz %>% 
   filter(exclusion_set == "complete", 
          dataset == "blue tit",
          str_detect(model_name, "sorensen_glm")) %>% 
@@ -1239,6 +1248,7 @@ patchwork::wrap_plots(yi_deviation_RE_plots, byrow = TRUE) +
 
 ```{r}
 #| label: multivariate-models-mod-summary
+data(ManyEcoEvo_viz)
 
 filter_vars <- rlang::exprs(exclusion_set == "complete",
                             expertise_subset == "All",
@@ -1246,7 +1256,7 @@ filter_vars <- rlang::exprs(exclusion_set == "complete",
                             collinearity_subset == "All")
 
 multivar_mods <- 
-  ManyEcoEvo::ManyEcoEvo_viz %>% 
+  ManyEcoEvo_viz %>% 
   dplyr::filter(!!!filter_vars, model_name == "MA_mod_mv") %>% 
   hoist(mod_fit_stats, "R2_conditional", "R2_marginal", "Sigma")
 
@@ -1280,7 +1290,7 @@ euc_multivar_mod_sigma <- multivar_mods %>%
 #| echo: false
 #| message: false
 #| column: page-right
-#| tbl-cap: "Parameter estimates from models explaining Box-Cox transformed deviation scores from the mean $Z_r$ as a function of continuous and categorical peer-review ratings in multivariate analyses. Standard Errors (SE), 95% Confidence Intervals (95%CI) are reported for all estimates, while t values, degrees of freedom and p-values are presented for fixed-effects."
+#| tbl-cap: "Parameter estimates from models explaining Box-Cox transformed deviation scores from the mean $Z_r$ as a function of continuous and categorical peer-review ratings in multivariate analyses. Standard Errors (SE), 95% confidence intervals (95% CI) are reported for all estimates, while t values, degrees of freedom and p-values are presented for fixed-effects."
 
 multivar_mods %>% 
   select(dataset, model_params) %>% 
@@ -1432,7 +1442,6 @@ all_model_fits_multivar <-
          effects_analysis = 
            map(effects_analysis, 
                ~ .x %>% 
-                 unnest(review_data) %>% 
                  select(study_id, 
                         starts_with("box_cox_abs_dev"), 
                         RateAnalysis, 
@@ -1729,19 +1738,19 @@ tbl_data_yi_deviation_model_params %>%
 
 ## Post-hoc analysis: checking the use of model weights in all models explaining deviation from the meta-analytic mean {#sec-post-hoc-weights-analysis}
 
-As we describe in @box-weight-deviation, for models of deviation from the meta-analytic mean effect-size, we had intended to use the inverse variance of the Box-Cox transformed deviation from the meta-analytic mean as model weights. Unfortunately using our intended weights specification resulted in invalid transformed response variables for some models whereby extreme outliers were weighted more heavily (two orders of magnitude) than other effect sizes, which caused both issues in the estimated model parameters as well as convergence issues, in particular for models analysing the effect of categorical peer-review rating on deviation from the meta-analytic mean. 
+As we describe in @nte-box-weight-deviation, for models of deviation from the meta-analytic mean effect-size, we had intended to use the inverse variance of the Box-Cox transformed deviation from the meta-analytic mean as model weights. Unfortunately using our intended weights specification resulted in invalid transformed response variables for some models whereby extreme outliers were weighted more heavily (two orders of magnitude) than other effect sizes, which caused both issues in the estimated model parameters as well as convergence issues, in particular for models analysing the effect of categorical peer-review rating on deviation from the meta-analytic mean. 
 
 ::: {.callout-note appearance="simple"}
 # Model Weight Calculation Details
 
-We intended to use the invariance of the Box-Cox transformed deviation scores as model weights in our models of deviation from the meta-analytic mean. The variance of the Box-Cox transformation scores is calculated using the delta method ([@eq-folded-variance] and [@lst-variance-box-cox]). 
+We intended to use the invariance of the Box-Cox transformed deviation scores as model weights in our models of deviation from the meta-analytic mean. The variance of the Box-Cox transformation scores is calculated using the delta method ([@eq-folded-variance]). 
 
 $$
 \begin{aligned}
 \mu_{\text{folded}} &= \sigma \sqrt{\frac{2}{\pi}} \exp\left(-\frac{\mu^2}{2 \sigma^2}\right) + \mu \left(1 - 2 \times \boldsymbol{\phi}\left(-\frac{\mu}{\sigma}; 0,1\right)\right) \\
 \text{SE}_\text{folded} &= \sqrt{\mu^2 + \sigma^2 - \mu_{\text{folded}}^2} \\
 \text{VAR}_\text{folded} &= \text{SE}_\text{folded}^2 \\
-VAR_{\text{Box-Cox}} &= \text{VAR}_\text{folded} \times \left(\lambda \mu_{\text{folded}}^{\lambda - 1}\right)^2
+\text{VAR}_\text{Box-Cox} &= \text{VAR}_\text{folded} \times \left(\lambda \mu_{\text{folded}}^{\lambda - 1}\right)^2
 \end{aligned}
 $$ {#eq-folded-variance}
 

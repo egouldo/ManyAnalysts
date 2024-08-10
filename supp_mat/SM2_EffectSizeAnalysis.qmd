@@ -5,6 +5,7 @@ format: html
 editor: visual
 number-sections: true
 code-fold: true
+pre-render: "utils.R"
 execute:
   freeze: auto  # re-render only when source changes
 ---
@@ -16,6 +17,7 @@ library(tidyverse)
 library(performance)
 library(broom.mixed)
 library(gt)
+library(gtExtras)
 library(lme4)
 library(MuMIn)
 library(ManyEcoEvo)
@@ -23,6 +25,7 @@ library(ggrepel)
 library(glue)
 library(gluedown)
 set.seed(1234)
+source(here::here("utils.R"))
 ```
 
 ```{r}
@@ -32,8 +35,10 @@ set.seed(1234)
 #| warning: false
 #| message: false
 
+data(ManyEcoEvo_results)
+
 ManyEcoEvo_results <- 
-  ManyEcoEvo::ManyEcoEvo_results %>% 
+  ManyEcoEvo_results %>% 
   mutate(effects_analysis = 
            map(effects_analysis, 
                rename, 
@@ -116,6 +121,8 @@ The forest plots in @fig-all-forest-plots-Zr compare the distributions of $Z_r$ 
 #| fig-height: 14
 #| fig-width: 10
 # TeamIdentifier_lookup <- read_csv(here::here("data-raw/metadata_and_key_data/TeamIdentifierAnonymised.csv"))
+
+data(ManyEcoEvo_viz)
 
 plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
   if (MA_mean == FALSE){
@@ -583,7 +590,7 @@ For the blue tit dataset, we created a subset of analyses that excluded effects 
 
 ```{r}
 #| label: fig-forest-plot-Zr-collinear-rm-subset
-#| fig-cap: "Forest plot of meta-analytic estimated effect-sizes $Z_{r}$, standard error and 95% confidence intervals of Blue tit analyses with highly collinear analyses removed. The meta-analytic mean for the reduced subset is denoted by the black triangle, and a dashed vertical line, with error bars representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0."
+#| fig-cap: "Forest plot of meta-analytic estimated effect-sizes $Z_{r}$, standard error and 95% confidence intervals of blue tit analyses with highly collinear analyses removed. The meta-analytic mean for the reduced subset is denoted by the black triangle, and a dashed vertical line, with error bars representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0."
 #| fig-height: 6
 #| echo: true
 
@@ -644,6 +651,8 @@ ManyEcoEvo_viz %>%
 #| label: excluded-constructed-yi
 #| echo: false
 #| message: false
+
+data(ManyEcoEvo)
 
 # Constructed Variables Included in the ManyAnalysts meta-analysis
 ManyEcoEvo_constructed_vars <-
@@ -716,11 +725,12 @@ all_constructed_vars %>%
   ) %>% 
   dplyr::filter(dataset != "eucalyptus") %>% # not excluded as standardisation not needed
   dplyr::mutate(included_in_yi = ifelse(isTRUE(included_in_yi),"check", "xmark")) %>% 
-  gt::gt() %>% 
+  gt::gt(caption = gt::md("Analyst-constructed variables and whether they are included in our meta-analyses of out-of-sample predictions, $y\\_i$")) %>% 
   gt::cols_label(response_variable_name = "Constructed Variable",
                  included_in_yi = gt::md("Included in $y\\_i$ meta-analysis?")) %>% 
   gtExtras::gt_fa_column(included_in_yi) %>% 
-  gt::cols_hide("dataset")
+  gt::cols_hide("dataset") %>% 
+  gt::as_raw_html()
 
 ```
 
@@ -734,6 +744,8 @@ Below is the non-truncated version of @fig-euc-yi-forest-plot showing a forest p
 #| fig-height: 8
 #| echo: true
 #| message: false
+
+data("ManyEcoEvo_yi")
 
 plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE, y_zoom = numeric(2L)){
   if(MA_mean == FALSE){
