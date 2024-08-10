@@ -981,20 +981,26 @@ patchwork::wrap_plots(yi_cont_plots,heights = 4, byrow = TRUE) +
 ManyEcoEvo_yi_viz %>%
   filter(exclusion_set == "complete", 
          dataset == "blue tit",
-         model_name %nin% c("box_cox_rating_cont", "box_cox_rating_cat_no_int","sorensen_glm" )) %>% 
-  bind_rows({euc_yi_results %>% 
-      filter(model_name %nin% c("box_cox_rating_cont", "box_cox_rating_cat_no_int","sorensen_glm", "uni_mixed_effects"))}) %>% 
+         model_name %nin% c("MA_mod",
+                            "box_cox_rating_cat_no_int",
+                            "MA_mod_mv")) %>% 
+  bind_rows({
+    euc_yi_results %>% 
+      filter(model_name %nin% c("box_cox_rating_cat_no_int", "MA_mod", "MA_mod_mv"))
+  }) %>% 
   mutate( dataset = case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
                               TRUE ~ dataset),
           model_name = forcats::as_factor(model_name) %>% 
-            forcats::fct_relevel(c("box_cox_rating_cat_no_int", 
+            forcats::fct_relevel(c("box_cox_rating_cat", 
                                    "box_cox_rating_cont", 
                                    "sorensen_glm", 
                                    "uni_mixed_effects")) %>% 
-            forcats::fct_recode(`Deviation explained by categorical ratings` = "box_cox_rating_cat",
-                                `Deviation explained by continuous ratings` = "box_cox_rating_cont",
-                                `Deviation explained by Sorensen's index` =  "sorensen_glm",
-                                `Deviation explained by inclusion of random effects` =  "uni_mixed_effects")) %>% 
+            forcats::fct_recode(
+              `Deviation explained by categorical ratings` = "box_cox_rating_cat",
+              `Deviation explained by continuous ratings` = "box_cox_rating_cont",
+              `Deviation explained by Sorensen's index` =  "sorensen_glm",
+              `Deviation explained by inclusion of random effects` =  "uni_mixed_effects")
+  ) %>% 
   semi_join(
     {bind_rows(yi_singularity_convergence_sorensen_mixed_mod, 
                yi_convergence_singularity) %>% 
