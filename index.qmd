@@ -2267,12 +2267,14 @@ To account for the non-independence of multiple ratings of the same analysis, we
 To account for potential differences among reviewers in their scoring of analyses, we also planned to include reviewer identity as a random effect:
 
 $$ 
-\begin{align}
-\text{DeviationScore}_j = \text{BoxCox}(abs(\text{DeviationFromMean}_{j})) \\
-{\text{DeviationScore}}_{ij} \sim Rating_{ij} + \text{ReviewerID}_{i} + {\text{AnalysisID}}_{j} \\
-{\text{ReviewerID}}_i \sim \mathcal{N}(0,\sigma_i^2) \\
-{\text{AnalysisID}}_j \sim \mathcal{N}(0,\sigma_j^2)
-\end{align}
+\begin{alignat*}{2}
+{\mathrm{DeviationScore}_{j}} &=&& \mathrm{BoxCox}(|\mathrm{DeviationFromMean}_{j}|) \\
+{\mathrm{DeviationScore}}_{ij} & \sim &&\mathrm{Rating}_{ij} + \\
+& &&\mathrm{ReviewerID}_{i} + \\
+& && {\mathrm{AnalysisID}}_{j} \\
+{\mathrm{ReviewerID}}_i &\sim &&\mathcal{N}(0,\sigma_i^2) \\
+{\mathrm{AnalysisID}}_j &\sim &&\mathcal{N}(0,\sigma_j^2) \\
+\end{alignat*}
 $$ {#eq-deviation-rating}
 
 Where $\text{DeviationFromMean}_{j}$ is the deviation from the meta-analytic mean for the $j$th analysis, $\text{ReviewerID}_{i}$ is the random intercept assigned to each $i$ reviewer, and $\text{AnalysisID}_{j}$ is the random intercept assigned to each $j$ analysis, both of which are assumed to be normally distributed with a mean of 0 and a variance of $\sigma^{2}$.
@@ -2321,14 +2323,14 @@ To generate an individual Sorensen's value for each analysis required calculatin
 We calculated the Sorensen's index values using the *betapart* package [@betapart] in R:
 
 $$
-\beta_{Sorensen} = \frac{b+c}{2a+b+c}
+\beta_{\mathrm{Sorensen}} = \frac{b+c}{2a+b+c}
 $$ {#eq-sorensen}
 
 where $a$ is the number of variables common to both analyses, $b$ is the number of variables that occur in the first analysis but not in the second and $c$ is the number of variables that occur in the second analysis.
 We then used the per-model average Sorensen's index value as an independent variable to predict the deviation score in a general linear model, and included no random effect since each analysis is included only once, in R [@base]:
 
 $$ 
-\text{DeviationScore}_{j} \sim \beta \text{Sorensen}_{j}
+\mathrm{DeviationScore}_{j} \sim \beta_{\mathrm{Sorensen}_{j}}
 $$ {#eq-deviation}
 
 ::: {.callout-note appearance="simple"}
@@ -2347,15 +2349,16 @@ Finally, we conducted a multivariate analysis with the five predictors described
 We had stated here in the text that we would use only the revised (final) peer ratings in this analysis, so the absence of the initial ratings is not a deviation from our plan:
 
 $$ 
-\begin{align}
-{\text{DeviationScore}}_{j} \sim {\text{RatingContinuous}}_{ij}\space+ \\
-{\text{RatingCategorical}}_{ij} \space + \\
-{\beta\text{Sorensen}}_{j} \space + \\
-{\text{AnalysisID}}_{j} \space + \\
-{\text{ReviewerID}}_{i} \\
-{\text{ReviewerID}}_i \sim \mathcal{N}(0,\sigma_i^2) \\
-{\text{AnalysisID}}_j \sim \mathcal{N}(0,\sigma_j^2)
-\end{align}
+\begin{alignat*}{3}
+{\mathrm{DeviationScore}_{j}} &=&& \mathrm{BoxCox}(|\mathrm{DeviationFromMean}_{j}|) \\
+{\mathrm{DeviationScore}}_{ij} &\sim  && {\mathrm{RatingContinuous}}_{ij} + \\
+& && {\mathrm{RatingCategorical}}_{ij} + \\
+& && {\beta_\mathrm{Sorensen}}_{j} + \\
+& && {\mathrm{AnalysisID}}_{j} + \\
+& && {\mathrm{ReviewerID}}_{i} \\
+{\mathrm{ReviewerID}}_{i} &\sim &&\mathcal{N}(0,\sigma_i^2) \\
+{\mathrm{AnalysisID}}_{j} &\sim &&\mathcal{N}(0,\sigma_j^2)
+\end{alignat*}
 $$ {#eq-deviation-multivar}
 
 We conducted all the analyses described above eight times; for each of the four responses ($Z_r$, $y_{25th}$, $y_{50th}$, $y_{75th}$) one time for each of the two datasets.
