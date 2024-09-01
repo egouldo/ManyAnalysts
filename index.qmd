@@ -3141,8 +3141,8 @@ zr_heterogeneity <- ManyEcoEvo_viz %>%
                          publishable_subset,
                          expertise_subset,
                          collinearity_subset)) %>% 
-    mutate(publishable_subset = 
-           case_when(publishable_subset == "All" & expertise_subset == "All" ~ 
+  mutate(publishable_subset = 
+           case_when(publishable_subset == "All" & expertise_subset == "All" & collinearity_subset == "All"~ 
                        "All analyses",
                      publishable_subset == "data_flawed" & expertise_subset == "All" ~ 
                        "Analyses receiving at least one 'Unpublishable' rating removed",
@@ -3153,10 +3153,9 @@ zr_heterogeneity <- ManyEcoEvo_viz %>%
                      TRUE ~ ""),
          exclusion_set = 
            case_when(exclusion_set == "complete" ~ "",
-                     TRUE ~ ", Outliers removed"),
-         collinearity_subset = dplyr::na_if(collinearity_subset, "All")) %>% 
+                     TRUE ~ ", Outliers removed")) %>% 
   ungroup %>% 
-  select(-expertise_subset) %>% 
+  select(-expertise_subset, -collinearity_subset) %>% 
   unite("data_subset", publishable_subset, exclusion_set, sep = "", remove = TRUE) %>% 
   group_by(data_subset) %>% 
   arrange(data_subset, dataset) %>% 
@@ -3167,8 +3166,8 @@ zr_heterogeneity <- ManyEcoEvo_viz %>%
   mutate(tau_total = sum(sigma2_1, sigma2_2)) %>% 
   relocate(tau_total, .after = starts_with("sigma"))
 
-bt_MA_summ_stats <- zr_heterogeneity %>% filter(dataset == "blue tit", data_subset == "All analyses", is.na(collinearity_subset))
-euc_MA_summ_stats <- zr_heterogeneity %>% filter(dataset == "eucalyptus", data_subset == "All analyses", is.na(collinearity_subset))
+bt_MA_summ_stats <- zr_heterogeneity %>% filter(dataset == "blue tit", data_subset == "All analyses")
+euc_MA_summ_stats <- zr_heterogeneity %>% filter(dataset == "eucalyptus", data_subset == "All analyses")
 ```
 
 We quantified both absolute ($\tau^{2}$) and relative ($I^{2}$) heterogeneity resulting from analytical variation.
