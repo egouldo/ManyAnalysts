@@ -3190,9 +3190,6 @@ zr_heterogeneity %>%
   arrange(dataset) %>% 
   dplyr::relocate(tau_total, .after = data_subset) %>% 
   gt::gt() %>% 
-  gt::sub_missing(columns = "collinearity_subset", rows = everything(), "") %>% 
-  gt::fmt("collinearity_subset", fns = function(x) str_replace(x, "_", " ") %>%
-            str_c(", ", .)) %>% 
   gt::fmt_number(columns = 
                    c(-"dataset", 
                      -"dataset",
@@ -3211,9 +3208,8 @@ zr_heterogeneity %>%
                  tau_total = "$${\\tau}_\\text{Total}^{2}$$",
                  Nobs = "N.Obs"
   ) %>% 
-  gt::cols_merge(columns = c(dataset, collinearity_subset),
-                 hide_columns = c(collinearity_subset)) %>% 
   gt::row_group_order(groups = c("All analyses",
+                                 "Blue tit analyses containing highly collinear predictors removed",
                                  "All analyses, Outliers removed",
                                  "Analyses receiving at least one 'Unpublishable' rating removed",
                                  "Analyses receiving at least one 'Unpublishable' and or 'Major Revisions' rating removed",
