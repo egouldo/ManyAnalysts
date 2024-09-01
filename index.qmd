@@ -2520,11 +2520,11 @@ ArticleReviewSummary <-
             .groups = "drop_last") %>% 
   group_by(dataset) %>% 
   summarise(
-    mean=mean(reviews),
-    sd=sd(reviews),
-    min=min(reviews),
-    max=max(reviews),
-    sum=sum(reviews),
+    mean = mean(reviews),
+    sd = sd(reviews),
+    min = min(reviews),
+    max = max(reviews),
+    sum = sum(reviews),
     .groups = "drop")
 
 # how many reviewers
