@@ -35,8 +35,6 @@ source(here::here("utils.R"))
 #| warning: false
 #| message: false
 
-data(ManyEcoEvo_results)
-
 ManyEcoEvo_results <- 
   ManyEcoEvo_results %>% 
   mutate(effects_analysis = 
@@ -121,8 +119,6 @@ The forest plots in @fig-all-forest-plots-Zr compare the distributions of $Z_r$ 
 #| fig-height: 14
 #| fig-width: 10
 # TeamIdentifier_lookup <- read_csv(here::here("data-raw/metadata_and_key_data/TeamIdentifierAnonymised.csv"))
-
-data(ManyEcoEvo_viz)
 
 plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
   if (MA_mean == FALSE){
@@ -652,8 +648,6 @@ ManyEcoEvo_viz %>%
 #| echo: false
 #| message: false
 
-data(ManyEcoEvo)
-
 # Constructed Variables Included in the ManyAnalysts meta-analysis
 ManyEcoEvo_constructed_vars <-
   tribble(~response_variable_name,
@@ -744,8 +738,6 @@ Below is the non-truncated version of @fig-euc-yi-forest-plot showing a forest p
 #| fig-height: 8
 #| echo: true
 #| message: false
-
-data("ManyEcoEvo_yi")
 
 plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE, y_zoom = numeric(2L)){
   if(MA_mean == FALSE){

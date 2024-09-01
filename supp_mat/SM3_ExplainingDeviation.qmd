@@ -34,7 +34,6 @@ library(rlang)
 
 set.seed(1234)
 source(here::here("utils.R"))
-data("ManyEcoEvo_yi")
 ```
 
 
@@ -341,9 +340,6 @@ Consequently, each dataset has its own unique value of $\lambda$, and therefore 
 #| column: body-outset
 #| fig-height: 8
 #| message: false
-
-data(ManyEcoEvo_yi_results)
-data(ManyEcoEvo_results)
 
 back_transformed_predictions <- 
   ManyEcoEvo_yi %>% 
@@ -652,8 +648,6 @@ Zr_singularity_convergence %>%
 #| warning: false
 #| message: false
 
-data(ManyEcoEvo_yi_results)
-
 plot_data_logged <- mod_data_logged %>% 
   mutate(tidy_mod = map(.x = MA_mod,
                         ~broom::tidy(.x,
@@ -741,8 +735,6 @@ MA_yi_summary_stats <- # ALL ON logged RESPONSE SCALE for EUC, standardized resp
 
 euc_yi_results <- 
   ManyEcoEvo::make_viz(deviation_models_yi_euc)
-
-data(ManyEcoEvo_yi_viz)
 
 yi_convergence_singularity <- 
   ManyEcoEvo_yi_viz %>% 
@@ -1248,8 +1240,6 @@ patchwork::wrap_plots(yi_deviation_RE_plots, byrow = TRUE) +
 
 ```{r}
 #| label: multivariate-models-mod-summary
-data(ManyEcoEvo_viz)
-
 filter_vars <- rlang::exprs(exclusion_set == "complete",
                             expertise_subset == "All",
                             publishable_subset == "All",

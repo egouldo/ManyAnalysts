@@ -39,8 +39,6 @@ source(here::here("utils.R"))
 
 ```{r descriptive-munging-2, eval=TRUE,include=FALSE, eval=TRUE}
 # ----- Using complete objects in 'ManyEcoEvo' -----
-data(ManyEcoEvo_study_summary)
-data(ManyEcoEvo)
 
 Table1 <- # Teams, analyses and model types
   ManyEcoEvo_study_summary %>% 
@@ -191,7 +189,6 @@ We observed few clear trends in the blue tit specification curve (@fig-specr-bt)
 ```{r calc_MA_mod_coefs-2, eval=TRUE, cache = FALSE, eval = TRUE, warning=FALSE, message = FALSE}
 # knitr::read_chunk(here::here("index.qmd"), labels = "calc_MA_mod_coefs")
 #TODO why is here??
-data(ManyEcoEvo_viz)
 
 coefs_MA_mod <- bind_rows( ManyEcoEvo_viz %>%
                              filter(model_name == "MA_mod",
@@ -299,8 +296,6 @@ forest_plot_new_labels <- forest_plot_new_labels %>%
 #| fig-align: center
 #| fig-cap: "**A.** Forest plot for blue tit analyses: standardized effect-sizes (circles) and their 95% confidence intervals are displayed for each analysis included in the meta-analysis model. The meta-analytic mean effect-size is denoted by a black diamond, with error bars also representing the 95% confidence interval. The dashed black line demarcates effect sizes of 0, whereby no effect of the test variable on the response variable is found. Blue points where Zr and its associated confidence intervals are greater than 0 indicate analyses that found a negative effect of sibling number on nestling growth. Gray coloured points have confidence intervals crossing 0, indicating no relationship between the test and response variable. Red points indicate the analysis found a positive relationship between sibling number and nestling growth. **B.** Analysis specification plot: for each analysis plotted in A, the corresponding combination of analysis decisions is plotted. Each decision and its alternative choices is grouped into its own facet, with the decision point described on the right of the panel, and the option shown on the left. Lines indicate the option chosen used in the corresponding point in plot A. **C.** Sample sizes of each analysis. Note that empty bars indicate analyst did not report sample size and sample size could not be derived by lead team."
 #| column: page-right
-
-data(ManyEcoEvo_results)
 
 analytical_choices_bt <- ManyEcoEvo_results$effects_analysis[[1]] %>% 
   select(study_id, 

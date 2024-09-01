@@ -2282,7 +2282,6 @@ Absolute deviation scores were Box-Cox transformed using the `step_box_cox()` fu
 
 ```{r eqn-boxcox-ratings-bt, results = 'asis', eval = FALSE, echo = FALSE}
 # Ratings Continuous blue tit
-data(ManyEcoEvo_viz)
 ManyEcoEvo_viz %>% 
   filter(str_detect(model_name, "box_cox_rating"),
          str_detect(model_name, "_no_int", negate = TRUE),
@@ -2436,7 +2435,6 @@ The full manuscript, including further analysis and presentation of results is w
 # Results
 
 ```{r descriptive-munging, eval=TRUE,include=TRUE, echo = FALSE, message=FALSE, warning=FALSE}
-data(ManyEcoEvo_study_summary)
 
 filter_vars_main_analysis <- rlang::exprs(estimate_type == "Zr", 
                                           exclusion_set == "complete", 
@@ -2494,8 +2492,6 @@ SorensenSummary <-
   unnest(cols = sorensen_summary)
 
 ## ----- Review Summaries -----
-
-data(ManyEcoEvo_results)
 
 ReviewData <- 
   ManyEcoEvo_results %>% 
@@ -2605,7 +2601,6 @@ Table4 %>%
 ### Standardized Effect Sizes ($Z_r$)
 
 ```{r calc_MA_mod_coefs, eval=TRUE,include=TRUE, echo = FALSE}
-data("ManyEcoEvo_viz")
 coefs_MA_mod <- bind_rows( ManyEcoEvo_viz %>% 
                              filter(model_name == "MA_mod") %>% 
                              filter(exclusion_set == "complete"),
@@ -2793,8 +2788,6 @@ euc_forest
 ### Out-of-sample predictions $y_{i}$
 
 ```{r define-plot-forest-function, echo = FALSE, message=FALSE, warning=FALSE}
-data("ManyEcoEvo_yi")
-data("ManyEcoEvo_yi_results")
 
 plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
   if(MA_mean == FALSE){
@@ -3336,9 +3329,6 @@ mean_n_euc_Zr <- sample_size_euc_Zr %>%
 N_outliers_Zr_euc <- sample_size_euc_Zr %>% 
   filter(term %in% min_outlier_euc) %>% 
   arrange(desc(sample_size))
-
-data("euc_data")
-
 ```
 
 The outlier *Eucalyptus* $Z_r$ values were striking and merited special examination.
