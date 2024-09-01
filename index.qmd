@@ -2625,7 +2625,7 @@ bt_complete_data <- ManyEcoEvo_viz %>%
          dataset == "blue tit",
          publishable_subset == "All",
          expertise_subset == "All",
-         collinearity_subset == "collinearity_removed") %>% 
+         collinearity_subset == "All") %>% 
   select(model) %>% 
   mutate(plot_data = map(model, 
                          .f = ~ broom::tidy(.x, 
