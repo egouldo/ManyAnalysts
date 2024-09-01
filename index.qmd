@@ -2619,48 +2619,33 @@ coefs_MA_mod <- bind_rows( ManyEcoEvo_viz %>%
 
 ```{r inline-text-Zr-data, message=FALSE, echo=FALSE}
 bt_complete_data <- ManyEcoEvo_viz %>% 
-  filter(exclusion_set == "complete", 
-         estimate_type == "Zr", 
-         model_name == "MA_mod",
-         dataset == "blue tit",
-         publishable_subset == "All",
-         expertise_subset == "All",
-         collinearity_subset == "All") %>% 
-  select(model) %>% 
-  mutate(plot_data = map(model, 
-                         .f = ~ broom::tidy(.x, 
-                                             conf.int = TRUE, 
-                                             include_studies = TRUE) %>% 
-                           dplyr::mutate(point_shape = 
-                                           ifelse(stringr::str_detect(term, "overall"), 
-                                                  "diamond", 
-                                                  "circle"),
-                                         Parameter = 
-                                           forcats::fct_reorder(term, 
-                                                                estimate) %>% 
-                                           forcats::fct_reorder(., 
-                                                                point_shape,
-                                                                .desc = TRUE))
-  ),
-  meta_analytic_mean = map_dbl(plot_data, 
-                               ~ filter(.x, Parameter == "overall") %>% 
-                                 pull(estimate))) %>% 
-  select(plot_data, meta_analytic_mean) %>% 
-  unnest(cols = c("plot_data")) %>% 
-  mutate(parameter_type = case_when(str_detect(Parameter, "overall") ~ "mean",
-                                    TRUE ~ "study")) 
-
-# bt_complete_data <- 
-#   bt_complete_data %>% 
-#   rename(id_col = term) %>% 
-#   group_by(type) %>%  
-#   group_split() %>% 
-#   set_names(., bt_complete_data$type %>%  unique) %>% 
-#   map_if(.x = ., names(.) == "study",
-#          .f = ~ anonymise_teams(.x, TeamIdentifier_lookup)) %>% 
-#   bind_rows() %>% 
-#   rename(term = id_col)
-  
+    filter(exclusion_set == "complete", 
+           estimate_type == "Zr", 
+           model_name == "MA_mod",
+           dataset == "blue tit",
+           publishable_subset == "All",
+           expertise_subset == "All",
+           collinearity_subset == "All") %>% 
+    select(tidy_mod_summary) %>% 
+    mutate(plot_data = map(tidy_mod_summary, 
+                           .f = ~ dplyr::mutate(.x, point_shape = 
+                                                    ifelse(stringr::str_detect(term, "overall"), 
+                                                           "diamond", 
+                                                           "circle"),
+                                                Parameter = 
+                                                    forcats::fct_reorder(term, 
+                                                                         estimate) %>% 
+                                                    forcats::fct_reorder(., 
+                                                                         point_shape,
+                                                                         .desc = TRUE))
+    ),
+    meta_analytic_mean = map_dbl(plot_data, 
+                                 ~ filter(.x, Parameter == "overall") %>% 
+                                     pull(estimate))) %>% 
+    select(plot_data, meta_analytic_mean) %>% 
+    unnest(cols = c("plot_data")) %>% 
+    mutate(parameter_type = case_when(str_detect(Parameter, "overall") ~ "mean",
+                                      TRUE ~ "study")) 
 
 complete_euc_data <- 
   ManyEcoEvo_viz %>% 
@@ -2670,21 +2655,19 @@ complete_euc_data <-
          dataset == "eucalyptus",
          publishable_subset == "All",
          expertise_subset == "All") %>% 
-  select(model) %>% 
-  mutate(plot_data = map(model, 
-                         .f = ~ broom::tidy(.x, 
-                                            conf.int = TRUE, 
-                                            include_studies = TRUE) %>% 
-                           dplyr::mutate(point_shape = 
-                                           ifelse(stringr::str_detect(term, "overall"), 
-                                                  "diamond", 
-                                                  "circle"),
-                                         Parameter = 
-                                           forcats::fct_reorder(term, 
-                                                                estimate) %>% 
-                                           forcats::fct_reorder(., 
-                                                                point_shape,
-                                                                .desc = TRUE))
+  select(tidy_mod_summary) %>% 
+  mutate(plot_data = map(tidy_mod_summary, 
+                         .f = ~ dplyr::mutate(.x, 
+                                            point_shape = 
+                                              ifelse(stringr::str_detect(term, "overall"), 
+                                                     "diamond", 
+                                                     "circle"),
+                                            Parameter = 
+                                              forcats::fct_reorder(term, 
+                                                                   estimate) %>% 
+                                              forcats::fct_reorder(., 
+                                                                   point_shape,
+                                                                   .desc = TRUE))
   ),
   meta_analytic_mean = map_dbl(plot_data, 
                                ~ filter(.x, Parameter == "overall") %>% 
@@ -2693,27 +2676,18 @@ complete_euc_data <-
   unnest(cols = c("plot_data")) %>% 
   mutate(parameter_type = case_when(str_detect(Parameter, "overall") ~ "mean",
                                     TRUE ~ "study"))
-# 
-# complete_euc_data <- 
-#   complete_euc_data %>% 
-#   rename(id_col = term) %>% 
-#   group_by(type) %>%  
-#   group_split() %>% 
-#   set_names(., complete_euc_data$type %>%  unique) %>% 
-#   map_if(.x = ., names(.) == "study",
-#          .f = ~ anonymise_teams(.x, TeamIdentifier_lookup)) %>% 
-#   bind_rows() %>% 
-#   rename(term = id_col)
 
 #find the second smallest
- small2 <-  function(x) {
-   u <- unique(x)
-sort(u, decreasing = FALSE)[2L]}
- 
+small2 <-  function(x) {
+  u <- unique(x)
+  sort(u, decreasing = FALSE)[2L]
+}
+
 #find the second largest
- large2 <-  function(x) {
-   u <- unique(x)
-sort(u, decreasing = TRUE)[2L]}
+large2 <-  function(x) {
+  u <- unique(x)
+  sort(u, decreasing = TRUE)[2L]
+}
 ```
 
 Although the majority (`r bt_complete_data %>% filter(estimate < 0, type == "study") %>% nrow()` of `r filter(Table1, dataset == "blue tit", subset_name == "effects") %>% pluck("totalanalyses")`) of the usable $Z_r$ effects from the blue tit dataset found nestling growth decreased with sibling competition, and the meta-analytic mean $\bar{Z_r}$ (Fisher's transformation of the correlation coefficient) was convincingly negative (`r filter(coefs_MA_mod, dataset == "blue tit", !!!filter_vars_main_no_est) %>% round_pluck("estimate")` $\pm$ `r filter(coefs_MA_mod, dataset == "blue tit", !!!filter_vars_main_no_est) %>% mutate(interval = estimate - conf.low) %>% round_pluck("interval")` 95$\%$CI), there was substantial variability in the strength and the direction of this effect.
