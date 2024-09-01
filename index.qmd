@@ -2701,10 +2701,8 @@ Most values of $Z_r$ were relatively small with values $\lt |0.2|$ and the meta-
 Of the `r Table1 %>% filter(subset_name == "effects", dataset == "eucalyptus") %>% pluck("totalanalyses")` effects, `r complete_euc_data %>% filter(estimate >0 & conf.low <= 0 | estimate <0 & conf.high >= 0, type == "study") %>% nrow() %>% xfun::numbers_to_words()` had confidence intervals overlapping zero, approximately a quarter (`r complete_euc_data %>% filter(estimate < 0, conf.high < 0, type == "study") %>% nrow() %>% xfun::numbers_to_words()`) crossed the traditional threshold of statistical significance indicating a negative relationship between grass cover and seedling success, and `r complete_euc_data %>% filter(estimate  > 0 & conf.low > 0, type == "study") %>% nrow() %>% xfun::numbers_to_words()` crossed the significance threshold indicating a positive relationship between grass cover and seedling success (@fig-forest-plots-Zr-2).
 
 ```{r plot_forest_fn, echo = FALSE, message = FALSE}
-
-
 plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
-  if (MA_mean == FALSE){
+  if (MA_mean == FALSE) {
     data <- filter(data, Parameter != "overall")
   }
   
@@ -2773,7 +2771,7 @@ bt_forest <- bt_complete_data %>%
 
 euc_forest <- complete_euc_data %>% 
   filter(estimate > -2) %>% 
-   arrange(desc(type)) %>% 
+  arrange(desc(type)) %>% 
   mutate(type = forcats::as_factor(type)) %>% 
   group_by(type) %>% 
   arrange(desc(estimate),.by_group = TRUE) %>% 
@@ -2781,10 +2779,10 @@ euc_forest <- complete_euc_data %>%
          point_shape = case_when(str_detect(type, "summary") ~ "mean",
                                  TRUE ~ "study")) %>% 
   plot_forest(intercept = TRUE, MA_mean = TRUE) +
-    theme(axis.text.x = element_text(size = 15), 
+  theme(axis.text.x = element_text(size = 15), 
         axis.title.x = element_text(size = 15),
         axis.text.y = element_blank()
-        ) +
+  ) +
   scale_y_continuous(limits = c(-1.6, 0.65))
 
 bt_forest
@@ -2872,13 +2870,13 @@ plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE, y_zoom = numer
                                    TRUE ~ "study"))
   
   p <- ggplot(plot_data, aes(y = estimate, 
-                        x =  study_id,
-                        ymin = conf.low, 
-                        ymax = conf.high,
-                        # shape = type,
-                        shape = point_shape,
-                        colour = estimate_type
-                        )) +
+                             x =  study_id,
+                             ymin = conf.low, 
+                             ymax = conf.high,
+                             # shape = type,
+                             shape = point_shape,
+                             colour = estimate_type
+  )) +
     geom_pointrange(position = position_dodge(width = 0.5)) +
     ggforestplot::theme_forest() +
     theme(axis.line = element_line(linewidth = 0.10, colour = "black"),
@@ -3215,7 +3213,7 @@ zr_heterogeneity %>%
                  Nobs = "N.Obs"
   ) %>% 
   gt::cols_merge(columns = c(dataset, collinearity_subset),
-                 hide_columns =c(collinearity_subset)) %>% 
+                 hide_columns = c(collinearity_subset)) %>% 
   gt::row_group_order(groups = c("All analyses",
                                  "All analyses, Outliers removed",
                                  "Analyses receiving at least one 'Unpublishable' rating removed",
@@ -3239,16 +3237,16 @@ For both datasets, the majority of heterogeneity in $Z_r$ was driven by differen
 
 ```{r heterogeneity-reporting-data, echo = FALSE, warning=FALSE, message = FALSE}
 heterogeneity_data_yi <- ManyEcoEvo_yi_results %>% 
-    filter(exclusion_set == "complete", dataset == "blue tit") %>% 
-    group_by(estimate_type, dataset) %>% 
-    select(MA_mod, -effects_analysis, -exclusion_set) %>%  
-    bind_rows(., {mod_data_logged %>% select(-data) %>% mutate(dataset = "eucalyptus")}) %>% 
-    transmute(tidy_mod_summary = map(MA_mod, 
-                                     ~ broom::glance(.x, )),
-              MA_fit_stats = map(MA_mod, get_MA_fit_stats)) %>% 
-    unnest(c(tidy_mod_summary, MA_fit_stats)) %>% 
-    group_by(dataset) %>% 
-    select(-logLik, -deviance, -tau.squared, -AIC, -BIC, -AICc, -cochran.qm, -p.value.cochran.qm) 
+  filter(exclusion_set == "complete", dataset == "blue tit") %>% 
+  group_by(estimate_type, dataset) %>% 
+  select(MA_mod, -effects_analysis, -exclusion_set) %>%  
+  bind_rows(., {mod_data_logged %>% select(-data) %>% mutate(dataset = "eucalyptus")}) %>% 
+  transmute(tidy_mod_summary = map(MA_mod, 
+                                   ~ broom::glance(.x, )),
+            MA_fit_stats = map(MA_mod, get_MA_fit_stats)) %>% 
+  unnest(c(tidy_mod_summary, MA_fit_stats)) %>% 
+  group_by(dataset) %>% 
+  select(-logLik, -deviance, -tau.squared, -AIC, -BIC, -AICc, -cochran.qm, -p.value.cochran.qm) 
 ```
 
 We observed substantial heterogeneity among out-of-sample estimates, but the pattern differed somewhat from the $Z_r$ values (@tbl-yi-heterogeneity).
@@ -3328,11 +3326,11 @@ min_outlier_euc <- complete_euc_data %>%
   pull(term)
 
 sample_size_euc_Zr <- ManyEcoEvo_results %>% 
-    filter(exclusion_set == "complete", dataset == "eucalyptus") %>% 
-    pluck("data", 1) %>% 
-    select(id_col, sample_size) %>% 
-    rename(term = id_col) %>% 
-    mutate(sample_size = as.numeric(sample_size))
+  filter(exclusion_set == "complete", dataset == "eucalyptus") %>% 
+  pluck("data", 1) %>% 
+  select(id_col, sample_size) %>% 
+  rename(term = id_col) %>% 
+  mutate(sample_size = as.numeric(sample_size))
 
 mean_n_euc_Zr <- sample_size_euc_Zr %>% 
   drop_na(sample_size) %>% 
@@ -3342,7 +3340,7 @@ mean_n_euc_Zr <- sample_size_euc_Zr %>%
 
 N_outliers_Zr_euc <- sample_size_euc_Zr %>% 
   filter(term %in% min_outlier_euc) %>% 
-   arrange(desc(sample_size))
+  arrange(desc(sample_size))
 
 data("euc_data")
 
@@ -3425,9 +3423,9 @@ Thus, effects at the extremes of the distribution were much stronger contributor
 #| tbl-cap: 'Estimated mean value of the standardised correlation coefficient, $Z_r$, along with its standard error and 95$\\%$confidence intervals. We re-computed the meta-analysis for different post-hoc subsets of the data: All eligible effects, removal of effects from blue tit analyses that contained a pair of highly collinear predictor variables, removal of effects from analysis teams that received at least one peer rating of "deeply flawed and unpublishable", removal of any effects from analysis teams that received at least one peer rating of either "deeply flawed and unpublishable" or "publishable with major revisions", inclusion of only effects from analysis teams that included at least one member who rated themselves as "highly proficient" or "expert" at conducting statistical analyses in their research area.'
 #| echo: false
 effectsparams <- ManyEcoEvo_viz %>% 
-    dplyr::filter(estimate_type == "Zr", 
-                  model_name == "MA_mod", 
-                  exclusion_set == "complete") %>% 
+  dplyr::filter(estimate_type == "Zr", 
+                model_name == "MA_mod", 
+                exclusion_set == "complete") %>% 
   bind_rows(ManyEcoEvo_viz %>% 
               dplyr::filter(exclusion_set == "complete-rm_outliers",
                             estimate_type == "Zr", 
@@ -3487,7 +3485,7 @@ effectsparams %>%
   gt::cols_move(columns = conf.low, after = std.error) %>% 
   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
                                        columns = dataset),
-                                      style = cell_text(style = "italic")) %>% 
+                style = cell_text(style = "italic")) %>% 
   gt::as_raw_html()
 ```
 
@@ -3708,14 +3706,14 @@ review_data <- ManyEcoEvo_results %>%
   select(ends_with("_id"), id_col, dataset, review_data) %>% 
   unnest(review_data) %>% 
   distinct(ReviewerId , id_col,.keep_all = T) %>% 
-#by unfortunate chance two reviewer reviewed the same analyses twice Rev100 for R_2TFbZCxFIz91BGC and Rev133 for R_1hSZf5af3tKfwLI. Fortunately, their ratings were similar so we will just use distinct to remove one above
-#reviewers reviewed all analyses per team for each dataset - need to deduplicate to avoid inflating inter-rater reliability
+  #by unfortunate chance two reviewer reviewed the same analyses twice Rev100 for R_2TFbZCxFIz91BGC and Rev133 for R_1hSZf5af3tKfwLI. Fortunately, their ratings were similar so we will just use distinct to remove one above
+  #reviewers reviewed all analyses per team for each dataset - need to deduplicate to avoid inflating inter-rater reliability
   distinct(response_id, ReviewerId , dataset,.keep_all = T) %>% 
   mutate(PublishableAsIs = case_when(PublishableAsIs == "publishable as is" ~ 4,
-                                      PublishableAsIs == "publishable with minor revision" ~ 3,
-                                      PublishableAsIs == "publishable with major revision" ~ 2,
-                                      PublishableAsIs == "deeply flawed and unpublishable" ~ 1,
-                                      TRUE ~ NA))
+                                     PublishableAsIs == "publishable with minor revision" ~ 3,
+                                     PublishableAsIs == "publishable with major revision" ~ 2,
+                                     PublishableAsIs == "deeply flawed and unpublishable" ~ 1,
+                                     TRUE ~ NA))
 
 alpha_result_continuous <- review_data %>% 
   select(id_col, ReviewerId, RateAnalysis) %>%
@@ -3781,11 +3779,11 @@ plot_model_means_box_cox_cat <- function(dat,
       as_tibble() %>% 
       mutate(lambda = dat$lambda %>% unique()) %>%  
       mutate(across(.cols = -PublishableAsIs,
-              ~ sae::bxcx(unique(dat$lambda),x = .x, InverseQ = TRUE)))
+                    ~ sae::bxcx(unique(dat$lambda),x = .x, InverseQ = TRUE)))
   }
   
   p <- ggplot(dat, aes(x = {{variable}},
-                        y = box_cox_abs_deviation_score_estimate)) +
+                       y = box_cox_abs_deviation_score_estimate)) +
     # Add base dat
     geom_violin(aes(fill = {{variable}}),
                 trim = TRUE, 
@@ -3812,7 +3810,7 @@ plot_model_means_box_cox_cat <- function(dat,
     EnvStats::stat_n_text() +
     see::theme_modern() +
     theme(axis.text.x = element_text(angle = 90)) #+
-    # ggtitle(label = title)
+  # ggtitle(label = title)
   
   if(back_transform == TRUE){
     p <- p + 
@@ -3846,31 +3844,31 @@ ManyEcoEvo_results %>%
          plot_name = paste(exclusion_set, dataset, sep = ", ")) %>%
   mutate(model_data = map(model_data, 
                           .f = ~ mutate(.x, PublishableAsIs =
-                           str_replace(PublishableAsIs,
-                                       "publishable with ", "") %>%
-                           str_replace("deeply flawed and ", "") %>% 
-                           capwords())),
+                                          str_replace(PublishableAsIs,
+                                                      "publishable with ", "") %>%
+                                          str_replace("deeply flawed and ", "") %>% 
+                                          capwords())),
          predictor_means = map(predictor_means,
-           .f = ~ mutate(.x, PublishableAsIs =
-                           str_replace(PublishableAsIs,
-                                       "publishable with ", "") %>%
-                           str_replace("deeply flawed and ", "") %>% 
-                           capwords()))) %>% 
+                               .f = ~ mutate(.x, PublishableAsIs =
+                                               str_replace(PublishableAsIs,
+                                                           "publishable with ", "") %>%
+                                               str_replace("deeply flawed and ", "") %>% 
+                                               capwords()))) %>% 
   mutate(plot_name = 
            str_remove(plot_name, "complete, ") %>% 
            str_replace_all(., " ", "_") %>% 
            paste0("_violin_plot")) %>% 
   pwalk(.l = list(.$model_data, .$predictor_means, .$plot_name),
-       .f = ~ plot_model_means_box_cox_cat(..1, 
-                                           PublishableAsIs, 
-                                           ..2,
-                                           new_order = 
-                                             c("Unpublishable",
-                                               "Major Revision",
-                                               "Minor Revision",
-                                               "Publishable As Is"),
-                                           ..3) %>% 
-         assign(x = ..3, value = ., envir = .GlobalEnv))
+        .f = ~ plot_model_means_box_cox_cat(..1, 
+                                            PublishableAsIs, 
+                                            ..2,
+                                            new_order = 
+                                              c("Unpublishable",
+                                                "Major Revision",
+                                                "Minor Revision",
+                                                "Publishable As Is"),
+                                            ..3) %>% 
+          assign(x = ..3, value = ., envir = .GlobalEnv))
 
 library(patchwork)
 blue_tit_violin_plot + 
@@ -3965,35 +3963,35 @@ There was no relationship between random-effect inclusion and deviation from met
 #TODO move function to R/ and document roxygen
 plot_model_means_RE <- function(data, variable, predictor_means) {
   p <- ggplot(data, aes(x = as.factor({{variable}}), 
-              y = box_cox_abs_deviation_score_estimate)) +
-  # Add base data
-  geom_violin(aes(fill = as.factor({{variable}})), color = "white") +
-  see::geom_jitter2(width = 0.05, alpha = 0.5) +
-  # Add pointrange and line from means
-  geom_line(data = predictor_means, aes(y = Mean, group = 1), size = 1) +
-  geom_pointrange(
-    data = predictor_means,
-    aes(y = Mean, ymin = CI_low, ymax = CI_high),
-    size = 1,
-    color = "white"
-  ) +
-  # Improve colors
-  scale_x_discrete(labels = c("0" = "No Random Effects", "1" = "Random Effects")) +
-  see::scale_fill_material(palette = "ice",
-                           discrete = TRUE, 
-                           labels = c("No Random Effects", "Random effects"), 
-                           name = "") +
-  see::theme_modern() +
+                        y = box_cox_abs_deviation_score_estimate)) +
+    # Add base data
+    geom_violin(aes(fill = as.factor({{variable}})), color = "white") +
+    see::geom_jitter2(width = 0.05, alpha = 0.5) +
+    # Add pointrange and line from means
+    geom_line(data = predictor_means, aes(y = Mean, group = 1), size = 1) +
+    geom_pointrange(
+      data = predictor_means,
+      aes(y = Mean, ymin = CI_low, ymax = CI_high),
+      size = 1,
+      color = "white"
+    ) +
+    # Improve colors
+    scale_x_discrete(labels = c("0" = "No Random Effects", "1" = "Random Effects")) +
+    see::scale_fill_material(palette = "ice",
+                             discrete = TRUE, 
+                             labels = c("No Random Effects", "Random effects"), 
+                             name = "") +
+    see::theme_modern() +
     EnvStats::stat_n_text() +
-  labs(x = "Random Effects Included", 
-       y = "Box Cox Transformed \n Absolute Deviation Score")
+    labs(x = "Random Effects Included", 
+         y = "Box Cox Transformed \n Absolute Deviation Score")
   return(p)
 }
 
 ManyEcoEvo_viz %>% 
   filter(model_name == "uni_mixed_effects", 
          dataset == "eucalyptus", 
-        !!!filter_vars_main_analysis) %>%
+         !!!filter_vars_main_analysis) %>%
   left_join(ManyEcoEvo_results %>% 
               select(effects_analysis)) %>% 
   ungroup() %>% 
@@ -4227,25 +4225,25 @@ All authors read and approved the final manuscript.
 
 data.frame(
   stringsAsFactors = FALSE,
-           Package = c("base","betapart",
-                       "broom.mixed","colorspace","cowplot","devtools","EnvStats",
-                       "GGally","ggforestplot","ggh4x","ggpubr","ggrepel",
-                       "ggthemes","glmmTMB","gt","gtsummary","here","Hmisc",
-                       "irr","janitor","knitr","latex2exp","lme4","ManyEcoEvo",
-                       "metafor","modelbased","multilevelmod","MuMIn",
-                       "naniar","NatParksPalettes","orchaRd","parameters",
-                       "patchwork","performance","renv","rmarkdown","sae",
-                       "scales","see","showtext","specr","targets","tidymodels",
-                       "tidytext","tidyverse","withr","xfun"),
-           Version = c("4.4.0","1.6","0.2.9.5",
-                       "2.1.0","1.1.3","2.4.5","2.8.1","2.2.1","0.1.0","0.2.8",
-                       "0.6.0","0.9.5","5.1.0","1.1.8","0.10.1","1.7.2",
-                       "1.0.1","5.1.2","0.84.1","2.2.0","1.46","0.9.6",
-                       "1.1.35.3","1.1.0","4.6.0","0.8.7","1.0.0","1.47.5",
-                       "1.1.0","0.2.0","2.0","0.21.7","1.2.0","0.11.0",
-                       "1.0.2","2.27","1.3","1.3.0","0.8.4","0.9.7","1.0.0",
-                       "1.7.0","1.1.1","0.4.2","2.0.0","3.0.0","0.44"),
-            Citation = c("@base", "@betapart", "@broommixed", "@colorspace2020a", "@cowplot", "@devtools", "@EnvStats-book", "@GGally", "@ggforestplot", "@ggh4x", "@ggpubr", "@ggrepel", "@ggthemes", "@glmmTMB", "@gt", "@gtsummary", "@here", "@Hmisc", "@irr", "@janitor", "@knitr2024", "@latex2exp", "@lme4", "@ManyEcoEvo", "@metafor", "@modelbased", "@multilevelmod", "@MuMIn", "@naniar", "@NatParksPalettes", "@orchaRd", "@parameters", "@patchwork", "@performance", "@renv", "@rmarkdown2024", "@molina-marhuenda:2015", "@scales", "@see", "@showtext", "@specr", "@targets", "@tidymodels", "@tidytext", "@tidyverse", "@withr", "@xfun")
+  Package = c("base","betapart",
+              "broom.mixed","colorspace","cowplot","devtools","EnvStats",
+              "GGally","ggforestplot","ggh4x","ggpubr","ggrepel",
+              "ggthemes","glmmTMB","gt","gtsummary","here","Hmisc",
+              "irr","janitor","knitr","latex2exp","lme4","ManyEcoEvo",
+              "metafor","modelbased","multilevelmod","MuMIn",
+              "naniar","NatParksPalettes","orchaRd","parameters",
+              "patchwork","performance","renv","rmarkdown","sae",
+              "scales","see","showtext","specr","targets","tidymodels",
+              "tidytext","tidyverse","withr","xfun"),
+  Version = c("4.4.0","1.6","0.2.9.5",
+              "2.1.0","1.1.3","2.4.5","2.8.1","2.2.1","0.1.0","0.2.8",
+              "0.6.0","0.9.5","5.1.0","1.1.8","0.10.1","1.7.2",
+              "1.0.1","5.1.2","0.84.1","2.2.0","1.46","0.9.6",
+              "1.1.35.3","1.1.0","4.6.0","0.8.7","1.0.0","1.47.5",
+              "1.1.0","0.2.0","2.0","0.21.7","1.2.0","0.11.0",
+              "1.0.2","2.27","1.3","1.3.0","0.8.4","0.9.7","1.0.0",
+              "1.7.0","1.1.1","0.4.2","2.0.0","3.0.0","0.44"),
+  Citation = c("@base", "@betapart", "@broommixed", "@colorspace2020a", "@cowplot", "@devtools", "@EnvStats-book", "@GGally", "@ggforestplot", "@ggh4x", "@ggpubr", "@ggrepel", "@ggthemes", "@glmmTMB", "@gt", "@gtsummary", "@here", "@Hmisc", "@irr", "@janitor", "@knitr2024", "@latex2exp", "@lme4", "@ManyEcoEvo", "@metafor", "@modelbased", "@multilevelmod", "@MuMIn", "@naniar", "@NatParksPalettes", "@orchaRd", "@parameters", "@patchwork", "@performance", "@renv", "@rmarkdown2024", "@molina-marhuenda:2015", "@scales", "@see", "@showtext", "@specr", "@targets", "@tidymodels", "@tidytext", "@tidyverse", "@withr", "@xfun")
 ) %>%
   knitr::kable()
 ```
