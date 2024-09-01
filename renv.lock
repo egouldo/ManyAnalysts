@@ -146,14 +146,19 @@
     },
     "ManyEcoEvo": {
       "Package": "ManyEcoEvo",
-      "Version": "2.3.0",
-      "Source": "Local",
+      "Version": "2.7.3",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "egouldo",
+      "RemoteRepo": "ManyEcoEvo",
+      "RemoteRef": "v2.7.3",
+      "RemoteSha": "557ed87207b9a8bc95fdfac3086318b3914b43cf",
       "Remotes": "daniel1noble/orchaRd, NightingaleHealth/ggforestplot",
-      "RemoteType": "local",
-      "RemoteUrl": "/Users/elliotgould/Documents/GitHub/ManyEcoEvo_2.3.0.tar.gz",
       "Requirements": [
         "R",
         "betapart",
+        "bookdown",
         "cli",
         "data.table",
         "dplyr",
@@ -161,6 +166,7 @@
         "fs",
         "glue",
         "here",
+        "lifecycle",
         "lme4",
         "magrittr",
         "metafor",
@@ -168,11 +174,13 @@
         "pointblank",
         "purrr",
         "rlang",
+        "rmarkdown",
         "tibble",
         "tidyr",
-        "tidyselect"
+        "tidyselect",
+        "withr"
       ],
-      "Hash": "edeab19f0c1a65484a021805563d4be1"
+      "Hash": "8f10530517dc86d5af7dc804da6c1122"
     },
     "Matrix": {
       "Package": "Matrix",
@@ -572,6 +580,23 @@
         "vctrs"
       ],
       "Hash": "40415719b5a479b87949f3aa0aee737c"
+    },
+    "bookdown": {
+      "Package": "bookdown",
+      "Version": "0.40",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "htmltools",
+        "jquerylib",
+        "knitr",
+        "rmarkdown",
+        "tinytex",
+        "xfun",
+        "yaml"
+      ],
+      "Hash": "896a79478a50c78fb035a37148638f4e"
     },
     "boot": {
       "Package": "boot",
