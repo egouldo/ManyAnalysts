@@ -3417,7 +3417,8 @@ effectsparams <- ManyEcoEvo_viz %>%
                             model_name == "MA_mod",
                             publishable_subset == "All")) %>% 
   hoist(tidy_mod_summary) %>% 
-  unnest(tidy_mod_summary)
+  unnest(tidy_mod_summary) %>% 
+  filter(type == "summary")
 
 effectsparams %>% 
   select(dataset, 
@@ -3431,7 +3432,7 @@ effectsparams %>%
          p.value, 
          starts_with("conf")) %>% 
   mutate(publishable_subset = 
-           case_when(publishable_subset == "All" & expertise_subset == "All" ~ 
+           case_when(publishable_subset == "All" & expertise_subset == "All" & collinearity_subset == "All" ~ 
                        "All analyses",
                      publishable_subset == "data_flawed" & expertise_subset == "All" ~ 
                        "Analyses receiving at least one 'Unpublishable' rating removed",
@@ -3444,9 +3445,8 @@ effectsparams %>%
            case_when(exclusion_set == "complete" ~ "",
                      TRUE ~ ", outliers removed"),
          dataset = case_when(str_detect(dataset, "euc") ~ "Eucalyptus",
-                             TRUE ~ dataset),
-         collinearity_subset = dplyr::na_if(collinearity_subset, "All")) %>% 
-  select(-expertise_subset) %>% 
+                             TRUE ~ dataset)) %>% 
+  select(-expertise_subset, -collinearity_subset) %>% 
   unite("data_subset", publishable_subset, exclusion_set, sep = "", remove = TRUE) %>% 
   group_by(data_subset) %>% 
   arrange(data_subset, dataset)  %>% 
@@ -3455,19 +3455,20 @@ effectsparams %>%
   gt::fmt(columns = "p.value",
           fns = function(x) gtsummary::style_pvalue(x)) %>% 
   gt::fmt_number(columns = c(-p.value, -dataset)) %>% 
-  gt::sub_missing(columns = "collinearity_subset", rows = everything(), "") %>% 
-  gt::fmt("collinearity_subset", fns = function(x) str_replace(x, "_", " ") %>%
-            str_c(", ", .)) %>% 
   gt::cols_label(dataset = "Dataset",
                  estimate = "$$\\hat\\mu$$", 
                  std.error = gt::md("$$\\text{SE}[\\hat\\mu]$$"),
                  conf.low = gt::md("95\\%CI"),
                  p.value = "p-value") %>% 
-  gt::cols_merge(columns = c(dataset, collinearity_subset),
-                 hide_columns =c(collinearity_subset)) %>% 
   gt::cols_merge(columns = starts_with("conf"),
                  pattern = "[{1},{2}]") %>% 
-  gt::cols_move(columns = conf.low, after = std.error) %>% 
+  gt::cols_move(columns = conf.low, after = std.error) %>%
+  gt::row_group_order(groups = c("All analyses",
+                                 "Blue tit analyses containing highly collinear predictors removed",
+                                 "All analyses, outliers removed",
+                                 "Analyses receiving at least one 'Unpublishable' rating removed",
+                                 "Analyses receiving at least one 'Unpublishable' and or 'Major Revisions' rating removed",
+                                 "Analyses from teams with highly proficient or expert data analysts")) %>% 
   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
                                        columns = dataset),
                 style = cell_text(style = "italic")) %>% 
