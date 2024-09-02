@@ -515,7 +515,7 @@ Zr_singularity_convergence <-
   left_join({all_model_fits %>% 
       unnest(params) %>% 
       filter(Effects == "random") %>% 
-      filter(is.infinite(CI_high) | is.na(SE)) %>% 
+      filter(is.na(SE)) %>% 
       distinct(fixed_effects, 
                random_intercepts_1,
                random_intercepts_2, 
@@ -524,7 +524,19 @@ Zr_singularity_convergence <-
                convergence, 
                singularity) %>% 
       mutate(SD_calc = FALSE)}) %>% 
-  mutate(SD_calc = ifelse(is.na(SD_calc), TRUE, SD_calc)) 
+  left_join({all_model_fits %>% 
+      unnest(params) %>% 
+      filter(Effects == "random") %>% filter(if_any(contains("CI"), list(is.infinite, is.na))) %>%  
+      distinct(fixed_effects, 
+               random_intercepts_1,
+               random_intercepts_2, 
+               dataset, 
+               estimate_type,
+               convergence, 
+               singularity) %>% 
+      mutate(CI_calc = FALSE)}) %>% 
+  mutate(across(ends_with("_calc"), 
+                ~ replace_na(.x, TRUE)))
 
 # ----- new code showing ALL model fits not just bad fits
 
@@ -559,17 +571,19 @@ Zr_singularity_convergence %>%
     locations = list(
       cells_body(columns = "singularity", rows = singularity == TRUE),
       cells_body(columns = "convergence", rows = convergence == FALSE), #TODO why didn't work here??
-      cells_body(columns = "SD_calc", rows = SD_calc == FALSE)
+      cells_body(columns = "SD_calc", rows = SD_calc == FALSE),
+      cells_body(columns = "CI_calc", rows = CI_calc == FALSE)
     )
   ) %>% 
   gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
-                     locations = cells_body(columns = c("singularity", "convergence", "SD_calc"))) %>% 
+                     locations = cells_body(columns = c("singularity", "convergence", "SD_calc", "CI_calc"))) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::cols_label(dataset = "Dataset",
                  fixed_effects = "Fixed Effect",
                  singularity = "Singular Fit?",
                  convergence = "Model converged?",
-                 SD_calc = "Can random effect SD be calculated?") %>% 
+                 SD_calc = "Can random effect SD be calculated?",
+                 CI_calc = "Can random effect 95% CI be calculated?") %>% 
   gt::tab_spanner(label = "Random Effects",
                   columns = gt::starts_with("random")) %>% 
   gt::sub_missing() %>% 
@@ -581,7 +595,6 @@ Zr_singularity_convergence %>%
                 style = cell_text(style = "italic")) %>% 
   gt::text_transform(fn = function(x) str_replace(x, "publishable_as_is", "Categorical Peer Rating") %>% str_replace(., "rate_analysis", "Continuous Peer Rating"),
                      locations = cells_body(columns = c("fixed_effects")))
-
 ```
 
 ```{r}
