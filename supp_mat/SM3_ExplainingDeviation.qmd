@@ -526,7 +526,8 @@ Zr_singularity_convergence <-
       mutate(SD_calc = FALSE)}) %>% 
   left_join({all_model_fits %>% 
       unnest(params) %>% 
-      filter(Effects == "random") %>% filter(if_any(contains("CI"), list(is.infinite, is.na))) %>%  
+      filter(Effects == "random") %>% 
+      filter(if_any(contains("CI"), list(is.infinite, is.na))) %>%  
       distinct(fixed_effects, 
                random_intercepts_1,
                random_intercepts_2, 
