@@ -1111,16 +1111,19 @@ This is most evident for the $y_{50}$ predictions which both shows the greatest 
 #| message: false
 
 yi_deviation_RE_plot_data <- 
-  euc_yi_results %>% 
-  filter(str_detect(model_name, "uni_mixed_effects")) %>%
-  select(dataset, estimate_type, model) %>% 
+  ManyEcoEvo_yi_results %>% 
+  mutate(dataset = Hmisc::capitalize(dataset)) %>% 
+  semi_join({yi_singularity_convergence_sorensen_mixed_mod %>% filter(!singularity, convergence, SE_calc, CI_calc, str_detect(model_name, "random"))}, by = join_by(dataset, estimate_type)) %>% 
+  select(dataset, estimate_type, model = uni_mixed_effects) %>% 
+  rowwise() %>% 
+  filter(!is_logical(model)) %>% ungroup %>% 
   mutate(predictor_means = map(model, .f = ~ pluck(.x, "fit") %>% 
                                  modelbased::estimate_means(.)),
          plot_data = map(model, pluck, "fit", "data"),
          plot_data = map(plot_data, 
                          rename, 
                          box_cox_abs_deviation_score_estimate = ..y)) %>% 
-  mutate(dataset = Hmisc::capitalize(dataset) %>% paste0("*", ., "*")) %>%
+  mutate(dataset = case_when(str_detect(dataset, "Eucalyptus") ~ paste0("*", dataset, "*"), TRUE ~ dataset)) %>% 
   unite(plot_names, dataset, estimate_type, sep = ", ")
 
 yi_deviation_RE_plot_subfigcaps <- yi_deviation_RE_plot_data %>% 
@@ -1145,7 +1148,8 @@ yi_deviation_RE_plot_figcap <-
 yi_deviation_RE_plots <- 
   yi_deviation_RE_plot_data %>% 
   map2(.x = .$plot_data, .y = .$predictor_means, 
-       .f = ~ plot_model_means_RE(.x, mixed_model, .y))
+       .f = ~ plot_model_means_RE(.x, mixed_model, .y)) %>% 
+  set_names(yi_deviation_RE_plot_subfigcaps)
 
 patchwork::wrap_plots(yi_deviation_RE_plots, byrow = TRUE) +
   patchwork::plot_annotation(tag_levels = 'A') +
