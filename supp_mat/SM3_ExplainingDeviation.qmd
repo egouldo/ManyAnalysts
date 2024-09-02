@@ -1040,7 +1040,8 @@ yi_sorensen_fig_cap <- paste0("Scatter plots examining Box-Cox transformed devia
 yi_sorensen_plots <- 
   map2(.x = yi_sorensen_plot_data$model, 
        .y = yi_sorensen_plot_data$plot_data,
-       .f = ~ walk_plot_effects_diversity(model = .x, plot_data = .y))
+       .f = ~ walk_plot_effects_diversity(model = .x, plot_data = .y)) %>% 
+  purrr::set_names(yi_sorensen_plot_data$plot_names)
 
 patchwork::wrap_plots(yi_sorensen_plots,heights = 4, byrow = TRUE) +
   patchwork::plot_annotation(tag_levels = 'A')
