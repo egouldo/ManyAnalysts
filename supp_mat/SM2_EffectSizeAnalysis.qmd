@@ -254,18 +254,12 @@ For each dataset (blue tit, Eucalyptus), we created a second, more conservative 
 ManyEcoEvo_viz %>% 
     dplyr::filter(estimate_type == "Zr", 
                   model_name == "MA_mod", 
-                  collinearity_subset != "collinearity_removed") %>% 
-  hoist(tidy_mod_summary) %>% 
-  unnest(tidy_mod_summary) %>% 
-    filter(publishable_subset == "All", expertise_subset == "All") %>% 
-  select(-publishable_subset, -expertise_subset) %>% 
-  select(dataset, 
-         exclusion_set, 
-         estimate, 
-         std.error, 
-         statistic, 
-         p.value, 
-         starts_with("conf")) %>% 
+                  collinearity_subset != "collinearity_removed",
+                  publishable_subset == "All", expertise_subset == "All") %>% 
+    select(dataset, exclusion_set, tidy_mod_summary) %>% 
+    unnest(tidy_mod_summary) %>% 
+    filter(type == "summary") %>% 
+  select(-term, -type) %>% 
   mutate(exclusion_set = 
            case_when(exclusion_set == "complete" ~ 
                        "Primary dataset",
