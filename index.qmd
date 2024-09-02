@@ -2790,59 +2790,6 @@ euc_forest
 
 ```{r define-plot-forest-function, echo = FALSE, message=FALSE, warning=FALSE}
 
-plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
-  if(MA_mean == FALSE){
-    data <- filter(data, study_id != "overall")
-  }
-  
-  data <- data %>% 
-    group_by(study_id) %>% 
-    group_nest() %>% 
-    hoist(data, "estimate",.remove = FALSE) %>% 
-    hoist(estimate, y50 = 2) %>% 
-    select(-estimate) %>% 
-    unnest(data) %>% 
-    arrange(desc(type)) %>% 
-    mutate(type = forcats::as_factor(type)) %>% 
-    group_by(type) %>% 
-    arrange(desc(y50),.by_group = TRUE) %>% 
-    mutate(study_id = forcats::as_factor(study_id),
-           point_shape = case_when(str_detect(type, "summary") ~ "mean",
-                                   TRUE ~ "study"))
-  
-  p <- ggplot(data, aes(y = estimate, 
-                        x =  study_id,
-                        ymin = conf.low, 
-                        ymax = conf.high,
-                        shape = point_shape,
-                        colour = estimate_type
-                        )) +
-    geom_pointrange(position = position_jitter(width = 0.1)) +
-    ggforestplot::theme_forest() +
-    theme(axis.line = element_line(linewidth = 0.10, colour = "black"),
-          # axis.line.y = element_blank(),
-          text = element_text(family = "Helvetica")) +
-    guides(shape = guide_legend("Estimate Type"), colour = guide_legend("Prediction Scenario")) +
-    coord_flip() +
-    labs(y = "Standardised Out of Sample Predictions, Z",
-         x = element_blank()) +
-    scale_y_continuous(breaks = seq(from = round(min(data$conf.low)), to = round(max(data$conf.high)), by = 1),
-                       minor_breaks = seq(from = -4.5, to = 1.5, by = 0.5)) +
-    NatParksPalettes::scale_color_natparks_d("Glacier") 
-  
-  if(intercept == TRUE){
-    p <- p + geom_hline(yintercept = 0)
-  }
-  if(MA_mean == TRUE){
-    # p <- p + geom_hline(aes(yintercept = meta_analytic_mean), 
-    #                     data = data,
-    #                     colour = "#01353D", 
-    #                     linetype = "dashed")
-  }
-  
-  print(p)
-}
-
 plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE, y_zoom = numeric(2L)){
   if(MA_mean == FALSE){
     data <- filter(data, study_id != "overall")
@@ -3057,16 +3004,61 @@ yi_plot_data_bt <-
                            ~ broom::tidy(.x, conf.int = TRUE, include_studies = TRUE) %>% 
                              rename(id_col = term))) %>% 
   unnest(tidy_mod) 
+plot_forest_yi <- function(data, intercept = TRUE, MA_mean = TRUE){
+  if (MA_mean == FALSE){
+    data <- filter(data, study_id != "overall")
+  }
   
-yi_plot_data_bt %>% 
-  # group_by(type) %>%  
-  # group_split() %>% 
-  # set_names(., yi_plot_data_bt$type %>%  unique) %>% 
-  # map_if(.x = ., names(.) == "study",
-  #        .f = ~ anonymise_teams(.x, TeamIdentifier_lookup)) %>% 
-  # bind_rows() %>% 
-  rename(study_id = id_col) %>% 
-  plot_forest(., intercept = TRUE, MA_mean = TRUE) +
+  data <- data %>% 
+    filter(!is.na(type))%>% 
+    group_by(study_id) %>% 
+    group_nest() %>% 
+    hoist(data, "estimate",.remove = FALSE) %>% 
+    hoist(estimate, y50 = 2) %>% 
+    select(-estimate) %>% 
+    unnest(data) %>% 
+    arrange(desc(type)) %>% 
+    mutate(type = forcats::as_factor(type)) %>% 
+    group_by(type) %>% 
+    arrange(desc(y50),.by_group = TRUE) %>% 
+    mutate(study_id = forcats::as_factor(study_id),
+           point_shape = case_when(str_detect(type, "summary") ~ "mean",
+                                   TRUE ~ "study"))
+  
+  p <- ggplot(data, aes(y = estimate, 
+                        x =  study_id,
+                        ymin = conf.low, 
+                        ymax = conf.high,
+                        shape = point_shape,
+                        colour = estimate_type
+  )) +
+    geom_pointrange(position = position_jitter(width = 0.1)) +
+    ggforestplot::theme_forest() +
+    theme(axis.line = element_line(linewidth = 0.10, colour = "black"),
+          # axis.line.y = element_blank(),
+          text = element_text(family = "Helvetica")) +
+    guides(shape = guide_legend("Estimate Type"), 
+           colour = guide_legend("Prediction Scenario")) +
+    coord_flip() +
+    labs(y = "Standardised Out of Sample Predictions, Z",
+         x = element_blank()) +
+    scale_y_continuous(breaks = seq(from = round(min(data$conf.low,na.rm = TRUE)), 
+                                    to = round(max(data$conf.high, na.rm = TRUE)), by = 1),
+                       minor_breaks = seq(from = -4.5, to = 1.5, by = 0.5)) +
+    NatParksPalettes::scale_color_natparks_d("Glacier") 
+  
+  if (intercept == TRUE){
+    p <- p + geom_hline(yintercept = 0)
+  }
+  if (MA_mean == TRUE){
+    # p <- p + geom_hline(aes(yintercept = meta_analytic_mean), 
+    #                     data = data,
+    #                     colour = "#01353D", 
+    #                     linetype = "dashed")
+  }
+  
+  print(p)
+}
   theme(axis.text.y = element_blank())
 ```
 
