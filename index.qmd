@@ -3540,34 +3540,19 @@ These high values of the ${R}_\text{Conditional}^{2}$ result from the fact that 
 modelfitstats <- ManyEcoEvo_viz %>% 
   filter(!!!filter_vars_main_analysis,
          model_name %in% c("box_cox_rating_cont", "box_cox_rating_cat")) %>% 
-  mutate(perf = map(model, performance::performance),
-         mod_sum_stats = map(model, broom.mixed::glance)) %>% 
-  hoist(perf, "R2_conditional", "R2_marginal", "ICC", "Sigma", "RMSE") %>% 
-  hoist(mod_sum_stats, "nobs") %>% 
-  select(-model, 
-         -mod_summary, 
-         -tidy_mod_summary, 
-         -MA_fit_stats, 
-         -mod_fit_stats, 
-         -ends_with("plot"),
-         -perf, 
-         -mod_sum_stats, 
-         -estimate_type, 
-         -publishable_subset, 
-         -exclusion_set,
-         -expertise_subset,
-         -collinearity_subset) %>% 
+  select(dataset, model_name, mod_fit_stats, mod_glance) %>% 
+  hoist(mod_fit_stats, "R2_conditional", "R2_marginal", "ICC", "Sigma", "RMSE") %>% 
+  hoist(mod_glance, "nobs") %>% 
+  select(-mod_fit_stats, -mod_glance) %>%
   bind_rows({
     ManyEcoEvo_viz %>% 
       filter(!!!filter_vars_main_analysis,
              model_name %in% c("sorensen_glm", "uni_mixed_effects")) %>% 
-      mutate(model = map(model, extract_fit_engine), 
-             perf = map(model, performance::performance),
-             mod_sum_stats = map(model, broom.mixed::glance)) %>% 
-      select(dataset, model_name, perf, mod_sum_stats) %>% 
-      hoist(mod_sum_stats, "nobs") %>% 
-      hoist(perf, "R2", "RMSE", "Sigma") %>% 
-      select(-perf, -mod_sum_stats)
+      select(dataset, model_name, mod_fit_stats, mod_glance) %>% 
+      hoist(mod_glance, "nobs") %>% 
+      hoist(mod_fit_stats, "R2", "RMSE", "Sigma") %>% 
+      select(-mod_fit_stats, -mod_glance) %>% 
+      drop_na() #rm uni_mixed_effects for blue tit, as was not fitted (N < 5)
   }) %>% 
   group_by(model_name) %>% 
   relocate("R2", .before = starts_with("R2_")) 
