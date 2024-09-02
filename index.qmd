@@ -3636,13 +3636,13 @@ p_cat_bt_tidy <- ManyEcoEvo_viz %>%
   filter(!!!filter_vars_main_analysis, 
          model_name == "sorensen_glm", 
          dataset == "blue tit") %>% 
-  pluck("mod_glance", 1)
+  pluck("tidy_mod_summary", 1)
 
 p_cat_euc_tidy <- ManyEcoEvo_viz %>% 
   filter(!!!filter_vars_main_analysis, 
          model_name == "sorensen_glm", 
          dataset == "eucalyptus") %>% 
-  pluck("mod_glance", 1)
+  pluck("tidy_mod_summary", 1)
 ```
 
 ## Deviation Scores as explained by Reviewer Ratings
