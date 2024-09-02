@@ -893,15 +893,10 @@ patchwork::wrap_plots(yi_cont_plots,heights = 4, byrow = TRUE) +
 #| tbl-cap: "Parameter estimates for univariate models of Box-Cox transformed deviation from the mean $y_i$ estimate as a function of categorical peer-review rating, continuous peer-review rating, and Sorensen's index for blue tit and *Eucalyptus* analyses, and also for the inclusion of random effects for *Eucalyptus* analyses."
 #| column: page-right
 ManyEcoEvo_yi_viz %>%
-  filter(exclusion_set == "complete", 
-         dataset == "blue tit",
+  filter(
          model_name %nin% c("MA_mod",
                             "box_cox_rating_cat_no_int",
                             "MA_mod_mv")) %>% 
-  bind_rows({
-    euc_yi_results %>% 
-      filter(model_name %nin% c("box_cox_rating_cat_no_int", "MA_mod", "MA_mod_mv"))
-  }) %>% 
   mutate( dataset = case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
                               TRUE ~ dataset),
           model_name = forcats::as_factor(model_name) %>% 
@@ -916,24 +911,23 @@ ManyEcoEvo_yi_viz %>%
               `Deviation explained by inclusion of random effects` =  "uni_mixed_effects")
   ) %>% 
   semi_join(
-    {bind_rows(yi_singularity_convergence_sorensen_mixed_mod, 
-               yi_convergence_singularity) %>% 
-        filter(singularity == FALSE, 
-               convergence == TRUE, 
-               SD_calc == TRUE | is.na(SD_calc)) },
+    {yi_convergence_singularity %>% 
+    filter(!singularity, 
+           convergence, 
+           SE_calc, CI_calc) },
     by = join_by("dataset", "estimate_type", "model_name")
   ) %>% 
-  select(dataset, estimate_type, model_name, model, model_params) %>% 
   select(dataset, 
          estimate_type,
          model_name, 
          model_params) %>% 
   unnest(model_params) %>% 
-  mutate(dataset = case_when(str_detect(dataset, "eucalyptus") ~ "*Eucalyptus*",
-                             TRUE ~ dataset),
-         Group = case_when(Group == "study_id" ~ "Effect ID",
-                           Group == "ReviewerId" ~ "Reviewer ID",
-                           TRUE ~ Group),
+  mutate(
+         Group = case_match(Group,
+                            "study_id" ~ "Effect ID",
+                            "ReviewerId" ~ "Reviewer ID",
+                            "" ~ NA,
+                           .default = Group),
          df_error = as.integer(df_error),
          Parameter =  str_remove(Parameter, "PublishableAsIs") %>% 
            str_replace("diversity", "Sorensen's") %>% 
@@ -941,11 +935,9 @@ ManyEcoEvo_yi_viz %>%
            str_remove(., "1") %>% 
            Hmisc::capitalize() ) %>%
   group_by(model_name) %>% 
-  arrange(desc(model_name), 
+  arrange(model_name, 
           dataset, estimate_type) %>%
   select(-CI) %>% 
-  dplyr::filter(dataset != "blue tit" | str_detect(model_name, "random", 
-                                                   negate = TRUE)) %>% 
   gt::gt(rowname_col = "dataset") %>% 
   gt::fmt(columns = "p",
           fns = function(x) gtsummary::style_pvalue(x)) %>% 
