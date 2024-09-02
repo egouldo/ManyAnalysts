@@ -687,67 +687,45 @@ MA_yi_summary_stats <- # ALL ON logged RESPONSE SCALE for EUC, standardized resp
 #| echo: false
 #| results: 'hide'
 
-euc_yi_results <- 
-  ManyEcoEvo::make_viz(deviation_models_yi_euc)
-
 yi_convergence_singularity <- 
   ManyEcoEvo_yi_viz %>% 
-  filter(exclusion_set == "complete", 
-         dataset == "blue tit",
-         model_name %in% c("box_cox_rating_cat", "box_cox_rating_cont")) %>% 
-  bind_rows({euc_yi_results %>% 
-      filter(model_name %in% 
-               c("box_cox_rating_cat", "box_cox_rating_cont"))}) %>% 
-  mutate(singularity = map_lgl(model, possibly_check_singularity),
-         convergence = map_lgl(model, possibly_check_convergence),
-         params = map(model, parameters::parameters),
-         convergence = ifelse(is.na(convergence), FALSE, convergence),
-         singularity = ifelse(is.na(singularity), FALSE, singularity)) %>% 
-  select(dataset, estimate_type, model_name, singularity, convergence, params) %>% 
+  filter(model_name %in% c("box_cox_rating_cat", "box_cox_rating_cont", "sorensen_glm", "uni_mixed_effects")) %>% 
+  select(-ends_with("_plot"), -MA_fit_stats) %>% 
+  rowwise() %>% 
+  mutate(singularity = possibly_check_singularity(model), 
+         convergence = list(possibly_check_convergence(model))) %>% 
+  ungroup %>% 
+  drop_na(convergence) %>% unnest(convergence) %>% 
+  select(dataset, estimate_type, model_name, singularity, convergence, model_params) %>% 
   mutate(model_name = forcats::as_factor(model_name),
          model_name = forcats::fct_relevel(model_name, 
                                            c("box_cox_rating_cat", 
-                                             "box_cox_rating_cont")),
+                                             "box_cox_rating_cont",
+                                             "sorensen_glm",
+                                             "uni_mixed_effects")),
          model_name = forcats::fct_recode(model_name,
                                           `Deviation explained by categorical ratings` = "box_cox_rating_cat",
-                                          `Deviation explained by continuous ratings` = "box_cox_rating_cont"),
+                                          `Deviation explained by continuous ratings` = "box_cox_rating_cont",
+                                          `Deviation explained by Sorensen's index` =  "sorensen_glm",
+                                          `Deviation explained by inclusion of random effects` =  "uni_mixed_effects"),
          dataset = case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
                              TRUE ~ dataset)) %>% 
-  hoist(params, SD_calc = "SE",.remove = FALSE) %>% 
-  mutate(SD_calc = map_lgl(SD_calc, ~ is.na(.x) %>% any(.) %>% isFALSE(.)))
+  hoist(model_params, 
+        SE_NA =  "SE", 
+        CI_high_NA = "CI_high", 
+        CI_low_NA = "CI_low", 
+        .transform = ~ any(is.na(.x)) | any(is.infinite(.x))) %>% 
+  mutate(across(ends_with("_NA"), ~ !.x, .names = "{.col}_calc"), .keep = "unused") %>% 
+  rename_with(~ stringr::str_remove(.x, "_NA")) %>% 
+  rowwise() %>% 
+  mutate(CI_calc = any(CI_high_calc, CI_low_calc), .keep = "unused") %>% 
+  rename_with(~ stringr::str_remove(.x, "_NA")) %>% 
+  ungroup()
+
 
 yi_singularity_convergence_sorensen_mixed_mod <- 
-  ManyEcoEvo_yi_viz %>% 
-  bind_rows(euc_yi_results) %>% 
-  filter(exclusion_set == "complete", 
-         dataset == "blue tit",
-         model_name %in% c("sorensen_glm")) %>%
-  bind_rows({euc_yi_results %>% 
-      filter(model_name %in% c("sorensen_glm",
-                               "uni_mixed_effects"))}) %>% 
-  mutate(singularity = 
-           map_lgl(model, possibly_check_singularity),
-         convergence = 
-           map_lgl(model, possibly_check_convergence),
-         params = map(model, parameters::parameters),
-         dataset = 
-           case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
-                     TRUE ~ dataset),
-         model_name = 
-           forcats::as_factor(model_name),
-         model_name = 
-           forcats::fct_relevel(model_name,
-                                c("sorensen_glm","uni_mixed_effects")),
-         model_name = forcats::fct_recode(model_name,
-                                          `Deviation explained by Sorensen's index` =  "sorensen_glm",
-                                          `Deviation explained by inclusion of random effects` =  "uni_mixed_effects")) %>% 
-  select(dataset, 
-         estimate_type, 
-         model_name, 
-         singularity, 
-         convergence,
-         params) %>% 
-  group_by(model_name) 
+  yi_convergence_singularity %>% 
+  filter(str_detect(model_name, "Sorensen") | str_detect(model_name, "random"))
 ```
 
 We fitted the same deviation models on the out-of-sample-predictions dataset that we fitted for the effect-size dataset. 
