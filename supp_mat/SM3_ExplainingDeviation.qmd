@@ -720,10 +720,10 @@ Results of all deviation models are therefore presented only for models with non
 ```{r}
 #| label: tbl-yi-deviation-ratings-convergence-singularity
 #| tbl-cap: "Singularity and convergence checking for models of deviation in out-of-sample-predictions $y_i$ explained by peer-ratings."
-#| 
-yi_convergence_singularity %>% 
-  select(-params) %>% 
-  group_by(model_name) %>% 
+
+yi_convergence_singularity %>% filter(stringr::str_detect(model_name, "ratings")) %>% 
+    select(-model_params) %>% 
+    group_by(model_name)  %>% 
   gt::gt(rowname_col = "dataset") %>% 
   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
                                        columns = dataset),
@@ -732,12 +732,14 @@ yi_convergence_singularity %>%
                  estimate_type = "Estimate Type",
                  singularity = "Singular Fit?",
                  convergence = "Model converged?",
-                 SD_calc = "Can random effect SE be calculated?") %>% 
+                 SE_calc = "Can random effect SE be calculated?",
+                 CI_calc = "Can random effect CI be calculated?") %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
                      locations = cells_body(columns = c("singularity",
                                                         "convergence",
-                                                        "SD_calc")
+                                                        "SE_calc", 
+                                                        "CI_calc")
                      )) %>% 
   gt::text_transform(
     locations = cells_stub(
@@ -758,7 +760,8 @@ yi_convergence_singularity %>%
     locations = list(
       cells_body(columns = "singularity", rows = singularity == TRUE),
       cells_body(columns = "convergence", rows = convergence == FALSE),
-      cells_body(columns = "SD_calc", rows = SD_calc == FALSE)
+      cells_body(columns = "SE_calc", rows = SE_calc == FALSE),
+      cells_body(columns = "CI_calc", rows = CI_calc == FALSE)
     )
   ) 
 ```
