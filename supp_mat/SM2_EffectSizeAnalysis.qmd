@@ -340,22 +340,21 @@ complete_euc_data <-
          estimate_type == "Zr", 
          model_name == "MA_mod",
          dataset == "eucalyptus",
-         publishable_subset == "All") %>% 
-  select(model) %>% 
-  mutate(plot_data = map(model, 
-                         .f = ~ broom::tidy(.x, 
-                                            conf.int = TRUE, 
-                                            include_studies = TRUE) %>% 
-                           dplyr::mutate(point_shape = 
-                                           ifelse(stringr::str_detect(term, "overall"), 
-                                                  "diamond", 
-                                                  "circle"),
-                                         Parameter = 
-                                           forcats::fct_reorder(term, 
-                                                                estimate) %>% 
-                                           forcats::fct_reorder(., 
-                                                                point_shape,
-                                                                .desc = TRUE))
+         publishable_subset == "All",
+         expertise_subset == "All") %>% 
+  select(tidy_mod_summary) %>% 
+  mutate(plot_data = map(tidy_mod_summary, 
+                         .f = ~ dplyr::mutate(.x, 
+                                            point_shape = 
+                                              ifelse(stringr::str_detect(term, "overall"), 
+                                                     "diamond", 
+                                                     "circle"),
+                                            Parameter = 
+                                              forcats::fct_reorder(term, 
+                                                                   estimate) %>% 
+                                              forcats::fct_reorder(., 
+                                                                   point_shape,
+                                                                   .desc = TRUE))
   ),
   meta_analytic_mean = map_dbl(plot_data, 
                                ~ filter(.x, Parameter == "overall") %>% 
@@ -462,21 +461,19 @@ bt_experts_only <-
   ManyEcoEvo_viz %>% 
   filter(!!!filter_experts, 
          dataset == "blue tit") %>% 
-  select(model) %>% 
-  mutate(plot_data = map(model, 
-                         .f = ~ broom::tidy(.x, 
-                                            conf.int = TRUE, 
-                                            include_studies = TRUE)%>% 
-                           dplyr::mutate(point_shape = 
-                                           ifelse(stringr::str_detect(term, "overall"), 
-                                                  "diamond", 
-                                                  "circle"),
-                                         Parameter = 
-                                           forcats::fct_reorder(term, 
-                                                                estimate) %>% 
-                                           forcats::fct_reorder(., 
-                                                                point_shape,
-                                                                .desc = TRUE))
+  select(tidy_mod_summary) %>% 
+  mutate(plot_data = map(tidy_mod_summary, 
+                         .f = ~ dplyr::mutate(.x, 
+                                            point_shape = 
+                                              ifelse(stringr::str_detect(term, "overall"), 
+                                                     "diamond", 
+                                                     "circle"),
+                                            Parameter = 
+                                              forcats::fct_reorder(term, 
+                                                                   estimate) %>% 
+                                              forcats::fct_reorder(., 
+                                                                   point_shape,
+                                                                   .desc = TRUE))
   ),
   meta_analytic_mean = map_dbl(plot_data, 
                                ~ filter(.x, Parameter == "overall") %>% 
@@ -595,20 +592,18 @@ filter_collinear <- rlang::exprs(exclusion_set == "complete",
 
 ManyEcoEvo_viz %>% 
   filter(!!!filter_collinear) %>% 
-  mutate(plot_data = map(model, 
-                         .f = ~ broom::tidy(.x, 
-                                            conf.int = TRUE, 
-                                            include_studies = TRUE)%>% 
-                           dplyr::mutate(point_shape = 
-                                           ifelse(stringr::str_detect(term, "overall"), 
-                                                  "diamond", 
-                                                  "circle"),
-                                         Parameter = 
-                                           forcats::fct_reorder(term, 
-                                                                estimate) %>% 
-                                           forcats::fct_reorder(., 
-                                                                point_shape,
-                                                                .desc = TRUE))
+  mutate(plot_data = map(tidy_mod_summary, 
+                         .f = ~ dplyr::mutate(.x, 
+                                            point_shape = 
+                                              ifelse(stringr::str_detect(term, "overall"), 
+                                                     "diamond", 
+                                                     "circle"),
+                                            Parameter = 
+                                              forcats::fct_reorder(term, 
+                                                                   estimate) %>% 
+                                              forcats::fct_reorder(., 
+                                                                   point_shape,
+                                                                   .desc = TRUE))
   ),
   meta_analytic_mean = map_dbl(plot_data, 
                                ~ filter(.x, Parameter == "overall") %>% 
