@@ -341,6 +341,11 @@ Consequently, each dataset has its own unique value of $\lambda$, and therefore 
 #| fig-height: 8
 #| message: false
 
+prep_math_label_estimate_type <- function(estimate_string){
+    paste0(substring(estimate_string, 1, 1), 
+           "[", substring(estimate_string, 2, 3), "]") 
+}
+
 filter_vars_main_analysis <- rlang::exprs(estimate_type == "Zr", 
                                           exclusion_set == "complete", 
                                           publishable_subset == "All", 
@@ -357,13 +362,25 @@ transformation_plot_data <-
   hoist(effects_analysis, "lambda", .simplify = TRUE, .transform = ~unique(.x)) %>% 
   select(-effects_analysis) %>% 
   unnest(cols = c(abs_deviation_score_estimate,
-                  box_cox_abs_deviation_score_estimate)) 
+                  box_cox_abs_deviation_score_estimate))
 
 transformation_plot_data %>% 
+    mutate(estimate_type = forcats::as_factor(estimate_type),
+           estimate_type = forcats::fct_relabel(estimate_type, prep_math_label_estimate_type),
+           dataset = case_match(dataset, 
+                                "eucalyptus" ~ "Eucalyptus",
+                                .default = dataset),
+           dataset =  dplyr::if_else(str_detect(dataset, "blue"),
+                                                             latex2exp::TeX(dataset, output = "character"),
+                                                             latex2exp::TeX(dataset, italic = TRUE, output = "character") )
+           ) %>% 
   ggplot(aes(y = abs_deviation_score_estimate, 
              x = box_cox_abs_deviation_score_estimate)) + 
   geom_point() +
-  facet_grid(dataset~estimate_type, scales = "free") +
+  ggh4x::facet_grid2(c("dataset", "estimate_type"), 
+                     scales = "free", 
+                     independent = "all",
+                     labeller = labeller(estimate_type = label_parsed, dataset = label_parsed)) +
   geom_label(aes(x = -Inf, y = Inf, 
                  label = latex2exp::TeX(paste("$\\lambda =$", round(lambda, digits = 4)), output = "character"), 
                  hjust = -0.2, vjust = 2), 
