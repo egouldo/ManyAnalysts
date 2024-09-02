@@ -364,16 +364,14 @@ complete_euc_data <-
   mutate(parameter_type = case_when(str_detect(Parameter, "overall") ~ "mean",
                                     TRUE ~ "study"))
 
-# complete_euc_data <- 
-#   complete_euc_data %>% 
-#   rename(id_col = term) %>% 
-#   group_by(type) %>%  
-#   group_split() %>% 
-#   set_names(., complete_euc_data$type %>%  unique) %>% 
-#   # map_if(.x = ., names(.) == "study",
-#          # .f = ~ anonymise_teams(.x, TeamIdentifier_lookup)) %>% 
-#   bind_rows() %>% 
-#   rename(term = id_col)
+  # ManyEcoEvo_viz %>% 
+  # filter(exclusion_set == "complete", 
+  #        estimate_type == "Zr", 
+  #        model_name == "MA_mod",
+  #        dataset == "eucalyptus",
+  #        publishable_subset == "All",
+  #        expertise_subset == "All") %>% 
+  # )
 
 min_outlier_euc <- complete_euc_data %>% 
   filter(type == "study") %>% 
