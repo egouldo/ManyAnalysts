@@ -4007,8 +4007,8 @@ ManyEcoEvo_viz %>%
   filter(model_name == "uni_mixed_effects", 
          dataset == "eucalyptus", 
          !!!filter_vars_main_analysis) %>%
-  left_join(ManyEcoEvo_results %>% 
-              select(effects_analysis)) %>% 
+  left_join(ManyEcoEvo_results,
+            by = join_by(exclusion_set, dataset, publishable_subset, expertise_subset, collinearity_subset, estimate_type)) %>%
   ungroup() %>% 
   select(exclusion_set, dataset, estimate_type, effects_analysis, model) %>% 
   mutate(predictor_means = map(model, .f = ~ pluck(.x, "fit") %>% 
