@@ -189,7 +189,7 @@ create_model_workflow <- function(outcome, fixed_effects, random_intercepts){
     set_engine("lmer")
   
   workflow_formula <-  workflow() %>%
-    add_variables(outcomes = outcome,
+    add_variables(outcomes = all_of(outcome),
                   predictors =  all_of(c(fixed_effects, random_intercepts))) %>%
     add_model(model, formula = model_formula) #%>% 
   # add_case_weights(weight)
