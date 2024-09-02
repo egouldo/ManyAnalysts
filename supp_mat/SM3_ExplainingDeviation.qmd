@@ -341,75 +341,16 @@ Consequently, each dataset has its own unique value of $\lambda$, and therefore 
 #| fig-height: 8
 #| message: false
 
-back_transformed_predictions <- 
-  ManyEcoEvo_yi %>% 
-  dplyr::mutate(data = 
-                  purrr::map(data, 
-                             ~ dplyr::filter(.x,
-                                             stringr::str_detect(response_variable_type, "constructed",                                                                       negate = TRUE)))) %>% 
-  prepare_response_variables_yi(estimate_type = "yi",
-                                param_table = ManyEcoEvo:::analysis_data_param_tables) %>% 
-  generate_yi_subsets()
-
-raw_mod_data_logged <- 
-  back_transformed_predictions %>% 
-  filter(dataset == "eucalyptus") %>%
-  group_by(estimate_type) %>% 
-  select(estimate_type, data) %>% 
-  unnest(data) %>% 
-  rename(study_id = id_col) %>% 
-  hoist(params, param_mean = list("value", 1), param_sd = list("value", 2)) %>% 
-  rowwise() %>% 
-  mutate(exclusion_threshold = param_mean + 3*param_sd) %>% 
-  filter(fit < exclusion_threshold) %>% 
-  mutate(log_vals = map2(fit, se.fit, log_transform, 1000)) %>% 
-  unnest(log_vals) %>%
-  select(study_id, 
-         TeamIdentifier,
-         estimate_type, 
-         starts_with("response_"), 
-         -response_id_S2, 
-         ends_with("_log")) %>% 
-  group_by(estimate_type) %>% 
-  nest()
-
-mod_data_logged <- raw_mod_data_logged %>% 
-  mutate(MA_mod = 
-           map(data, 
-               ~ ManyEcoEvo::fit_MA_mv(.x, mean_log, std.error_log, "yi")))
-
-deviation_models_yi_euc <- 
-  raw_mod_data_logged %>% 
-  mutate(dataset = "eucalyptus", 
-         exclusion_set = "complete") %>% 
-  select(dataset, estimate_type, exclusion_set, data) %>%  # rearrange cols
-  left_join({ManyEcoEvo_yi %>% 
-      mutate(review_dat = map(data, select, id_col, review_data, mixed_model)) %>% 
-      select(dataset, review_dat, diversity_data)}, by = "dataset") %>% 
-  mutate(data = map(data, ~ rename(.x, 
-                                   id_col = study_id,
-                                   Z_logged = mean_log,
-                                   VZ_logged = std.error_log)), #required by compute_MA_inputs() and meta_analyse_dataset()
-         data = map2(data, review_dat, left_join, by = "id_col"),
-         diversity_data = # this step filters diversity_data according to matches in data, is also applied in prepare_yi
-           map2(.x = diversity_data, 
-                .y = data,
-                .f = ~ semi_join(.x, .y, by = "id_col") %>% distinct), 
-         .keep = "unused") %>% #drops cols that aren't mutated
-  ManyEcoEvo::compute_MA_inputs() %>% 
-  ManyEcoEvo::meta_analyse_datasets()
+filter_vars_main_analysis <- rlang::exprs(estimate_type == "Zr", 
+                                          exclusion_set == "complete", 
+                                          publishable_subset == "All", 
+                                          expertise_subset == "All",
+                                          collinearity_subset == "All")
 
 transformation_plot_data <- 
   ManyEcoEvo_yi_results %>% 
-  ungroup %>% 
-  filter(exclusion_set == "complete", 
-         dataset == "blue tit") %>% 
-  bind_rows(deviation_models_yi_euc) %>% 
   bind_rows(ManyEcoEvo_results %>%
-              filter(exclusion_set == "complete", 
-                     publishable_subset == "All", 
-                     collinearity_subset == "All",
-                     expertise_subset == "All")) %>% 
+              filter(!!!filter_vars_main_analysis)) %>% 
   select(dataset, estimate_type, effects_analysis) %>% 
   hoist(effects_analysis, "abs_deviation_score_estimate",
         "box_cox_abs_deviation_score_estimate") %>% 
