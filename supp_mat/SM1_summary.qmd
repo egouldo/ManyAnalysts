@@ -175,7 +175,8 @@ Table3 %>%
   gt::tab_style(
     style = gt::cell_text(transform = "capitalize"),
     locations = gt::cells_column_spanners()
-  )
+  ) %>% 
+   gt::as_raw_html()
 ```
 
 ## Effect Size Specification Analysis
