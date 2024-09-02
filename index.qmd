@@ -3224,17 +3224,13 @@ For both datasets, the majority of heterogeneity in $Z_r$ was driven by differen
 ### Out-of-sample predictions ($y_{i}$)
 
 ```{r heterogeneity-reporting-data, echo = FALSE, warning=FALSE, message = FALSE}
-heterogeneity_data_yi <- ManyEcoEvo_yi_results %>% 
-  filter(exclusion_set == "complete", dataset == "blue tit") %>% 
-  group_by(estimate_type, dataset) %>% 
-  select(MA_mod, -effects_analysis, -exclusion_set) %>%  
-  bind_rows(., {mod_data_logged %>% select(-data) %>% mutate(dataset = "eucalyptus")}) %>% 
-  transmute(tidy_mod_summary = map(MA_mod, 
-                                   ~ broom::glance(.x, )),
-            MA_fit_stats = map(MA_mod, get_MA_fit_stats)) %>% 
-  unnest(c(tidy_mod_summary, MA_fit_stats)) %>% 
-  group_by(dataset) %>% 
-  select(-logLik, -deviance, -tau.squared, -AIC, -BIC, -AICc, -cochran.qm, -p.value.cochran.qm) 
+heterogeneity_data_yi <- ManyEcoEvo_yi_viz %>% 
+  filter(model_name == "MA_mod") %>% 
+  group_by(dataset, estimate_type) %>% 
+  select(mod_glance, MA_fit_stats) %>% 
+  unnest(cols = c(mod_glance, MA_fit_stats)) %>% 
+  group_by(dataset) %>%  
+  select(-logLik, -deviance, -tau.squared, -AIC, -BIC, -AICc, -cochran.qm, -p.value.cochran.qm, -c(cochran.qe, p.value.cochran.qe, df.residual)) 
 ```
 
 We observed substantial heterogeneity among out-of-sample estimates, but the pattern differed somewhat from the $Z_r$ values (@tbl-yi-heterogeneity).
@@ -3246,54 +3242,31 @@ We are limited in our interpretation of $\tau^{2}$ for these estimates because, 
 ```{r tbl-yi-heterogeneity, message = FALSE, results = 'asis', echo = FALSE}
 #| label: tbl-yi-heterogeneity
 #| tbl-cap: "Heterogeneity among the out-of-sample predictions ${y}_{i}$ for both blue tit and *Eucalyptus* datasets. ${\\tau}_\\text{Team}^{2}$ is the absolute heterogeneity for the random effect `Team`. ${\\tau}_\\text{effectID}^{2}$ is the absolute heterogeneity for the random effect `effectID` nested under `Team`. `effectID` is the unique identifier assigned to each individual statistical effect submitted by an analysis team. We nested `effectID` within analysis team identity (`Team`) because analysis teams often submitted >1 statistical effect, either because they considered >1 model or because they derived >1 effect per model, especially when a model contained a factor with multiple levels that produced >1 contrast. ${\\tau}_\\text{Total}^{2}$ is the total absolute heterogeneity. ${I}_\\text{Total}^{2}$ is the proportional heterogeneity; the proportion of the variance among effects not attributable to sampling error, ${I}_\\text{Team}^{2}$ is the subset of the proportional heterogeneity due to differences among `Teams` and ${I}_\\text{Team,effectID}^{2}$ is subset of the proportional heterogeneity attributable to among-`effectID` differences."
-ManyEcoEvo_yi_results %>% 
-  filter(exclusion_set == "complete", 
-         dataset == "blue tit") %>% 
-  group_by(estimate_type, dataset) %>% 
-  select(MA_mod, -effects_analysis, -exclusion_set) %>%  
-  bind_rows(., {mod_data_logged %>% 
-      select(-data) %>% 
-      mutate(dataset = "eucalyptus")}) %>% 
-  transmute(tidy_mod_summary = map(MA_mod, 
-                                   ~ broom::glance(.x, )),
-            MA_fit_stats = map(MA_mod, get_MA_fit_stats)) %>% 
-  unnest(c(tidy_mod_summary, MA_fit_stats)) %>% 
-  select(-logLik, 
-         -deviance, 
-         -tau.squared, 
-         -AIC, 
-         -BIC, 
-         -AICc, 
-         -cochran.qm, 
-         -p.value.cochran.qm, 
-         -c(cochran.qe, p.value.cochran.qe, df.residual)) %>% 
-  mutate(tau_total = sum(sigma2_1, sigma2_2),
-         dataset = case_when(str_detect(dataset, "eucalyptus") ~ "*Eucalyptus*",
-                             TRUE ~ dataset)) %>% 
-  relocate(tau_total, .after = starts_with("nobs")) %>% 
-  group_by(dataset) %>% 
-  gt::gt() %>%
-  gt::fmt_number(columns = c(-estimate_type, -"dataset", 
-                             -"nobs",
-                             -"dataset", 
-                             -starts_with("I2")), 
-                 decimals = 2) %>% 
-  gt::fmt(columns = starts_with("p.value"), 
-          fns =  function(x) gtsummary::style_pvalue(x)) %>% 
-  gt::fmt_percent(columns = "I2_Total", scale_values = FALSE, decimals = 3) %>% 
-  gt::fmt_percent(columns = starts_with("I2_"), scale_values = FALSE, decimals = 2) %>% 
-  gt::opt_stylize(style = 6, color = "gray") %>% 
-  gt::cols_label(dataset = "Dataset",
-                 tau_total = gt::md("$${\\tau}_\\text{Total}$$"),
-                 I2_Total = gt::md("$${I}_\\text{Total}^{2}$$"),
-                 I2_TeamIdentifier = gt::md("$${I}_\\text{Team}^{2}$$"),
-                 `I2_TeamIdentifier/study_id` = gt::md("$${I}_{Team, effectID}^{2}$$") ,
-                 sigma2_1 = gt::md("$${\\tau}_\\text{Team}^{2}$$"),
-                 sigma2_2 = gt::md("$${\\tau}_\\text{effectID}^{2}$$"),
-                 nobs = gt::md("$${N}_\\text{Obs}$$"),
-                 estimate_type = gt::md("Prediction Scenario")) %>% 
-  gt::text_transform(fn = function(x) map(x, gt::md), 
-                     locations = gt::cells_row_groups()) %>% 
+heterogeneity_data_yi %>% mutate(tau_total = sum(sigma2_1, sigma2_2),
+                                 dataset = case_when(str_detect(dataset, "eucalyptus") ~ "*Eucalyptus*",
+                                                     TRUE ~ dataset)) %>% 
+    relocate(tau_total, .after = starts_with("nobs")) %>% 
+    group_by(dataset) %>% 
+    gt::gt() %>%
+    gt::fmt_number(columns = c(-estimate_type, -"dataset", 
+                               -"nobs",
+                               -"dataset", 
+                               -starts_with("I2")), 
+                   decimals = 2) %>% 
+    gt::fmt_percent(columns = "I2_Total", scale_values = FALSE, decimals = 3) %>% 
+    gt::fmt_percent(columns = starts_with("I2_"), scale_values = FALSE, decimals = 2) %>% 
+    gt::opt_stylize(style = 6, color = "gray") %>% 
+    gt::cols_label(dataset = "Dataset",
+                   tau_total = gt::md("$${\\tau}_\\text{Total}$$"),
+                   I2_Total = gt::md("$${I}_\\text{Total}^{2}$$"),
+                   I2_TeamIdentifier = gt::md("$${I}_\\text{Team}^{2}$$"),
+                   `I2_TeamIdentifier/study_id` = gt::md("$${I}_{Team, effectID}^{2}$$") ,
+                   sigma2_1 = gt::md("$${\\tau}_\\text{Team}^{2}$$"),
+                   sigma2_2 = gt::md("$${\\tau}_\\text{effectID}^{2}$$"),
+                   nobs = gt::md("$${N}_\\text{Obs}$$"),
+                   estimate_type = gt::md("Prediction Scenario")) %>% 
+    gt::text_transform(fn = function(x) map(x, gt::md), 
+                       locations = gt::cells_row_groups()) %>% 
   gt::as_raw_html()
 
 ```
