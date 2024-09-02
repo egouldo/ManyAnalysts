@@ -153,7 +153,7 @@
       "RemoteUsername": "egouldo",
       "RemoteRepo": "ManyEcoEvo",
       "RemoteRef": "v2.7.4",
-      "RemoteSha": "afa43b66ece95922adaf42d51e7f38b08029e1ac",
+      "RemoteSha": "6fae5d2c63722f4e43aaf1a22d4ac98fac8ebe78",
       "Remotes": "daniel1noble/orchaRd, NightingaleHealth/ggforestplot",
       "Requirements": [
         "R",
@@ -180,7 +180,7 @@
         "tidyselect",
         "withr"
       ],
-      "Hash": "71a54f88991aaad1fb8ab4f456ba5015"
+      "Hash": "9abd74e201d27d7a66931f9ac65d063a"
     },
     "Matrix": {
       "Package": "Matrix",
