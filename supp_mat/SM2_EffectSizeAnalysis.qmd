@@ -808,63 +808,29 @@ plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE, y_zoom = numer
   print(p)
 }
 
-back_transformed_predictions <- 
-  ManyEcoEvo_yi %>% 
-  dplyr::mutate(data = 
-                  purrr::map(data, 
-                             ~ dplyr::filter(.x,
-                                             stringr::str_detect(response_variable_type, "constructed",                                                                       negate = TRUE)))) %>% 
-  prepare_response_variables_yi(estimate_type = "yi",
-                                param_table = ManyEcoEvo:::analysis_data_param_tables) %>% 
-  generate_yi_subsets()
+# ---- new code ----
 
-raw_mod_data_logged <- 
-  back_transformed_predictions %>% 
-  filter(dataset == "eucalyptus") %>%
-  group_by(estimate_type) %>% 
-  select(estimate_type, data) %>% 
-  unnest(data) %>% 
-  rename(study_id = id_col) %>% 
-  hoist(params, param_mean = list("value", 1), param_sd = list("value", 2)) %>% 
-  rowwise() %>% 
-  mutate(exclusion_threshold = param_mean + 3*param_sd) %>% 
-  filter(fit < exclusion_threshold) %>% 
-  mutate(log_vals = map2(fit, se.fit, log_transform, 1000)) %>% 
-  unnest(log_vals) %>%
-  select(study_id, 
-         TeamIdentifier,
-         estimate_type, 
-         starts_with("response_"), 
-         -response_id_S2, 
-         ends_with("_log")) %>% 
-  group_by(estimate_type) %>% 
-  nest()
-  
-
-mod_data_logged <- raw_mod_data_logged %>% 
-  mutate(MA_mod = 
-           map(data, 
-               ~ ManyEcoEvo::fit_MA_mv(effects_analysis = .x,  
-                                      Z_colname = mean_log, 
-                                      VZ_colname = std.error_log,
-                                      estimate_type =  "yi"))
-         )
-
-
-plot_data_logged <- mod_data_logged %>% 
-  mutate(tidy_mod = map(.x = MA_mod,
-                        ~broom::tidy(.x,
-                                     conf.int = TRUE, 
-                                     include_studies = TRUE) %>% 
-                          rename(study_id = term))) %>% 
-  select(tidy_mod) %>% 
-  unnest(cols = c(tidy_mod)) 
-
-plot_data_logged %>% 
-  mutate(response_scale = map2(estimate, std.error, log_back, 1000)) %>% 
-  select(estimate_type, study_id, type, response_scale) %>% 
-  unnest(response_scale) %>% 
+eucalyptus_yi_plot_data <- 
+  ManyEcoEvo_yi_viz %>% 
+  filter(dataset == "eucalyptus", model_name == "MA_mod")  %>% 
+  unnest(cols = tidy_mod_summary) %>%  
+  mutate(response_scale = list(log_back(estimate, std.error, 1000)), 
+         .by = c(dataset, estimate_type, term, type), 
+         .keep = "used") %>% 
+  select(-estimate, -std.error) %>% 
+  unnest_wider(response_scale) %>% 
   rename(estimate = mean_origin, conf.low = lower, conf.high = upper) %>% 
-#  filter(estimate <1000) %>% 
-  plot_forest_2(MA_mean = T,y_zoom = c(0,140))
+  nest(tidy_mod_summary = c(-dataset, -estimate_type)) %>% #extract euc data for plotting (on count scale, not log scale)
+  select(dataset, estimate_type, tidy_mod_summary) %>% 
+  unnest(cols = tidy_mod_summary) %>% 
+  rename(study_id = term) %>% 
+  ungroup()
+
+eucalyptus_yi_plot_data %>% 
+  plot_forest_2(MA_mean = T,y_zoom = c(0,140)) +
+  theme(axis.text.y = element_blank())
+
+# mutate(exclusion_threshold = param_mean + 3*param_sd) %>% 
+
+
 ```
