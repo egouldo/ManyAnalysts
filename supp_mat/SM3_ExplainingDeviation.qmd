@@ -879,7 +879,10 @@ fig_cap_yi_deviation_cont_rating <-
 #| echo: false
 yi_cont_plots <- 
   yi_cont_plot_data$plot_data %>% 
-  map(.f =  ~ plot_continuous_rating(.x))
+  map(.f =  ~ plot_continuous_rating(.x)) %>% 
+  purrr::set_names({yi_cont_plot_data %>% 
+      unite(plot_name, dataset, estimate_type, sep = " ") %>% 
+      pull(plot_name)})
 
 patchwork::wrap_plots(yi_cont_plots,heights = 4, byrow = TRUE) +
   patchwork::plot_annotation(tag_levels = 'A')
