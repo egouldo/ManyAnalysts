@@ -705,8 +705,7 @@ all_constructed_vars %>%
         mutate(included_in_yi = FALSE)
     }
   ) %>% 
-  dplyr::filter(dataset != "eucalyptus") %>% # not excluded as standardisation not needed
-  dplyr::mutate(included_in_yi = ifelse(isTRUE(included_in_yi),"check", "xmark")) %>% 
+  dplyr::mutate(included_in_yi = case_match(included_in_yi, TRUE ~ "check", FALSE ~ "xmark" )) %>% 
   gt::gt(caption = gt::md("Analyst-constructed variables and whether they are included in our meta-analyses of out-of-sample predictions, $y\\_i$")) %>% 
   gt::cols_label(response_variable_name = "Constructed Variable",
                  included_in_yi = gt::md("Included in $y\\_i$ meta-analysis?")) %>% 
