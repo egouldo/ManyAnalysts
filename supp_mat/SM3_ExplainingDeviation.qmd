@@ -777,21 +777,23 @@ The fixed effect of peer review rating also explains virtually no variability in
 #| fig-width: 7
 #| column: page-inset-right
 
-# Omit all singular models
+# Omit all models that are singular/non-converged/non-computable RE CI's + SE's 
 yi_violin_cat_plot_data <- 
   ManyEcoEvo_yi_viz %>% 
-  filter(exclusion_set == "complete", #TODO NEED TO PULL OUT LAMBDA!
-         dataset == "blue tit",
-         model_name %in% c("box_cox_rating_cat")) %>% 
-  bind_rows({euc_yi_results %>% 
-      filter(model_name %in% c("box_cox_rating_cat"))}) %>% 
+  filter(model_name %in% "box_cox_rating_cat") %>%
+  left_join(., 
+            {ManyEcoEvo_yi_results %>% 
+                select(dataset, estimate_type, effects_analysis) %>% 
+                hoist(effects_analysis, "lambda", .transform = unique) %>% 
+                select(-effects_analysis)}, 
+            by = join_by(dataset, estimate_type)) %>% 
   mutate( dataset = case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
                               TRUE ~ dataset)) %>% 
-  semi_join({yi_convergence_singularity %>% # filter out singular models #TODO rm mods with NA/Inf/0 random effect SE
-      filter(singularity == FALSE, 
-             str_detect(model_name, "categorical")) }, 
+  semi_join({yi_convergence_singularity %>% 
+      filter( str_detect(model_name, "categorical"), 
+              !singularity, convergence, SE_calc, CI_calc)}, 
       by = join_by("dataset", "estimate_type")) %>% 
-  select(dataset:model, -exclusion_set, -model_name) %>% 
+  select(dataset, estimate_type, model_name, model) %>% 
   mutate(predictor_means = 
            map(model, modelbased::estimate_means),
          model_data = map(model, ~pluck(.x, "frame") %>% 
@@ -812,7 +814,8 @@ yi_violin_cat_plot_data <-
                                                str_replace(PublishableAsIs,
                                                            "publishable with ", "") %>%
                                                str_replace("deeply flawed and ", "") %>% 
-                                               capwords()))) 
+                                               capwords()))) %>% 
+  select(-model)
 
 yi_violin_cat_plots <- yi_violin_cat_plot_data %>% 
   pmap(.l = list(.$model_data, .$predictor_means, .$plot_name),
@@ -824,7 +827,11 @@ yi_violin_cat_plots <- yi_violin_cat_plot_data %>%
                                                "Major Revision",
                                                "Minor Revision",
                                                "Publishable As Is"),
-                                           ..3))
+                                           ..3)) %>% 
+  purrr::set_names({yi_violin_cat_plot_data %>% 
+      pull(plot_name) %>% 
+      stringr::str_split("_violin_cat", 2) %>% 
+      map_chr(pluck, 1) })
 
 library(patchwork)
 wrap_plots(yi_violin_cat_plots, ncol = 1, tag_levels = 'A', guides = 'collect')
@@ -841,20 +848,13 @@ Because almost no variability in $y_i$ deviation score was explained by reviewer
 # Omit all singular models
 yi_cont_plot_data <-
   ManyEcoEvo_yi_viz %>% 
-  filter(exclusion_set == "complete", 
-         dataset == "blue tit",
-         model_name %in% c("box_cox_rating_cont")) %>% 
-  bind_rows({euc_yi_results %>% 
-      filter(model_name %in% c("box_cox_rating_cont"))}) %>% 
-  mutate( dataset = case_when(str_detect(dataset,
-                                         "eucalyptus") ~
-                                "Eucalyptus",
-                              TRUE ~ dataset)) %>% 
+  filter(model_name %in% c("box_cox_rating_cont")) %>% 
+  mutate(dataset = case_match(dataset, "eucalyptus" ~ "Eucalyptus",.default = dataset)) %>% 
   semi_join({yi_convergence_singularity %>% 
-      filter(singularity == FALSE, SD_calc == TRUE, 
-             str_detect(model_name, "cont")) }, 
+      filter( str_detect(model_name, "cont"), 
+              !singularity, convergence, SE_calc, CI_calc)}, 
       by = join_by("dataset", "estimate_type")) %>% 
-  select(dataset:model, -exclusion_set, -model_name) %>% 
+   select(dataset, estimate_type, model_name, model) %>% 
   mutate(plot_data = map(model, pluck, "frame")) 
 
 subfigcaps <- yi_cont_plot_data %>% 
