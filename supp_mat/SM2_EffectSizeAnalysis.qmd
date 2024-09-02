@@ -255,7 +255,8 @@ ManyEcoEvo_viz %>%
     dplyr::filter(estimate_type == "Zr", 
                   model_name == "MA_mod", 
                   collinearity_subset != "collinearity_removed",
-                  publishable_subset == "All", expertise_subset == "All") %>% 
+                  publishable_subset == "All", 
+                  expertise_subset == "All") %>% 
     select(dataset, exclusion_set, tidy_mod_summary) %>% 
     unnest(tidy_mod_summary) %>% 
     filter(type == "summary") %>% 
