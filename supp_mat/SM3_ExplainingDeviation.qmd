@@ -465,34 +465,17 @@ model_vars <-
 # And Extract 
 
 all_model_fits <- 
-  model_vars %>% 
-  cross_join(., 
-             {ManyEcoEvo_results %>% 
-                 select(dataset, 
-                        exclusion_set, 
-                        estimate_type, 
-                        publishable_subset) %>% 
-                 filter(expertise_subset == "All", 
-                        collinearity_subset == "All") %>% 
-                 ungroup %>% 
-                 select(-expertise_subset, -collinearity_subset)}) %>% 
-  left_join(., {ManyEcoEvo_results %>% 
-      select(dataset, 
-             exclusion_set, 
-             estimate_type, 
-             publishable_subset, 
-             effects_analysis) %>% 
-      filter(expertise_subset == "All", 
-             collinearity_subset == "All") %>% 
-      ungroup %>% 
-      select(-expertise_subset, -collinearity_subset)},
-      by = join_by(dataset, 
-                   exclusion_set, 
-                   estimate_type,
-                   publishable_subset)) %>% 
-  ungroup %>% 
+ model_vars %>% 
+    cross_join(., 
+               {ManyEcoEvo_results %>% 
+                       select(estimate_type, ends_with("set"), effects_analysis) %>% 
+                       dplyr::filter(expertise_subset == "All", 
+                                     collinearity_subset == "All") %>% 
+                       select(-c(expertise_subset, collinearity_subset))}) %>% 
+  ungroup() %>% 
   filter(publishable_subset == "All", 
          exclusion_set == "complete") %>% 
+  select(-c(exclusion_set, publishable_subset)) %>%
   mutate(effects_analysis = 
            map(effects_analysis, 
                ~ .x %>% 
@@ -546,7 +529,7 @@ Zr_singularity_convergence <-
 # ----- new code showing ALL model fits not just bad fits
 
 Zr_singularity_convergence %>% 
-  select(-fitted_model, -params, -exclusion_set,	-publishable_subset, -estimate_type) %>% 
+  select(-fitted_model, -params, -estimate_type) %>% 
   arrange(dataset,
           fixed_effects,
           random_intercepts_1,
