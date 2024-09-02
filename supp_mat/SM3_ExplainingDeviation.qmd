@@ -994,22 +994,28 @@ All models fitted without problem.
 #| warning: false
 yi_sorensen_plot_data <- 
   ManyEcoEvo_yi_viz %>% 
-  filter(exclusion_set == "complete", 
-         dataset == "blue tit",
-         str_detect(model_name, "sorensen_glm")) %>% 
-  bind_rows({euc_yi_results %>% 
-      filter(model_name %in% c("sorensen_glm"))}) %>% 
+  filter(str_detect(model_name, "sorensen_glm")) %>% 
   mutate( dataset = case_when(str_detect(dataset, "eucalyptus") ~ "Eucalyptus",
-                              TRUE ~ dataset)) %>% 
+                              TRUE ~ dataset),
+          model_name = forcats::as_factor(model_name) %>% 
+            forcats::fct_relevel(c("box_cox_rating_cat", 
+                                   "box_cox_rating_cont", 
+                                   "sorensen_glm", 
+                                   "uni_mixed_effects")) %>% 
+            forcats::fct_recode(
+              `Deviation explained by categorical ratings` = "box_cox_rating_cat",
+              `Deviation explained by continuous ratings` = "box_cox_rating_cont",
+              `Deviation explained by Sorensen's index` =  "sorensen_glm",
+              `Deviation explained by inclusion of random effects` =  "uni_mixed_effects")) %>% 
   select(dataset, estimate_type, model_name, model) %>% 
   semi_join(
-    {yi_singularity_convergence_sorensen_mixed_mod %>% 
-        filter(str_detect(model_name, "Sorensen"), 
-               singularity == FALSE)},
-    by = join_by("dataset", "estimate_type")
+    {yi_convergence_singularity %>% 
+        filter(!singularity, 
+               convergence, 
+               SE_calc, CI_calc) },
+    by = join_by("dataset", "estimate_type", "model_name")
   ) %>% 
-  mutate(dataset = case_when(dataset == "Eucalyptus" ~ paste0("*", dataset, "*"),
-                             TRUE ~ Hmisc::capitalize(dataset)),
+  mutate(
          plot_data = map(model, ~ pluck(.x, "fit", "data") %>% 
                            rename(box_cox_abs_deviation_score_estimate = ..y))) %>% 
   unite(plot_names, dataset, estimate_type, sep = ", ")
