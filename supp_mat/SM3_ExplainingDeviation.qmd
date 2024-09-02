@@ -523,7 +523,7 @@ Zr_singularity_convergence <-
                estimate_type,
                convergence, 
                singularity) %>% 
-      mutate(SD_calc = FALSE)}) %>% 
+      mutate(SE_calc = FALSE)}) %>% 
   left_join({all_model_fits %>% 
       unnest(params) %>% 
       filter(Effects == "random") %>% 
@@ -572,18 +572,18 @@ Zr_singularity_convergence %>%
     locations = list(
       cells_body(columns = "singularity", rows = singularity == TRUE),
       cells_body(columns = "convergence", rows = convergence == FALSE), #TODO why didn't work here??
-      cells_body(columns = "SD_calc", rows = SD_calc == FALSE),
+      cells_body(columns = "SE_calc", rows = SE_calc == FALSE),
       cells_body(columns = "CI_calc", rows = CI_calc == FALSE)
     )
   ) %>% 
   gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
-                     locations = cells_body(columns = c("singularity", "convergence", "SD_calc", "CI_calc"))) %>% 
+                     locations = cells_body(columns = c("singularity", "convergence", "SE_calc", "CI_calc"))) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::cols_label(dataset = "Dataset",
                  fixed_effects = "Fixed Effect",
                  singularity = "Singular Fit?",
                  convergence = "Model converged?",
-                 SD_calc = "Can random effect SD be calculated?",
+                 SE_calc = "Can random effect SE be calculated?",
                  CI_calc = "Can random effect 95% CI be calculated?") %>% 
   gt::tab_spanner(label = "Random Effects",
                   columns = gt::starts_with("random")) %>% 
@@ -1410,10 +1410,10 @@ yi_multivar_singularity_convergence <-
                estimate_type,
                convergence, 
                singularity) %>% 
-      mutate(SD_calc = FALSE)}) %>% 
+      mutate(SE_calc = FALSE)}) %>% 
   mutate(model_na = is.na(fitted_model), 
-         SD_calc = ifelse(is.na(fitted_model), FALSE, SD_calc), 
-         SD_calc = ifelse(is.na(SD_calc), TRUE, SD_calc))
+         SE_calc = ifelse(is.na(fitted_model), FALSE, SE_calc), 
+         SE_calc = ifelse(is.na(SE_calc), TRUE, SE_calc))
 
 # If singularity == FALSE and convergence == TRUE, but the model appears here, then that's because
 # the SD and CI's couldn't be estimated by parameters::
@@ -1439,18 +1439,18 @@ yi_multivar_singularity_convergence %>%
     locations = list(
       cells_body(columns = "singularity", rows = singularity == TRUE),
       cells_body(columns = "convergence", rows = convergence == FALSE), #TODO why didn't work here??
-      cells_body(columns = "SD_calc", rows = SD_calc == FALSE)
+      cells_body(columns = "SE_calc", rows = SE_calc == FALSE)
     )
   ) %>% 
   gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
                      locations = cells_body(columns = c("singularity", 
                                                         "convergence", 
-                                                        "SD_calc"))) %>% 
+                                                        "SE_calc"))) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::cols_label(dataset = "Dataset",
                  singularity = "Singular Fit?",
                  convergence = "Model converged?",
-                 SD_calc = "Can random effect SE be calculated?") %>% 
+                 SE_calc = "Can random effect SE be calculated?") %>% 
   gt::tab_spanner(label = "Random Effects",
                   columns = gt::starts_with("random")) %>% 
   gt::sub_missing() %>% 
@@ -1472,7 +1472,7 @@ Consequently, we deviated from our intended plan of using random effects for bot
 #| tbl-cap: "Model summary statistic for non-singular, converging multivariate models fit to out-of-sample predictions."
 yi_multivar_singularity_convergence %>% 
   select(-params) %>% 
-  filter(SD_calc == TRUE) %>%
+  filter(SE_calc == TRUE) %>%
   mutate(broom_summary = 
            map(fitted_model, broom.mixed::glance), 
          performance_summary = 
@@ -1515,7 +1515,7 @@ yi_multivar_singularity_convergence %>%
 #| column: page-right
 
 yi_multivar_singularity_convergence %>% 
-  filter(SD_calc == TRUE) %>% 
+  filter(SE_calc == TRUE) %>% 
   filter(random_intercepts_1 != "study_id" | dataset != "blue tit") %>% #rm eliminated modl
   select(dataset, estimate_type, params) %>% 
   unnest(params) %>% 
