@@ -1358,8 +1358,6 @@ model_formulas_multivar <-
 
 all_model_fits_multivar <- 
   ManyEcoEvo_yi_results %>% 
-  filter(dataset == "blue tit", exclusion_set == "complete") %>% 
-  ungroup %>% 
   select(dataset, estimate_type, effects_analysis) %>% 
   bind_rows({deviation_models_yi_euc %>% 
       ungroup %>% 
