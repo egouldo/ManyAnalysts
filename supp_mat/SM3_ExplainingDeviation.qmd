@@ -1009,19 +1009,15 @@ ManyEcoEvo_yi_viz %>%
       paste0("")
     }
   ) %>% 
-  gt::fmt(columns = c(Coefficient, SE, t, starts_with("CI_")) ,
-          # rows = Parameter %in% c("RateAnalysis", "SD (Observations)", "mixed_model1"),
-          fns = function(x) ifelse(x < 0.0009, 
-                                   format(x, nsmall = 2, digits = 1),
-                                   round(x, digits = 2))) %>% 
+  gt::fmt_number(columns = c(Coefficient, SE, t, starts_with("CI_")), decimals = 2,drop_trailing_zeros = TRUE, drop_trailing_dec_mark = TRUE) %>% 
   gt::fmt_scientific(columns = c( starts_with("CI_")),
-                     rows = CI_low < 0.01 | CI_high < 0.01 | CI_low > 1000 | CI_high > 1000,
+                     rows = abs(CI_low) < 0.01 | abs(CI_high) < 0.01 | abs(CI_low) > 1000 | abs(CI_high) > 1000,
                      decimals = 2) %>%
   gt::fmt_scientific(columns = c( starts_with("Coefficient")),
-                     rows = Coefficient < 0.01 | Coefficient > 1000,
+                     rows = abs(Coefficient) < 0.01 | abs(Coefficient) > 1000,
                      decimals = 2) %>%
   gt::fmt_scientific(columns = c( starts_with("SE")),
-                     rows = SE < 0.01 | SE > 1000,
+                     rows = abs(SE) < 0.01 | abs(SE) > 1000,
                      decimals = 2) %>%
   gt::tab_style(locations = gt::cells_stub(rows = str_detect(dataset, "Eucalyptus")),
                 style = cell_text(style = "italic")) %>% 
@@ -1273,12 +1269,14 @@ multivar_mods %>%
       str_replace(Parameter, "mixed_model", "random_included"))  %>% 
   group_by(dataset) %>% 
   gt::gt() %>% 
-  gt::fmt(columns = "p",
+  gt::fmt_number(columns = c(Coefficient, SE, starts_with("CI_"), t), 
+                 decimals = 2, 
+                 drop_trailing_zeros = TRUE, 
+                 drop_trailing_dec_mark = TRUE) %>%
+    gt::fmt(columns = "p",
           fns = function(x) gtsummary::style_pvalue(x, 
                                                     prepend_p = TRUE)
   ) %>% 
-  gt::fmt(columns = function(x) rlang::is_bare_numeric(x),
-          fns = function(x) round(x, 3))  %>% 
   gt::cols_label(CI_low = gt::md("95\\%CI"),
                  df_error = "df") %>% 
   gt::cols_merge(columns = starts_with("CI_"), 
@@ -1343,6 +1341,10 @@ multivar_performance_tidy %>%
                   cells_body(rows = str_detect(dataset, "Eucalyptus"),
                              columns = dataset),
                 style = cell_text(style = "italic")) %>% 
+  gt::fmt_number(columns = c(R2_conditional, R2_marginal, ICC, Sigma), 
+                 decimals = 2, 
+                 drop_trailing_zeros = TRUE, 
+                 drop_trailing_dec_mark = TRUE) %>%
   gt::as_raw_html()
 ```
 
@@ -1528,7 +1530,7 @@ Consequently, we deviated from our intended plan of using random effects for bot
 
 ```{r}
 #| label: tbl-BT-yi-multivar-summary
-#| tbl-cap: "Model summary statistic for non-singular, converging multivariate models fit to out-of-sample estimates $y_i$."
+#| tbl-cap: "Model summary statistics for non-singular, converging multivariate models fit to out-of-sample estimates $y_i$."
 # pull models from ManyEcoEvo, have manually checked and validated that ManyEcoEvo 
 # fitted models resulted in identifical model fit as equivalent models in 
 # pipeline above
@@ -1566,10 +1568,16 @@ ManyEcoEvo_yi_viz %>%
                 style = cell_text(style = "italic")) %>% 
   gt::cols_hide(dataset) %>% 
   gt_fmt_yi(columns = "estimate_type") %>% 
-  gt::fmt_scientific(columns = c("RMSE", "Sigma"),
+    gt::fmt_number(columns = c(gt::starts_with("R2"), "ICC", "Sigma", "RMSE"),
+                   drop_trailing_zeros = TRUE,
+                   drop_trailing_dec_mark = TRUE,
+                   decimals = 2) %>%
+  gt::fmt_scientific(columns = c("RMSE"),
+                     rows = abs(RMSE) < 0.01 | abs(RMSE) > 1000,
                      decimals = 2) %>%
-  gt::fmt_number(columns = c(gt::starts_with("R2"), "ICC"),
-                 decimals = 2) %>%
+  gt::fmt_scientific(columns = c("Sigma"),
+                     rows = abs(Sigma) < 0.01 | abs(Sigma) > 1000,
+                     decimals = 2) %>%
   gt::tab_style(style = cell_text(style = "italic", transform = "capitalize"), 
                 locations = cells_row_groups(groups = "eucalyptus")) %>% 
   gt::as_raw_html()
@@ -2242,10 +2250,9 @@ all_models %>%
                  AIC_wt = gt::md("$$AIC$$ (weight)"),
                  AIC = gt::md("$$AIC$$"),
                  BIC = gt::md("$$BIC$$")) %>%
-  gt::fmt_number(columns =  !gt::contains(c("Name", "wt")),
-                 rows = Name != "no_weights.RE_rev",
-                 decimals = 2) %>%
-  gt::fmt_number(columns = contains(c("AIC","AICc", "BIC", "R2_")),
+  gt::fmt_number(columns = contains(c("AIC","AICc", "BIC", "R2_", "ICC", "Sigma")), 
+                 drop_trailing_zeros = TRUE, 
+                 drop_trailing_dec_mark = TRUE,
                  decimals = 2)  %>% 
   gt::fmt_scientific(columns = "R2_conditional",
                      rows = R2_conditional < 0.01 | R2_conditional > 1000,
