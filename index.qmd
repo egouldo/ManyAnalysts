@@ -3474,7 +3474,8 @@ modelfitstats <- ManyEcoEvo_viz %>%
       drop_na() #rm uni_mixed_effects for blue tit, as was not fitted (N < 5)
   }) %>% 
   group_by(model_name) %>% 
-  relocate("R2", .before = starts_with("R2_")) 
+  relocate("R2", .before = starts_with("R2_")) %>% 
+  relocate("nobs", .after = dataset) 
 
 modelfitstats %>% 
   mutate(model_name = forcats::as_factor(model_name),
