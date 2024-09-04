@@ -3110,7 +3110,7 @@ euc_MA_summ_stats <- zr_heterogeneity %>% filter(dataset == "eucalyptus", data_s
 We quantified both absolute ($\tau^{2}$) and relative ($I^{2}$) heterogeneity resulting from analytical variation.
 Both measures suggest that substantial variability among effect sizes was attributable to the analytical decisions of analysts.
 
-The total absolute level of variance beyond what would typically be expected due to sampling error, $\tau^{2}$ (@tbl-effects-heterogeneity), among all usable blue tit effects was `r round(bt_MA_summ_stats$tau_total, digits = 2)` and for *Eucalyptus* effects was `r round(euc_MA_summ_stats$tau_total, digits = 2)`.
+The total absolute level of variance beyond what would typically be expected due to sampling error, $\tau^{2}$ (@tbl-effects-heterogeneity), among all usable blue tit effects was `r round_pluck(bt_MA_summ_stats, "tau_total")` and for *Eucalyptus* effects was `r round_pluck(euc_MA_summ_stats, "tau_total")`.
 This is similar to or exceeding the median value (0.105) of $\tau^{2}$ found across 31 recent meta-analyses [calculated from the data in @yang2023].
 The similarity of our observed values to values from meta-analyses of different studies based on different data suggest the potential for a large portion of heterogeneity to arise from analytical decisions.
 For further discussion of interpretation of $\tau^{2}$ in our study, please consult discussion of *post hoc* analyses below.
@@ -3402,7 +3402,7 @@ We did not conduct these *post hoc* analyses on the out-of-sample predictions as
 ### Effect Sizes ($Z_r$)
 
 Removing poorly rated analyses had limited impact on the meta-analytic means (@fig-all-forest-plots-Zr).
-For the *Eucalyptus* dataset, the meta-analytic mean shifted from `r filter(effectsparams, dataset == "eucalyptus", publishable_subset == "All") %>% round_pluck("estimate")` to `r filter(effectsparams, dataset == "eucalyptus", publishable_subset == "data_flawed") %>% round_pluck("estimate")` when effects from analyses rated as unpublishable were removed, and to `r filter(effectsparams, dataset == "eucalyptus", publishable_subset == "data_flawed_major") %>% round_pluck("estimate")` when effects from analyses rated, at least once, as unpublishable or requiring major revisions were removed.
+For the *Eucalyptus* dataset, the meta-analytic mean shifted from `r filter(effectsparams, !!!filter_vars_main_analysis, dataset == "eucalyptus")  %>% round_pluck("estimate")` to `r filter(effectsparams, dataset == "eucalyptus", publishable_subset == "data_flawed") %>% round_pluck("estimate")` when effects from analyses rated as unpublishable were removed, and to `r filter(effectsparams, dataset == "eucalyptus", publishable_subset == "data_flawed_major") %>% round_pluck("estimate")` when effects from analyses rated, at least once, as unpublishable or requiring major revisions were removed.
 Further, the confidence intervals for all of these means overlapped each of the other means (@tbl-effects-params).
 We saw similar patterns for the blue tit dataset, with only small shifts in the meta-analytic mean, and confidence intervals of all three means overlapping each other mean (@tbl-effects-params).
 Refitting the meta-analysis with a fixed effect for categorical ratings also showed no indication of differences in group meta-analytic means due to peer ratings (@fig-euc-cat-ratings-MA).
