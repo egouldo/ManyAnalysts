@@ -693,7 +693,7 @@ Where $\mu$ is the population parameter taken from our original dataset for vari
 
 ```{r}
 #| label: tbl-constructed-var-exclusions
-
+#| tbl-caption: "Analyst-constructed variables and whether they are included in our meta-analyses of out-of-sample predictions, $y\\_i$"
 all_constructed_vars %>% 
   semi_join(ManyEcoEvo_constructed_vars, by) %>% 
   mutate(included_in_yi = TRUE) %>% 
@@ -705,13 +705,13 @@ all_constructed_vars %>%
     }
   ) %>% 
   dplyr::mutate(included_in_yi = case_match(included_in_yi, TRUE ~ "check", FALSE ~ "xmark" )) %>% 
-  gt::gt(caption = gt::md("Analyst-constructed variables and whether they are included in our meta-analyses of out-of-sample predictions, $y\\_i$")) %>% 
+  group_by(dataset) %>% 
+  gt::gt() %>% 
   gt::cols_label(response_variable_name = "Constructed Variable",
                  included_in_yi = gt::md("Included in $y\\_i$ meta-analysis?")) %>% 
-  gtExtras::gt_fa_column(included_in_yi) %>% 
-  gt::cols_hide("dataset") %>% 
-  gt::as_raw_html()
-
+  gt::fmt_icon(included_in_yi) %>% 
+  gt::tab_style(style = cell_text(style = "italic",transform = "capitalize"), 
+                locations = cells_row_groups(groups = "eucalyptus"))
 ```
 
 #### Non-truncated $y_{i}$ meta-analysis forest plot
