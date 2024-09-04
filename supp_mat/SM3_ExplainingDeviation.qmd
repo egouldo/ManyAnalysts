@@ -326,6 +326,20 @@ plot_model_means_RE <- function(data, variable, predictor_means) {
 
 poss_fit <- possibly(fit, otherwise = NA, quiet = FALSE)
 
+create_model_formulas <- function(outcome, fixed_effects, random_intercepts){
+  # https://community.rstudio.com/t/programmatically-generate-formulas-for-lmer/8575
+  # ---- Define random effects constructor function ----
+  randomify <- function(feats) {
+    paste0("(1|", feats, ")", collapse = " + ")
+  }
+  # ---- Construct formula ----
+  randomify <- function(feats) paste0("(1|", feats, ")", collapse = " + ")
+  fixed <- paste0(fixed_effects, collapse = " + ")
+  random <- randomify(random_intercepts)
+  model_formula <- as.formula(paste(outcome, "~", fixed, "+", random))
+  return(model_formula)
+}
+
 ```
 
 ## Box-Cox transformation of response variable for model fitting
