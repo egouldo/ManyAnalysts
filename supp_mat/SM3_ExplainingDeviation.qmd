@@ -2200,12 +2200,31 @@ all_models %>%
   gt::fmt_number(columns =  !gt::contains(c("Name", "wt")),
                  rows = Name != "no_weights.RE_rev",
                  decimals = 2) %>%
-  gt::fmt_scientific(columns = c(gt::contains(("R2")), "ICC", "BIC", "AIC", "RMSE", "Sigma", "AICc"),
+    gt::fmt_number(columns = contains(c("AIC","AICc", "BIC", "R2_")),
+                 decimals = 2)  %>% 
+  gt::fmt_scientific(columns = "R2_conditional",
+                     rows = R2_conditional < 0.01 | R2_conditional > 1000,
+                     drop_trailing_zeros = T,
+                     decimals = 2) %>% 
+  gt::fmt_scientific(columns = "R2_marginal",
+                     rows = R2_marginal < 0.01 | R2_marginal > 1000,
+                     drop_trailing_zeros = T,
+                     decimals = 2) %>%
+    gt::fmt_scientific(columns = "RMSE",
+                       rows = RMSE < 0.01 | RMSE > 1000,
+                     drop_trailing_zeros = T,
+                     decimals = 2) %>% 
+    gt::fmt_scientific(columns = c("ICC"),
+                       rows = ICC < 0.01 | ICC > 1000,
+                     drop_trailing_zeros = T,
+                     decimals = 2) %>% 
+    gt::fmt_scientific(columns = c("Sigma"),
+                       rows = Sigma < 0.01 | Sigma > 1000,
                      drop_trailing_zeros = T,
                      decimals = 2) %>% 
   gt::fmt_scientific(columns =  gt::contains(c("_wt")),  
                      rows = Name != "no_weights.RE_rev",
-                     drop_trailing_zeros = T,
+                     drop_trailing_zeros = F,
                      decimals = 2) %>%
   gt::opt_stylize(style = 6, color = "gray") %>%
   gt::tab_style(
