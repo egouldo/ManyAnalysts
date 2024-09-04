@@ -3574,6 +3574,8 @@ ManyEcoEvo_viz %>%
                   missing_text = "") %>% 
   gt::text_transform(fn = function(x) map(x, gt::md), 
                      locations = gt::cells_row_groups()) %>% 
+  gt::cols_hide(Effects) %>% 
+  gt::cols_label(Group = "Random Effect") %>% 
   gt::as_raw_html()
 
 p_cat_bt_tidy <- ManyEcoEvo_viz %>% 
