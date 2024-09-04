@@ -109,7 +109,7 @@ The composition of models varied substantially (@tbl-Table2) in regards to the n
 
 ```{r}
 #| label: tbl-Table2
-#| tbl-cap: "Mean, standard deviation and range of number of fixed and random variables and interaction terms used in models and sample size used. Repeated for effect size analyses only ($Z_r$) and out-of-sample prediction only ($y_i$)."
+#| tbl-cap: "Mean, standard deviation and range of number of fixed and random variables, interaction terms used in models and analysis sample size (*N*). Repeated for effect-size analyses only ($Z_r$) and out-of-sample predictions only ($y_i$)."
 
 Table2 %>% 
   rename(SD = sd, subset = subset_name) %>%   
@@ -119,10 +119,10 @@ Table2 %>%
     names_sep = ".",
     values_from = c(mean, SD, min, max)
   ) %>% 
-  mutate(variable = case_when(variable == "samplesize" ~ "*N*",
+  mutate(variable = case_when(variable == "samplesize" ~ "N",
                               TRUE ~ variable)) %>% 
   gt::gt(rowname_col = "subset") %>% 
-  gt::row_group_order(groups = c("fixed", "random", "interactions", "*N*")) %>% 
+  gt::row_group_order(groups = c("fixed", "random", "interactions", "N")) %>% 
   gt::tab_spanner_delim(delim = ".") %>% 
   gt::fmt_scientific(columns = "mean.blue tit",
                      rows = `mean.blue tit` < 0.01,
@@ -141,6 +141,8 @@ Table2 %>%
     style = gt::cell_text(transform = "capitalize"),
     locations = gt::cells_column_spanners()
   ) %>% 
+  gt::tab_style(style = gt::cell_text(transform = "capitalize"),locations = cells_row_groups()) %>% 
+gt::tab_style(style = gt::cell_text(style = "italic"), locations = cells_row_groups(groups = "N")) %>% 
   gt::cols_label_with(c(contains("Eucalyptus")), 
                       fn = ~ gt::md(paste0("*",.x, "*"))) %>% 
   gt::sub_values(columns = subset, values = c("effects"), 
