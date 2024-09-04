@@ -536,8 +536,10 @@ Zr_singularity_convergence <-
                convergence, 
                singularity) %>% 
       mutate(CI_calc = FALSE)}) %>% 
+  rowwise() %>% 
   mutate(across(ends_with("_calc"), 
-                ~ replace_na(.x, TRUE)))
+                ~ replace_na(.x, TRUE))) %>% 
+  mutate(across(c(SE_calc, CI_calc, singularity), ~ ifelse(is_false(convergence), NA, .x))) 
 
 # ----- new code showing ALL model fits not just bad fits
 
@@ -716,6 +718,7 @@ yi_convergence_singularity <-
   rowwise() %>% 
   mutate(CI_calc = any(CI_high_calc, CI_low_calc), .keep = "unused") %>% 
   rename_with(~ stringr::str_remove(.x, "_NA")) %>% 
+  mutate(across(c(SE_calc, CI_calc, singularity), ~ ifelse(is_false(convergence), NA, .x))) %>% 
   ungroup()
 
 
@@ -1071,6 +1074,7 @@ patchwork::wrap_plots(yi_sorensen_plots,heights = 4, byrow = TRUE) +
 #| message: false
 
 yi_singularity_convergence_sorensen_mixed_mod %>% 
+  mutate(across(c(SE_calc, CI_calc, singularity), ~ ifelse(is_false(convergence), NA, .x))) %>% 
   select(-model_params) %>% 
   group_by(model_name) %>% 
   gt::gt(rowname_col = "dataset") %>% 
