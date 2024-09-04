@@ -1748,7 +1748,7 @@ tbl_data_yi_deviation_model_params <-
 #| label: tbl-yi-deviation-parameter-estimates
 #| message: false
 #| warning: false
-#| tbl-cap: "Model summary metrics for models of Box-Cox transformed deviation from the mean $y_i$ estimate as a function of categorical peer-review rating, continuous peer-review rating, and Sorensen's index for blue tit and *Eucalyptus* analyses, and also for the inclusion of random effects for *Eucalyptus* analyses. Coefficient of determination, $R^2$, is reported for models of deviation as a function of Sorensen diversity scores and presence of random effects, while $R^{2}_\\text{Conditional}$, $R^{2}_\\text{Marginal}$ and the intra-class correlation (ICC) are reported for models of deviation as explained by peer-review ratings. For all models the residual standard deviation $\\sigma$, root mean squared error (RMSE) were calculated. The number of observations ($N_{Obs.}$) is displayed for reference."
+#| tbl-cap: "Model summary metrics for models of Box-Cox transformed deviation from the mean $y_i$ estimate as a function of categorical peer-review rating, continuous peer-review rating, and Sorensen's index for blue tit and *Eucalyptus* analyses, and also for the inclusion of random effects for *Eucalyptus* analyses. Coefficient of determination, $R^2$, is reported for models of deviation as a function of Sorensen diversity scores and presence of random effects, while $R^{2}_\\text{Conditional}$, $R^{2}_\\text{Marginal}$ and the intra-class correlation (ICC) are reported for models of deviation as explained by peer-review ratings. For all models the residual standard deviation $\\sigma$, root mean squared error (RMSE) were calculated. The number of observations ($N_{\\text{Obs.}}$) is displayed for reference."
 #| column: page-inset-right
 tbl_data_yi_deviation_model_params %>% 
   gt::gt(rowname_col = "dataset") %>% 
@@ -1759,7 +1759,7 @@ tbl_data_yi_deviation_model_params %>%
                  R2_conditional = "$$R^{2}_\\text{Conditional}$$",
                  R2_marginal = "$$R^{2}_\\text{Marginal}$$",
                  Sigma = "$$\\sigma$$",
-                 nobs = "$$N_{Obs.}$$",
+                 nobs = "$$N_{\\text{Obs.}}$$",
                  estimate_type = "Prediction Scenario") %>% 
   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
                                        columns = dataset),
@@ -1775,10 +1775,12 @@ tbl_data_yi_deviation_model_params %>%
   gt::tab_style(locations = gt::cells_stub(rows = str_detect(dataset, "Eucalyptus")),
                 style = cell_text(style = "italic")) %>% 
   gt::fmt_number(columns =  gt::contains(c("ICC", "RMSE")),  
+                 drop_trailing_dec_mark = TRUE,
                  drop_trailing_zeros = T, 
                  decimals = 2) %>% 
   gt::fmt_scientific(columns = c("RMSE"),
-                     rows = RMSE < 0.01 | RMSE > 1000,
+                     rows = abs(RMSE) < 0.01 | abs(RMSE) > 1000,
+                     drop_trailing_dec_mark = TRUE,
                      drop_trailing_zeros = T,
                      decimals = 2) %>% 
   gt::fmt_scientific(columns = c(gt::contains(("R2_marginal"))), 
@@ -1786,18 +1788,33 @@ tbl_data_yi_deviation_model_params %>%
                      drop_trailing_zeros = T,
                      decimals = 2) %>% 
   gt::fmt_number(columns =  gt::contains(c("R2_conditional")),  
+                 drop_trailing_dec_mark = TRUE,
                  drop_trailing_zeros = T,
                  decimals = 2) %>% 
   gt::fmt_number(columns =  gt::contains(c("Sigma")),  
+                  drop_trailing_dec_mark = TRUE,
+                 drop_trailing_zeros = T,
                  decimals = 2) %>% 
   gt::fmt_scientific(columns = c("Sigma"),
-                     rows = Sigma < 0.01 | Sigma > 1000,
+                     rows = abs(Sigma) < 0.01 | abs(Sigma) > 1000,
                      drop_trailing_zeros = T,
                      decimals = 2) %>% 
   gt::fmt_number(columns =  "R2",
                  decimals = 2) %>% 
   gt::fmt_scientific(columns = c("R2"),
-                     rows = R2 < 0.01 | R2 > 1000,
+                     rows = abs(R2) < 0.01 | abs(R2) > 1000,
+                     drop_trailing_zeros = T,
+                     decimals = 2) %>% 
+    gt::fmt_scientific(columns = c("R2_conditional"),
+                     rows = abs(R2_conditional) < 0.01 | abs(R2_conditional) > 1000,
+                     drop_trailing_zeros = T,
+                     decimals = 2) %>% 
+      gt::fmt_scientific(columns = c("R2_marginal"),
+                     rows = abs(R2_marginal) < 0.01 | abs(R2_marginal) > 1000,
+                     drop_trailing_zeros = T,
+                     decimals = 2) %>% 
+    gt::fmt_scientific(columns = c("ICC"),
+                     rows = abs(ICC) < 0.01 | abs(ICC) > 1000,
                      drop_trailing_zeros = T,
                      decimals = 2) %>% 
   gt_fmt_yi("estimate_type")
