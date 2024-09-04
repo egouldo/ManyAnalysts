@@ -728,11 +728,11 @@ all_constructed_vars %>%
 
 #### Non-truncated $y_{i}$ meta-analysis forest plot
 
-Below is the non-truncated version of @fig-euc-yi-forest-plot showing a forest plot of the out-of-sample predictions, $y_{i}$, on the response-scale (stems counts), for *Eucalyptus* analyses, showing the full error bars of all model estimates.
+Below is the non-truncated version of @fig-euc-yi-forest-plot showing a forest plot of the out-of-sample predictions, $y_{i}$, on the response-scale (stem counts), for *Eucalyptus* analyses, showing the full error bars of all model estimates.
 
 ```{r}
 #| label: fig-euc-yi-forest-plot-full
-#| fig-cap: "Forest plot of meta-analytic estimated out of sample  predictions, $y_{i}$, on the response-scale (stems counts), for *Eucalyptus* analyses. Circles represent individual analysis estimates. Triangles represent the meta-analytic mean for each prediction scenario. Navy blue coloured points correspond to $y_{25}$ scenario, blue coloured points correspond to the $y_{50}$ scenario, while light blue points correspond to the $y_{75}$ scenario. Error bars are 95% confidence intervals. Outliers (observations more than 3SD above the mean) have been removed prior to model fitting."
+#| fig-cap: "Forest plot of meta-analytic estimated out of sample  predictions, $y_{i}$, on the response-scale (stem counts) for *Eucalyptus* analyses. Circles represent individual analysis estimates. Triangles represent the meta-analytic mean for each prediction scenario. Navy blue coloured points correspond to $y_{25}$ scenario, blue coloured points correspond to the $y_{50}$ scenario, while light blue points correspond to the $y_{75}$ scenario. Error bars are 95% confidence intervals. Outliers (observations more than 3SD above the mean) have been removed prior to model fitting."
 #| fig-height: 8
 #| echo: true
 #| message: false
