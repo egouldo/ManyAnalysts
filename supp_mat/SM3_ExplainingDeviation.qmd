@@ -505,7 +505,7 @@ all_model_fits <-
          -fitted_mod_workflow, 
          -effects_analysis,
          estimate_type) %>% 
-  replace_na(list(convergence = FALSE, singularity = TRUE)) 
+  replace_na(list(convergence = FALSE)) 
 
 # If singularity == FALSE and convergence == TRUE, but the model appears here, then that's because
 # the SD and CI's couldn't be estimated by parameters::
