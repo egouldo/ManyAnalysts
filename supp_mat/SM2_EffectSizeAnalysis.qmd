@@ -694,7 +694,7 @@ Where $\mu$ is the population parameter taken from our original dataset for vari
 
 ```{r}
 #| label: tbl-constructed-var-exclusions
-#| tbl-caption: "Analyst-constructed variables and whether they are included in our meta-analyses of out-of-sample predictions, $y\\_i$"
+#| tbl-cap: "Analyst-constructed variables and their inclusion in meta-analyses of out-of-sample predictions, $y\\_i$"
 all_constructed_vars %>% 
   semi_join(ManyEcoEvo_constructed_vars, by) %>% 
   mutate(included_in_yi = TRUE) %>% 
@@ -705,14 +705,25 @@ all_constructed_vars %>%
         mutate(included_in_yi = FALSE)
     }
   ) %>% 
-  dplyr::mutate(included_in_yi = case_match(included_in_yi, TRUE ~ "check", FALSE ~ "xmark" )) %>% 
+  dplyr::mutate(included_in_yi = case_match(included_in_yi, 
+                                            TRUE ~ "check", 
+                                            FALSE ~ "xmark" ),
+                response_variable_name = gluedown::md_code(response_variable_name)) %>% 
   group_by(dataset) %>% 
   gt::gt() %>% 
   gt::cols_label(response_variable_name = "Constructed Variable",
-                 included_in_yi = gt::md("Included in $y\\_i$ meta-analysis?")) %>% 
+                 included_in_yi = gt::md("Included in $y_i$ meta-analysis?")) %>% 
   gt::fmt_icon(included_in_yi) %>% 
   gt::tab_style(style = cell_text(style = "italic",transform = "capitalize"), 
-                locations = cells_row_groups(groups = "eucalyptus"))
+                locations = cells_row_groups(groups = "eucalyptus")) %>%
+  gt::tab_style(style = cell_text(align = "center"), 
+                locations = cells_body(columns = included_in_yi)) %>% 
+    gt::tab_style(style = cell_text(align = "left"), 
+                locations = cells_body(columns = response_variable_name)) %>% 
+      gt::tab_style(style = cell_text(align = "left"), 
+                locations = cells_column_labels(response_variable_name)) %>% 
+  gt::opt_stylize(style = 6, color = "gray") %>% 
+  gt::fmt_markdown(columns = response_variable_name)
 ```
 
 #### Non-truncated $y_{i}$ meta-analysis forest plot
