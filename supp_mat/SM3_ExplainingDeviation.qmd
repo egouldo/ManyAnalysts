@@ -714,7 +714,9 @@ yi_convergence_singularity <-
         CI_high_NA = "CI_high", 
         CI_low_NA = "CI_low", 
         .transform = ~ any(is.na(.x)) | any(is.infinite(.x))) %>% 
-  mutate(across(ends_with("_NA"), ~ !.x, .names = "{.col}_calc"), .keep = "unused") %>% 
+  mutate(across(ends_with("_NA"), ~ !.x, 
+                .names = "{.col}_calc"), 
+         .keep = "unused") %>% 
   rename_with(~ stringr::str_remove(.x, "_NA")) %>% 
   rowwise() %>% 
   mutate(CI_calc = any(CI_high_calc, CI_low_calc), .keep = "unused") %>% 
