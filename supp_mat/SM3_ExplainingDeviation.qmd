@@ -580,7 +580,8 @@ Zr_singularity_convergence %>%
       cells_body(columns = "CI_calc", rows = CI_calc == FALSE)
     )
   ) %>% 
-  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
+  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes",
+                                             ifelse(x == FALSE, "no", x)),
                      locations = cells_body(columns = c("singularity", "convergence", "SE_calc", "CI_calc"))) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::cols_label(dataset = "Dataset",
@@ -754,7 +755,8 @@ yi_convergence_singularity %>%
                  SE_calc = "Can random effect SE be calculated?",
                  CI_calc = "Can random effect CI be calculated?") %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
-  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
+  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes",
+                                             ifelse(x == FALSE, "no", x)),
                      locations = cells_body(columns = c("singularity",
                                                         "convergence",
                                                         "SE_calc", 
@@ -1099,7 +1101,8 @@ yi_singularity_convergence_sorensen_mixed_mod %>%
       cells_body(columns = "SE_calc", rows = SE_calc == FALSE),
       cells_body(columns = "CI_calc", rows = CI_calc == FALSE)
     )) %>% 
-  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
+  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes",
+                                             ifelse(x == FALSE, "no", x)),
                      locations = cells_body(columns = c("singularity",
                                                         "convergence", 
                                                         "SE_calc", 
@@ -1473,7 +1476,8 @@ yi_multivar_singularity_convergence %>%
       cells_body(columns = "SE_calc", rows = SE_calc == FALSE)
     )
   ) %>% 
-  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
+  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes",
+                                             ifelse(x == FALSE, "no", x)),
                      locations = cells_body(columns = c("singularity", 
                                                         "convergence", 
                                                         "SE_calc"))) %>% 
@@ -1932,7 +1936,8 @@ all_models %>%
                  convergence = "Model converged?",
                  model_spec_random_effect = "Random Effects",
                  estimate_means = "Means Estimable?") %>% 
-  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes", "no" ),
+  gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes",
+                                             ifelse(x == FALSE, "no", x)),
                      locations = cells_body(columns = c("singularity", 
                                                         "convergence", 
                                                         "estimate_means"))) %>%
