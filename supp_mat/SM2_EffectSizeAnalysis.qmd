@@ -57,7 +57,7 @@ ManyEcoEvo_results <-
 
 #### Effect of categorical review rating
 
-The figures below (@fig-euc-cat-ratings-MA,@fig-bt-cat-ratings-MA) shows the fixed effect of categorical review rating on deviation from the meta-analytic mean. There is very little difference in deviation for analyses in any of the review categories. It is worth noting that each analysis features multiple times in these figures corresponding to the multiple reviewers that provided ratings.
+The figures below (@fig-euc-cat-ratings-MA, @fig-bt-cat-ratings-MA) hows the fixed effect of categorical review rating on deviation from the meta-analytic mean. There is very little difference in deviation for analyses in any of the review categories. It is worth noting that each analysis features multiple times in these figures corresponding to the multiple reviewers that provided ratings.
 
 ```{r fig-euc-cat-ratings-MA, echo = FALSE, warning = FALSE, message = FALSE, fig.cap = "Orchard plot of meta-analytic model fitted to all eucalyptus analyses with a fixed effect for categorical peer-review ratings, and random effects for analyst ID and reviewer ID. Black circles denote coefficient mean for each categorical publishability rating. Thick error bars represent 95% confidence intervals and whiskers indicate 95% prediction intervals. Effect sizes are represented by circles and their size corresponds to the precision of the estimate.", fig.height=5, fig.width=8}
 orchard_publishability <- function(dat){
