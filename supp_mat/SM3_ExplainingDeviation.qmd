@@ -1296,7 +1296,9 @@ multivar_mods %>%
   gt::text_transform(fn = function(x) str_replace(x, "ReviewerId", "Reviewer ID")) %>% 
   gt::text_transform(fn = function(x) map(x, gt::md), 
                      locations = gt::cells_row_groups()) %>% 
-  gt::sub_missing(missing_text = "")
+  gt::sub_missing(missing_text = "") %>% 
+  gt::cols_hide(Effects) %>% 
+  gt::cols_label(Group = "Random Effect")
 
 multivar_mod_tidy <- multivar_mods %>% 
   pull(model, name = "dataset") %>% 
