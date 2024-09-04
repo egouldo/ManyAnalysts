@@ -3,9 +3,6 @@ title: "Summarising Variation Among Analysis Specifications"
 format: html
 editor: visual
 code-fold: true
-author:
-  - name: Elliot Gould
-  - name: Hannah S Fraser
 execute:
   freeze: auto  # re-render only when source changes
 bibliography: ../ms/references.bib
