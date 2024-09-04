@@ -1324,23 +1324,37 @@ possibly_parameters <- possibly(parameters::parameters, otherwise = NA)
 
 poss_extract_fit_engine <- possibly(extract_fit_engine, otherwise = NA)
 
-model_vars_multivar <- 
-  bind_rows(
+# ---- Create DF for combinatorial model specification ----
+
+model_formulas_multivar <- 
     tidyr::expand_grid(outcome = "box_cox_abs_deviation_score_estimate",
-                       random_intercepts = c("study_id", 
-                                             "reviewer_id")) %>% 
-      rowwise() %>% 
-      mutate(random_intercepts = as.list(random_intercepts)),
-    tidyr::expand_grid(outcome = "box_cox_abs_deviation_score_estimate",
-                       random_intercepts = c("study_id", 
-                                             "reviewer_id")) %>% 
-      group_by(outcome) %>% 
-      reframe(random_intercepts = list(random_intercepts))
-  ) %>% 
-  mutate(fixed_effects = list(c("publishable_as_is", 
-                                "rate_analysis", 
-                                "mean_diversity_index", 
-                                "mixed_model")))
+                       random_intercepts = list("study_id", 
+                                                "reviewer_id",
+                                                c("study_id", 
+                                                  "reviewer_id")),
+                       fixed_effects = list(c("publishable_as_is", 
+                                              "rate_analysis", 
+                                              "mean_diversity_index", 
+                                              "mixed_model"),
+                                            c("publishable_as_is", 
+                                              "rate_analysis", 
+                                              "mean_diversity_index"))) %>% 
+  rowwise() %>% 
+  mutate(dataset = case_when(length(fixed_effects) == 4 ~ "eucalyptus", 
+                             TRUE ~ "blue tit"),
+         wflow_id = paste0("RE:", 
+                           paste0(random_intercepts, collapse = "_"))) %>% 
+  unite(wflow_id, dataset, wflow_id, remove = FALSE) %>% 
+  rowwise() %>% 
+  mutate(model_formulas = 
+           list(create_model_formulas(outcome,
+                                      fixed_effects, 
+                                      random_intercepts)) %>% 
+           set_names(wflow_id),
+         model_workflows = list(create_model_workflow(outcome, 
+                                                      fixed_effects,
+                                                      random_intercepts)) %>% 
+           set_names(wflow_id))
 
 all_model_fits_multivar <- 
   ManyEcoEvo_yi_results %>% 
