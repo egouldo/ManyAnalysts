@@ -981,8 +981,9 @@ ManyEcoEvo_yi_viz %>%
   gt::fmt(columns = "p",
           fns = function(x) gtsummary::style_pvalue(x)) %>% 
   gt::cols_label(CI_low = gt::md("95\\%CI"),
-                 estimate_type = "Estimate Type") %>% 
-  gt::cols_label(df_error = "df") %>% 
+                 estimate_type = "Estimate Type",
+                 df_error = "df",
+                 p = gt::md("*p*")) %>% 
   gt::cols_merge(columns = starts_with("CI_"), 
                  pattern = "[{1},{2}]") %>% 
   gt::cols_move(columns = CI_low, after = SE) %>% 
@@ -1273,12 +1274,21 @@ multivar_mods %>%
                  decimals = 2, 
                  drop_trailing_zeros = TRUE, 
                  drop_trailing_dec_mark = TRUE) %>%
-    gt::fmt(columns = "p",
+  gt::fmt_scientific(
+    columns = c( starts_with("CI_")),
+    rows = abs(CI_low) < 0.01 | abs(CI_high) < 0.01 | abs(CI_low) > 1000 | abs(CI_high) > 1000,
+    decimals = 2) %>%
+    gt::fmt_scientific(
+    columns = c( starts_with("Coefficient")),
+    rows = abs(Coefficient) < 0.01 | abs(Coefficient) > 1000,
+    decimals = 2) %>%
+  gt::fmt(columns = "p",
           fns = function(x) gtsummary::style_pvalue(x, 
                                                     prepend_p = TRUE)
   ) %>% 
   gt::cols_label(CI_low = gt::md("95\\%CI"),
-                 df_error = "df") %>% 
+                 df_error = "df",
+                 p = gt::md("*p*")) %>% 
   gt::cols_merge(columns = starts_with("CI_"), 
                  pattern = "[{1},{2}]") %>% 
   gt::cols_move(columns = CI_low, after = SE) %>% 
@@ -1633,6 +1643,11 @@ yi_multivar_singularity_convergence %>%
   unnest(params) %>% 
   relocate(c(Effects, Group), .after = Parameter) %>% 
   gt::gt(rowname_col = "estimate_type", groupname_col = "dataset") %>% 
+  gt::fmt_number(columns = c(-dataset, -estimate_type),
+                 decimals = 2, 
+                 drop_trailing_zeros = TRUE, 
+                 drop_trailing_dec_mark = TRUE
+  ) %>% 
   gt::text_transform(fn = function(x) str_replace(x, "publishable_as_is", "Categorical Peer Rating") %>% 
                        str_replace(., "rate_analysis", "Continuous Peer Rating") %>% 
                        str_replace(., "mean_diversity_index", "Sorensen's Index") %>% 
@@ -1658,8 +1673,7 @@ yi_multivar_singularity_convergence %>%
                          Hmisc::capitalize() %>% 
                          str_replace("id", "ID")
                      }) %>% 
-  gt::cols_label(CI_low = gt::md("95\\%CI")) %>% 
-  gt::cols_label(df_error = "df") %>% 
+  gt::cols_label(CI_low = gt::md("95\\%CI"), df_error = "df", p = gt::md("*p*")) %>% 
   gt::tab_style(style = cell_text(style = "italic", transform = "capitalize"), 
                 locations = cells_row_groups(groups = "eucalyptus")) %>% 
   gt_fmt_yi(columns = "estimate_type") %>% 
