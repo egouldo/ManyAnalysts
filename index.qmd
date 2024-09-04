@@ -2623,24 +2623,24 @@ bt_complete_data <- ManyEcoEvo_viz %>%
   ) %>% 
   select(tidy_mod_summary) %>% 
   mutate(plot_data = map(tidy_mod_summary, 
-                           .f = ~ dplyr::mutate(.x, point_shape = 
-                                                    ifelse(stringr::str_detect(term, "overall"), 
-                                                           "diamond", 
-                                                           "circle"),
-                                                Parameter = 
-                                                    forcats::fct_reorder(term, 
-                                                                         estimate) %>% 
-                                                    forcats::fct_reorder(., 
-                                                                         point_shape,
-                                                                         .desc = TRUE))
-    ),
-    meta_analytic_mean = map_dbl(plot_data, 
-                                 ~ filter(.x, Parameter == "overall") %>% 
-                                     pull(estimate))) %>% 
-    select(plot_data, meta_analytic_mean) %>% 
-    unnest(cols = c("plot_data")) %>% 
-    mutate(parameter_type = case_when(str_detect(Parameter, "overall") ~ "mean",
-                                      TRUE ~ "study")) 
+                         .f = ~ dplyr::mutate(.x, point_shape = 
+                                                ifelse(stringr::str_detect(term, "overall"), 
+                                                       "diamond", 
+                                                       "circle"),
+                                              Parameter = 
+                                                forcats::fct_reorder(term, 
+                                                                     estimate) %>% 
+                                                forcats::fct_reorder(., 
+                                                                     point_shape,
+                                                                     .desc = TRUE))
+  ),
+  meta_analytic_mean = map_dbl(plot_data, 
+                               ~ filter(.x, Parameter == "overall") %>% 
+                                 pull(estimate))) %>% 
+  select(plot_data, meta_analytic_mean) %>% 
+  unnest(cols = c("plot_data")) %>% 
+  mutate(parameter_type = case_when(str_detect(Parameter, "overall") ~ "mean",
+                                    TRUE ~ "study")) 
 
 complete_euc_data <- 
   ManyEcoEvo_viz %>% 
@@ -2650,16 +2650,16 @@ complete_euc_data <-
   select(tidy_mod_summary) %>% 
   mutate(plot_data = map(tidy_mod_summary, 
                          .f = ~ dplyr::mutate(.x, 
-                                            point_shape = 
-                                              ifelse(stringr::str_detect(term, "overall"), 
-                                                     "diamond", 
-                                                     "circle"),
-                                            Parameter = 
-                                              forcats::fct_reorder(term, 
-                                                                   estimate) %>% 
-                                              forcats::fct_reorder(., 
-                                                                   point_shape,
-                                                                   .desc = TRUE))
+                                              point_shape = 
+                                                ifelse(stringr::str_detect(term, "overall"), 
+                                                       "diamond", 
+                                                       "circle"),
+                                              Parameter = 
+                                                forcats::fct_reorder(term, 
+                                                                     estimate) %>% 
+                                                forcats::fct_reorder(., 
+                                                                     point_shape,
+                                                                     .desc = TRUE))
   ),
   meta_analytic_mean = map_dbl(plot_data, 
                                ~ filter(.x, Parameter == "overall") %>% 
@@ -3028,7 +3028,7 @@ eucalyptus_yi_plot_data %>%
   rename(study_id = term) %>% 
   ungroup %>% 
   plot_forest_2(MA_mean = T,y_zoom = c(0,150)) +
-   theme(axis.text.y = element_blank())
+  theme(axis.text.y = element_blank())
 ```
 
 ## Quantifying Heterogeneity
