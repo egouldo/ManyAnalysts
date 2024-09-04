@@ -1222,11 +1222,11 @@ euc_multivar_mod_R <-
 
 bt_multivar_mod_sigma <- multivar_mods %>% 
   filter(dataset == "blue tit") %>% 
-  pluck("Sigma")
+  round_pluck("Sigma")
 
 euc_multivar_mod_sigma <- multivar_mods %>% 
   filter(dataset == "eucalyptus") %>% 
-  pluck("Sigma")
+  round_pluck("Sigma")
 ```
 
 ```{r}
