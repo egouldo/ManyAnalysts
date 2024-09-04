@@ -2116,11 +2116,22 @@ model_means_results %>%
                  pattern = "[{1},{2}]") %>% 
   gt::fmt_number(columns =  c("Mean", "SE", "CI_low", "CI_high"),
                  decimals = 2) %>% 
-  gt::tab_style(
+      gt::text_transform(
+        locations = cells_body(
+          columns = "model_spec_random_effect",
+            rows = PublishableAsIs != "deeply flawed and unpublishable"
+        ),
+        fn = function(x){
+            paste0("")
+        }
+    ) %>% 
+   gt::tab_style(
     style = list(gt::cell_text(transform = "capitalize"), 
                  gt::cell_text(style = "italic")),
     locations = gt::cells_row_groups(groups = "eucalyptus")
-  )
+  ) %>% 
+  gt::tab_style(style = cell_text(transform = "capitalize"), 
+                locations = cells_body(columns = "PublishableAsIs"))
 
 ```
 
