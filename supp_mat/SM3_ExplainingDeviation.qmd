@@ -1359,57 +1359,44 @@ model_formulas_multivar <-
 all_model_fits_multivar <- 
   ManyEcoEvo_yi_results %>% 
   select(dataset, estimate_type, effects_analysis) %>% 
-  bind_rows({deviation_models_yi_euc %>% 
-      ungroup %>% 
-      select(dataset, estimate_type, effects_analysis) }) %>% 
-  cross_join(model_vars_multivar) %>% 
+  group_by(dataset, estimate_type) %>% 
+  nest_join(model_formulas_multivar %>% 
+              select(dataset, 
+                     model_workflows, 
+                     fixed_effects, 
+                     random_intercepts), 
+            by = join_by(dataset), 
+            name = "model_workflow_sets") %>% 
+  unnest(model_workflow_sets) %>% 
+  rowwise() %>% 
   mutate(effects_analysis = 
-           map(effects_analysis, 
-               mutate, 
-               weight = importance_weights(1/box_cox_var)),
-         effects_analysis = 
-           map(effects_analysis, 
-               ~ .x %>% 
-                 select(study_id, 
-                        starts_with("box_cox_abs_dev"), 
-                        RateAnalysis, 
-                        PublishableAsIs,
-                        ReviewerId,
-                        box_cox_var,
-                        weight,
-                        mean_diversity_index,
-                        mixed_model) %>% 
-                 janitor::clean_names() %>%
-                 mutate_if(is.character, factor) 
-           ),
-         model_workflows = pmap(.l = list(outcome, 
-                                          fixed_effects, 
-                                          random_intercepts), 
-                                .f = create_model_workflow),
-         fitted_mod_workflow = map2(model_workflows, 
-                                    effects_analysis, 
-                                    poss_fit), 
-         fitted_model = map(fitted_mod_workflow, poss_extract_fit_engine),
-         convergence = map_if(fitted_model, 
-                              ~ !is.na(.x),
-                              possibly_check_convergence) %>% 
-           as.logical(),
-         singularity = map_if(fitted_model, 
-                              ~ !is.na(.x),
-                              possibly_check_singularity) %>% 
-           as.logical(),
-         params = map_if(fitted_model, 
-                         ~ !is.na(.x),
-                         parameters::parameters),
-         fixed_effects = map_chr(fixed_effects, paste0, collapse = ", ")
+           list(effects_analysis %>% 
+                  select(study_id, 
+                         starts_with("box_cox_abs_dev"), 
+                         RateAnalysis, 
+                         PublishableAsIs,
+                         ReviewerId,
+                         box_cox_var,
+                         mean_diversity_index,
+                         mixed_model) %>% 
+                  janitor::clean_names() %>% 
+                  mutate_if(is.character, factor)),
+         fitted_mod_workflow = list(poss_fit(model_workflows, 
+                                             effects_analysis)),
+         fitted_model = list(poss_extract_fit_engine(fitted_mod_workflow)),
+         convergence = list(if (!is.na(fitted_model)) 
+           possibly_check_convergence(fitted_model)),
+         singularity = list(if (!is.na(fitted_model)) 
+           possibly_check_singularity(fitted_model)),
+         params = list(if (!is.na(fitted_model)) 
+           possibly_parameters(fitted_model)),
+         fixed_effects = paste0(fixed_effects, collapse = ", ")
   ) %>% 
   unnest_wider(random_intercepts, names_sep = "_") %>% 
-  select(-outcome, 
-         -model_workflows, 
-         -fitted_mod_workflow, 
-         -effects_analysis,
-         estimate_type) %>% 
-  replace_na(list(convergence = FALSE, singularity = TRUE)) 
+  unnest(c(convergence, singularity)) %>% 
+  rowwise() %>% 
+  replace_na(list(convergence = FALSE)) %>% 
+  select(-model_workflows, -fitted_mod_workflow, -effects_analysis)
 
 yi_multivar_singularity_convergence <- 
   all_model_fits_multivar %>% 
