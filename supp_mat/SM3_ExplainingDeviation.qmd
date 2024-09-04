@@ -1463,11 +1463,11 @@ yi_multivar_singularity_convergence %>%
   gt_fmt_yi(columns = "estimate_type")
 ```
 
-For the blue tit analyses, the only models that did converged, were not singular and had estimable random effect variances were the $y_{25}$ and $y_{50}$ prediction scenarios with Reviewer ID as the model random effect, and the $y_{50}$ scenario with Study ID as the random effect (@tbl-yi-multivar-singularity-convergence).
+For the blue tit analyses, the only models that did converge, were not singular and had estimable random effect variances were the $y_{25}$ and $y_{50}$ prediction scenarios with Reviewer ID as the model random effect, and the $y_{50}$ scenario with Study ID as the random effect (@tbl-yi-multivar-singularity-convergence).
 
 Of the different random effects structures we trialled for the *Eucalyptus* analyses, only the model with Study ID sa the random effect successfully fitted to the $y_{25}$ prediction scenario, with models either failing to converge due to complete separation (`lme4::` error: `Downdated VtV is not positive definite`, see <https://github.com/lme4/lme4/issues/483>).
 
-Consequently, we deviated from our intended plan of using random effects for both Effect ID and Reviewer ID, instead using a single random effect for Reviewer ID for the $y_{25}$ and $y_{50}$ prediction scnearios for the blue tit datasets, and Study ID for the $y_{25}$ scenario for the *Eucalyptus* analysis (@tbl-BT-yi-multivar-summary, @tbl-BT-yi-multivar-params).
+Consequently, we deviated from our intended plan of using random effects for both Effect ID and Reviewer ID, instead using a single random effect for Reviewer ID for the $y_{25}$ and $y_{50}$ prediction scenarios for the blue tit datasets, and Study ID for the $y_{25}$ scenario for the *Eucalyptus* analysis (@tbl-BT-yi-multivar-summary, @tbl-BT-yi-multivar-params).
 
 ```{r}
 #| label: tbl-BT-yi-multivar-summary
