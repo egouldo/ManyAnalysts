@@ -3649,6 +3649,7 @@ We re-ran the multi-level meta-analysis with a fixed-effect for the categorical 
 #| label: fig-cat-peer-rating
 #| echo: false
 #| message: false
+#| warning: false
 #| fig-cap: "Violin plot of Box-Cox transformed deviation from meta-analytic mean $Z_r$ as a function of categorical peer rating. Grey points for each rating group denote model-estimated marginal mean deviation, and error bars denote 95$\\%$CI of the estimate. **A** Blue tit dataset, **B** *Eucalyptus* dataset."
 #| fig-height: 8
 #| fig-width: 10
