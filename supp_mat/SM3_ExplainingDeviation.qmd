@@ -1471,27 +1471,34 @@ Consequently, we deviated from our intended plan of using random effects for bot
 
 ```{r}
 #| label: tbl-BT-yi-multivar-summary
-#| tbl-cap: "Model summary statistic for non-singular, converging multivariate models fit to out-of-sample predictions."
-yi_multivar_singularity_convergence %>% 
-  select(-params) %>% 
-  filter(SE_calc == TRUE) %>%
-  mutate(broom_summary = 
-           map(fitted_model, broom.mixed::glance), 
-         performance_summary = 
-           map(fitted_model, performance::performance)) %>% 
-  unnest(c(performance_summary, 
-           broom_summary), names_sep = "-") %>% 
-  select(dataset, estimate_type, random_intercepts_1,
-         contains(c( "RMSE", "sigma",  "R2", "nobs", "ICC")), 
-         -contains("AICc")) %>% 
-  rename_with(~ str_remove(.x, "performance_summary-") %>%
-                str_remove("broom_summary-")) %>% 
-  select(-sigma) %>% 
+#| tbl-cap: "Model summary statistic for non-singular, converging multivariate models fit to out-of-sample estimates $y_i$."
+# pull models from ManyEcoEvo, have manually checked and validated that ManyEcoEvo 
+# fitted models resulted in identifical model fit as equivalent models in 
+# pipeline above
+
+ManyEcoEvo_yi_viz %>% 
+  filter(model_name == "MA_mod_mv") %>% 
+  rowwise() %>% 
+  mutate(converged = 
+           possibly_check_convergence(model), 
+         singularity = possibly_check_singularity(model)) %>% 
+  select(dataset, estimate_type, mod_fit_stats, mod_glance) %>% 
+  hoist(mod_fit_stats, "RMSE", "Sigma", "R2_conditional", "R2_marginal", "ICC") %>% 
+  hoist(mod_glance, "nobs") %>% 
+  select(-mod_glance, -mod_fit_stats) %>% 
+  semi_join({ManyEcoEvo_yi_viz %>% 
+      filter(model_name == "MA_mod_mv") %>% 
+      rowwise() %>% 
+      transmute(dataset, 
+                estimate_type, 
+                converged = possibly_check_convergence(model), 
+                singularity = possibly_check_singularity(model)) %>% 
+      filter(converged, !singularity)},
+            by = join_by(dataset, estimate_type)) %>% 
   relocate(nobs, .after = "ICC") %>% 
   gt::gt(groupname_col = "dataset", rowname_col = "estimate_type") %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::cols_label(estimate_type = "Prediction Scenario", 
-                 random_intercepts_1 = "Random Effect",
                  R2_conditional = gt::md("$$R^{2}_\\text{Conditional}$$"),
                  R2_marginal = gt::md("$$R^{2}_\\text{Marginal}$$"),
                  Sigma = gt::md("$$\\sigma$$"),
@@ -1509,6 +1516,44 @@ yi_multivar_singularity_convergence %>%
   gt::tab_style(style = cell_text(style = "italic", transform = "capitalize"), 
                 locations = cells_row_groups(groups = "eucalyptus")) %>% 
   gt::as_raw_html()
+
+# yi_multivar_singularity_convergence %>% 
+#   select(-params) %>% 
+#   filter(SE_calc) %>%
+#   mutate(broom_summary = 
+#            map(fitted_model, broom.mixed::glance), 
+#          performance_summary = 
+#            map(fitted_model, performance::performance)) %>% 
+#   unnest(c(performance_summary, 
+#            broom_summary), names_sep = "-") %>% 
+#   select(dataset, estimate_type, random_intercepts_1,
+#          contains(c( "RMSE", "sigma",  "R2", "nobs", "ICC")), 
+#          -contains("AICc")) %>% 
+#   rename_with(~ str_remove(.x, "performance_summary-") %>%
+#                 str_remove("broom_summary-")) %>% 
+#   select(-sigma) %>% 
+#   relocate(nobs, .after = "ICC") %>% 
+#   gt::gt(groupname_col = "dataset", rowname_col = "estimate_type") %>% 
+#   gt::opt_stylize(style = 6, color = "gray") %>% 
+#   gt::cols_label(estimate_type = "Prediction Scenario", 
+#                  random_intercepts_1 = "Random Effect",
+#                  R2_conditional = gt::md("$$R^{2}_\\text{Conditional}$$"),
+#                  R2_marginal = gt::md("$$R^{2}_\\text{Marginal}$$"),
+#                  Sigma = gt::md("$$\\sigma$$"),
+#                  dataset = "Dataset",
+#                  nobs = gt::md("$N_{Obs}$")) %>% 
+#   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
+#                                        columns = dataset),
+#                 style = cell_text(style = "italic")) %>% 
+#   gt::cols_hide(dataset) %>% 
+#   gt_fmt_yi(columns = "estimate_type") %>% 
+#   gt::fmt_scientific(columns = c("RMSE", "Sigma"),
+#                      decimals = 2) %>%
+#   gt::fmt_number(columns = c(gt::starts_with("R2"), "ICC"),
+#                  decimals = 2) %>%
+#   gt::tab_style(style = cell_text(style = "italic", transform = "capitalize"), 
+#                 locations = cells_row_groups(groups = "eucalyptus")) %>% 
+#   gt::as_raw_html()
 ```
 
 ```{r}
