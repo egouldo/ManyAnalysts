@@ -1320,38 +1320,6 @@ multivar_performance_tidy %>%
 #| label: tbl-yi-multivar-singularity-convergence
 #| tbl-cap: "Singularity and convergence checks for all combinations of random effects specifications trialled for across subsets of out of sample predictions $y_i$ from multivariate models."
 
-formula_study_id <- workflow() %>%
-  add_variables(outcomes = box_cox_abs_deviation_score_estimate, 
-                predictors =  c(publishable_as_is, 
-                                rate_analysis, 
-                                mean_diversity_index, 
-                                mixed_model, 
-                                study_id)) %>% 
-  add_model(model, 
-            formula = box_cox_abs_deviation_score_estimate ~ publishable_as_is + rate_analysis + mean_diversity_index + mixed_model + (1 | study_id ))
-
-formula_ReviewerId <- workflow() %>%
-  add_variables(outcomes = box_cox_abs_deviation_score_estimate, 
-                predictors =  c(publishable_as_is, 
-                                rate_analysis, 
-                                mean_diversity_index, 
-                                mixed_model,
-                                reviewer_id)) %>% 
-  add_model(model, 
-            formula = box_cox_abs_deviation_score_estimate ~ publishable_as_is + rate_analysis + mean_diversity_index + mixed_model + (1 | reviewer_id ))
-
-formula_both <- workflow() %>%
-  add_variables(outcomes = box_cox_abs_deviation_score_estimate, 
-                predictors =  c(publishable_as_is, 
-                                rate_analysis, 
-                                mean_diversity_index, 
-                                mixed_model,
-                                reviewer_id, 
-                                study_id)) %>% 
-  add_model(model,
-            formula = box_cox_abs_deviation_score_estimate ~ publishable_as_is + rate_analysis + mean_diversity_index + mixed_model + (1 | study_id) + (1 | reviewer_id))
-
-# ---- Create DF for combinatorial model specification ----
 possibly_parameters <- possibly(parameters::parameters, otherwise = NA)
 
 poss_extract_fit_engine <- possibly(extract_fit_engine, otherwise = NA)
