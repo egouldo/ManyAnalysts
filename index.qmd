@@ -3198,7 +3198,7 @@ heterogeneity_data_yi %>% mutate(tau_total = sum(sigma2_1, sigma2_2),
                                -starts_with("I2")), 
                    decimals = 2) %>% 
     gt::fmt_percent(columns = "I2_Total", scale_values = FALSE, decimals = 3) %>% 
-    gt::fmt_percent(columns = starts_with("I2_"), scale_values = FALSE, decimals = 2) %>% 
+    gt::fmt_percent(columns = starts_with("I2_"), scale_values = FALSE, decimals = 2,drop_trailing_zeros = T, drop_trailing_dec_mark = T) %>% 
     gt::opt_stylize(style = 6, color = "gray") %>% 
     gt::cols_label(dataset = "Dataset",
                    tau_total = gt::md("$${\\tau}_\\text{Total}$$"),
@@ -3211,6 +3211,7 @@ heterogeneity_data_yi %>% mutate(tau_total = sum(sigma2_1, sigma2_2),
                    estimate_type = gt::md("Prediction Scenario")) %>% 
     gt::text_transform(fn = function(x) map(x, gt::md), 
                        locations = gt::cells_row_groups()) %>% 
+  gt_fmt_yi(columns = "estimate_type") %>% 
   gt::as_raw_html()
 
 ```
