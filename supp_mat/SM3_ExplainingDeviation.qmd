@@ -1242,6 +1242,7 @@ multivar_mods %>%
       str_replace(dataset, "eucalyptus", "*Eucalyptus*"),             
     Parameter = 
       str_replace(Parameter, "mixed_model", "random_included"))  %>% 
+  group_by(dataset) %>% 
   gt::gt() %>% 
   gt::fmt(columns = "p",
           fns = function(x) gtsummary::style_pvalue(x, 
@@ -1319,6 +1320,7 @@ multivar_performance_tidy %>%
 ```{r}
 #| label: tbl-yi-multivar-singularity-convergence
 #| tbl-cap: "Singularity and convergence checks for all combinations of random effects specifications trialled for across subsets of out of sample predictions $y_i$ from multivariate models."
+#| seed: 1234
 
 possibly_parameters <- possibly(parameters::parameters, otherwise = NA)
 
@@ -1403,24 +1405,45 @@ yi_multivar_singularity_convergence <-
   left_join({all_model_fits_multivar %>% 
       unnest(params) %>% 
       filter(Effects == "random") %>% 
-      filter(is.infinite(CI_high) | is.na(SE)) %>% 
+      filter(is.na(SE) | is.infinite(SE)) %>% 
       distinct(fixed_effects, 
                random_intercepts_1,
                random_intercepts_2, 
                dataset, 
-               estimate_type,
-               convergence, 
-               singularity) %>% 
-      mutate(SE_calc = FALSE)}) %>% 
-  mutate(model_na = is.na(fitted_model), 
-         SE_calc = ifelse(is.na(fitted_model), FALSE, SE_calc), 
-         SE_calc = ifelse(is.na(SE_calc), TRUE, SE_calc))
+               estimate_type) %>% 
+      mutate(SE_calc = FALSE)}, 
+      by = join_by(dataset, 
+                   estimate_type, 
+                   random_intercepts_1,
+                   random_intercepts_2, 
+                   fixed_effects)) %>% 
+  left_join({all_model_fits_multivar %>% 
+      unnest(params) %>% 
+      filter(Effects == "random") %>% 
+      filter(if_any(contains("CI"), 
+                    list(is.infinite, is.na))) %>%  
+      distinct(fixed_effects, 
+               random_intercepts_1,
+               random_intercepts_2, 
+               dataset, 
+               estimate_type) %>% 
+      mutate(CI_calc = FALSE)},
+      by = join_by(dataset, 
+                   estimate_type, 
+                   random_intercepts_1,
+                   random_intercepts_2, 
+                   fixed_effects)) %>% 
+  rowwise() %>%
+  mutate(across(c(SE_calc, CI_calc), ~ ifelse(is.na(.x), TRUE, .x)),
+         across(c(SE_calc, CI_calc, singularity), 
+                ~ ifelse(is_false(convergence), NA, .x)))
 
-# If singularity == FALSE and convergence == TRUE, but the model appears here, then that's because
+# If singularity == FALSE and convergence == TRUE, 
+# but the model appears here, then that's because
 # the SD and CI's couldn't be estimated by parameters::
 
 yi_multivar_singularity_convergence %>% 
-  select(-fixed_effects, -fitted_model, -params, -model_na) %>% 
+  select(-fixed_effects, -fitted_model, -params) %>% 
   arrange(random_intercepts_1,
           random_intercepts_2, 
           dataset,
@@ -1440,19 +1463,22 @@ yi_multivar_singularity_convergence %>%
     locations = list(
       cells_body(columns = "singularity", rows = singularity == TRUE),
       cells_body(columns = "convergence", rows = convergence == FALSE), #TODO why didn't work here??
-      cells_body(columns = "SE_calc", rows = SE_calc == FALSE)
+      cells_body(columns = "SE_calc", rows = SE_calc == FALSE),
+      cells_body(columns = "CI_calc", rows = CI_calc == FALSE)
     )
   ) %>% 
   gt::text_transform(fn = function(x) ifelse(x == TRUE, "yes",
                                              ifelse(x == FALSE, "no", x)),
                      locations = cells_body(columns = c("singularity", 
                                                         "convergence", 
-                                                        "SE_calc"))) %>% 
+                                                        "SE_calc",
+                                                        "CI_calc"))) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::cols_label(dataset = "Dataset",
                  singularity = "Singular Fit?",
                  convergence = "Model converged?",
-                 SE_calc = "Can random effect SE be calculated?") %>% 
+                 SE_calc = "Can random effect SE be calculated?",
+                 CI_calc = "Can random effect CI be calculated?") %>% 
   gt::tab_spanner(label = "Random Effects",
                   columns = gt::starts_with("random")) %>% 
   gt::sub_missing() %>% 
