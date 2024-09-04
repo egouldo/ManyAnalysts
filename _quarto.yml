@@ -57,7 +57,7 @@ format:
             }
           };
           </script>
-
+css: "stylefile.css"
   
     # toc-location: left
     # number-depth: 1
