@@ -124,7 +124,17 @@ Table2 %>%
   gt::gt(rowname_col = "subset") %>% 
   gt::row_group_order(groups = c("fixed", "random", "interactions", "*N*")) %>% 
   gt::tab_spanner_delim(delim = ".") %>% 
-  gt::fmt_scientific(columns = c(contains("mean"), contains("SD")),
+  gt::fmt_scientific(columns = "mean.blue tit",
+                     rows = `mean.blue tit` < 0.01,
+                     decimals = 2) %>% 
+    gt::fmt_scientific(columns = "SD.blue tit",
+                     rows = `SD.blue tit` < 0.01,
+                     decimals = 2) %>% 
+    gt::fmt_scientific(columns = "mean.eucalyptus",
+                     rows = `mean.eucalyptus` < 0.01,
+                     decimals = 2) %>% 
+    gt::fmt_scientific(columns = "SD.eucalyptus",
+                     rows = `SD.eucalyptus` < 0.01,
                      decimals = 2) %>% 
   gt::cols_label_with(fn = Hmisc::capitalize) %>% 
   gt::tab_style(
