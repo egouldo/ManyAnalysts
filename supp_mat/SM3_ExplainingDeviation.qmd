@@ -998,6 +998,7 @@ ManyEcoEvo_yi_viz %>%
   gt::cols_move(columns = c(Effects, Group), after = Parameter) %>% 
   gt::sub_missing(columns = c(Effects, Group, t, df_error, p), 
                   missing_text = "") %>% 
+gt::cols_hide(Effects) %>% 
   gt::text_transform(fn = function(x) map(x, gt::md), 
                      locations = gt::cells_row_groups()) %>% 
   gt::text_transform(
@@ -1013,8 +1014,18 @@ ManyEcoEvo_yi_viz %>%
           fns = function(x) ifelse(x < 0.0009, 
                                    format(x, nsmall = 2, digits = 1),
                                    round(x, digits = 2))) %>% 
+  gt::fmt_scientific(columns = c( starts_with("CI_")),
+                     rows = CI_low < 0.01 | CI_high < 0.01 | CI_low > 1000 | CI_high > 1000,
+                     decimals = 2) %>%
+    gt::fmt_scientific(columns = c( starts_with("Coefficient")),
+                     rows = Coefficient < 0.01 | Coefficient > 1000,
+                     decimals = 2) %>%
+  gt::fmt_scientific(columns = c( starts_with("SE")),
+                     rows = SE < 0.01 | SE > 1000,
+                     decimals = 2) %>%
   gt::tab_style(locations = gt::cells_stub(rows = str_detect(dataset, "Eucalyptus")),
                 style = cell_text(style = "italic")) %>% 
+   gt::cols_label(Group = "Random Effect") %>% 
   gt_fmt_yi("estimate_type") %>% 
   gt::as_raw_html()
 
