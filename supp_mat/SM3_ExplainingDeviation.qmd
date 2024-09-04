@@ -784,7 +784,8 @@ yi_convergence_singularity %>%
       cells_body(columns = "SE_calc", rows = SE_calc == FALSE),
       cells_body(columns = "CI_calc", rows = CI_calc == FALSE)
     )
-  ) 
+  ) %>% 
+  gt::sub_missing()
 ```
 
 Group means and $95\%$ confidence intervals for different categories of peer-review rating are all overlapping (@fig-yi-deviation-cat-rating).
