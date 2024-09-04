@@ -171,8 +171,19 @@ Table3 %>%
   ungroup %>% 
   gt::gt(rowname_col = "subset") %>% 
   gt::tab_spanner_delim(delim = ".") %>% 
-  gt::fmt_scientific(columns = c(contains("mean"), contains("SD")),
+  gt::fmt_scientific(columns = "mean.blue tit",
+                     rows = `mean.blue tit` < 0.01,
                      decimals = 2) %>% 
+    gt::fmt_scientific(columns = "SD.blue tit",
+                     rows = `SD.blue tit` < 0.01,
+                     decimals = 2) %>% 
+    gt::fmt_scientific(columns = "mean.eucalyptus",
+                     rows = `mean.eucalyptus` < 0.01,
+                     decimals = 2) %>% 
+    gt::fmt_scientific(columns = "SD.eucalyptus",
+                     rows = `SD.eucalyptus` < 0.01,
+                     decimals = 2) %>% 
+  gt::fmt_number(decimals = 2,drop_trailing_zeros = T, drop_trailing_dec_mark = T) %>% 
   gt::cols_label_with(fn = Hmisc::capitalize) %>% 
   gt::cols_label_with(c(contains("Eucalyptus")), fn = ~ gt::md(paste0("*",.x, "*"))) %>% 
   gt::sub_values(columns = subset, values = c("effects"), 
