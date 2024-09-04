@@ -936,9 +936,10 @@ ManyEcoEvo_yi_viz %>%
   ) %>% 
   semi_join(
     {yi_convergence_singularity %>% 
-    filter(!singularity, 
-           convergence, 
-           SE_calc, CI_calc) },
+        filter(!singularity, 
+               convergence, 
+               SE_calc, 
+               CI_calc) },
     by = join_by("dataset", "estimate_type", "model_name")
   ) %>% 
   select(dataset, 
