@@ -2137,16 +2137,16 @@ We calculated summary statistics describing variation among analyses, including 
 We also present the number of analyses in which each variable was included.
 We summarized the variability in standardized effect sizes and predicted values of dependent variables among the individual analyses using standard random effects meta-analytic techniques.
 First, we derived standardized effect sizes from each individual analysis.
-We did this for all linear models or generalized linear models by converting the $t$ value and the degree of freedom ($df$) associated with regression coefficients (e.g. the effect of the number of siblings \[predictor\] on growth \[response\] or the effect of grass cover \[predictor\] on seedling recruitment \[response\]) to the correlation coefficient, $r$, using the following:
+We did this for all linear models or generalized linear models by converting the $t$ value and the degree of freedom ($\mathit{df}$) associated with regression coefficients (e.g. the effect of the number of siblings \[predictor\] on growth \[response\] or the effect of grass cover \[predictor\] on seedling recruitment \[response\]) to the correlation coefficient, $r$, using the following:
 
 $$
-r=\sqrt{\frac{{t}^2}{\left({{t}^2}+df\right) }}
+r=\sqrt{\frac{{t}^2}{\left({{t}^2}+\mathit{df}\right) }}
 $$ {#eq-t-to-r}
 
-This formula can only be applied if $t$ and $df$ values originate from linear or generalized linear models [GLMs; @nakagawa2007].
-If, instead, linear mixed-effects models (LMMs) or generalized linear mixed-effects models (GLMMs) were used by a given analysis, the exact $df$ cannot be estimated.
-However, adjusted $df$ can be estimated, for example, using the Satterthwaite approximation of $df$, ${df}_S$, [note that SAS uses this approximation to obtain $df$ for LMMs and GLMMs; @luke2017].
-For analyses using either LMMs or GLMMs that do not produce ${df}_S$ we planned to obtain ${df}_S$ by rerunning the same (G)LMMs using the `lmer()` or `glmer()` function in the *lmerTest* package in R [@kuznetsova2017; @base].
+This formula can only be applied if $t$ and $\mathit{df}$ values originate from linear or generalized linear models [GLMs; @nakagawa2007].
+If, instead, linear mixed-effects models (LMMs) or generalized linear mixed-effects models (GLMMs) were used by a given analysis, the exact $\mathit{df}$ cannot be estimated.
+However, adjusted $\mathit{df}$ can be estimated, for example, using the Satterthwaite approximation of $\mathit{df}$, $\mathit{df}_S$, [note that SAS uses this approximation to obtain $\mathit{df}$ for LMMs and GLMMs; @luke2017].
+For analyses using either LMMs or GLMMs that do not produce $\mathit{df}_S$ we planned to obtain $\mathit{df}_S$ by rerunning the same (G)LMMs using the `lmer()` or `glmer()` function in the *lmerTest* package in R [@kuznetsova2017; @base].
 
 ::: {.callout-note appearance="simple"}
 ## Preregistration Deviation:
@@ -2155,8 +2155,8 @@ Rather than re-run these analyses ourselves, we sent a follow-up survey (referen
 The instructions are publicly available and can be found within the following files (blue tit: <https://osf.io/kr2g9>, *Eucalyptus*: <https://osf.io/dfvym>).
 :::
 
-We then used the $t$ values and $df_S$ from the models to obtain $r$ as per the formula above.
-All $r$ and accompanying $df$ (or $df_S$) were converted to Fisher's $Z_r$ 
+We then used the $t$ values and $\mathit{df}_S$ from the models to obtain $r$ as per the formula above.
+All $r$ and accompanying $\mathit{df}$ (or $\mathit{df}_S$) were converted to Fisher's $Z_r$ 
 
 $$
 Z_r = \frac{1}{2} \ln(\dfrac{1+r}{1-r})
@@ -2220,7 +2220,7 @@ $$ {#eq-MA_yi}
 
 where $y_i$ is the predicted value for the dependent variable at the 25th percentile, median, or 75th percentile of the independent variables.
 The individual $Z_r$ effect sizes were weighted with the inverse of sampling variance for $Z_r$.
-The individual predicted values for dependent variable ($y_i$) were weighted by the inverse of the associated $SE^2$ (original registration omitted "inverse of the" in error).
+The individual predicted values for dependent variable ($y_i$) were weighted by the inverse of the associated $\text{SE}^2$ (original registration omitted "inverse of the" in error).
 These analyses provided an average $Z_r$ score or an average $y_i$ with corresponding 95$\%$confidence interval and allowed us to estimate two heterogeneity indices, $\tau^2$ and $I^2$.
 The former, $\tau^2$, is the absolute measure of heterogeneity or the between-study variance (in our case, between-effect variance) whereas $I^2$ is a relative measure of heterogeneity.
 We obtained the estimate of relative heterogeneity ($I^2$) by dividing the between-effect variance by the sum of between-effect and within-effect variance (sampling error variance).

@@ -250,7 +250,7 @@ For each dataset (blue tit, Eucalyptus), we created a second, more conservative 
 
 ```{r}
 #| label: tbl-Zr-exclusion-subsetting
-#| tbl-cap: "Estimated meta-analytic mean, standard error, and 95% confidence intervals, from analyses of the primary data set, the more conservative version of the dataset which excluded effects based on less reliable estimates of $df$, and both of these datasets with outliers removed."
+#| tbl-cap: "Estimated meta-analytic mean, standard error, and 95% confidence intervals, from analyses of the primary data set, the more conservative version of the dataset which excluded effects based on less reliable estimates of $\\mathit{df}$, and both of these datasets with outliers removed."
 ManyEcoEvo_viz %>% 
     dplyr::filter(estimate_type == "Zr", 
                   model_name == "MA_mod", 
@@ -276,7 +276,7 @@ group_by(exclusion_set) %>%
           fns = function(x) gtsummary::style_pvalue(x, prepend_p = FALSE)) %>% 
   gt::fmt_number(columns = c(-p.value, -dataset)) %>% 
   gt::cols_label(estimate = gt::md("$$\\hat\\mu$$"), 
-                 std.error = gt::md("$$SE[\\hat\\mu]$$"),
+                 std.error = gt::md("$$\text{SE}[\\hat\\mu]$$"),
                  conf.low = gt::md("95\\%CI")) %>% 
   gt::cols_merge(columns = starts_with("conf"), 
                  pattern = "[{1},{2}]") %>% 
