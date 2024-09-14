@@ -158,7 +158,7 @@ The choice of variables also differed substantially among analyses (@tbl-Table3)
 
 ```{r}
 #| label: tbl-Table3
-#| tbl-cap: "Mean, SD, minimum and maximum number of analyses in which each variable was used, for effect size analyses only ($Z_r$), out-of-sample prediction only ($y_i$), using the full dataset."
+#| tbl-cap: "Mean,  $\\text{SE}$, minimum and maximum number of analyses in which each variable was used, for effect size analyses only ($Z_r$), out-of-sample prediction only ($y_i$), using the full dataset."
 #table 3 - summary of mean, sd and range for the number of analyses in which each variable was used
 Table3 %>% 
   rename(SD = sd, subset = subset_name) %>% 

@@ -409,8 +409,8 @@ transformation_plot_data %>%
 During model fitting, especially during fitting of models with random effects using `lme4` [@lme4], some models failed to converge while others were accompanied with console warnings of singular fit.
 However, the convergence checks from `lme4` are known to be too strict (see `?performance::check_convergence()` documentation for a discussion of this issue), consequently we checked for model warnings of convergence failure using the `check_convergence()` function from the `performance` package [@performance].
 For all models we double-checked that they did not have singular fit by using `performance::check_singularity`.
-Despite passing `performance::check_singularity()`, `parameters::parameters()` was unable to properly estimate SE and confidence intervals for the random effects of some models, which suggests singular fit.
-For all models we also checked whether the SE of random effects could be calculated, and if not, marked these models as being singular.
+Despite passing `performance::check_singularity()`, `parameters::parameters()` was unable to properly estimate $\text{SE}$ and confidence intervals for the random effects of some models, which suggests singular fit.
+For all models we also checked whether the $\text{SE}$ of random effects could be calculated, and if not, marked these models as being singular.
 Analyses of singularity and convergence are presented throughout this document under the relevant section-heading for the analysis type and outcome, i.e. effect size ($Z_r$) or out-of-sample predictions ($y_i$).
 
 ## Deviation Scores as explained by Reviewer Ratings
@@ -418,11 +418,11 @@ Analyses of singularity and convergence are presented throughout this document u
 ### Effect Sizes $Z_r$ {#sec-Zr-deviation-ratings}
 
 For models of deviation explained by categorical peer ratings, including random effects for both the effect ID and the reviewer ID resulted in models with singular fit, or that failed to converge, for both blue tit and *Eucalyptus* datasets (@tbl-explore-Zr-deviation-random-effects-structure).
-For the *Eucalyptus* dataset, when a random effect was included for Reviewer ID only, the model passed the check with `performance::check_singularity()`, however, the SD and CI could not be estimated by `parameters::model_parameters()` with a warning stating this was likely due to singular fit.
+For the *Eucalyptus* dataset, when a random effect was included for Reviewer ID only, the model passed the check with `performance::check_singularity()`, however, the $\text{SD}$ and CI could not be estimated by `parameters::model_parameters()` with a warning stating this was likely due to singular fit.
 When fitting models of deviation explained by categorical peer ratings, we consequently included a random effect for Reviewer ID only (See @tbl-deviation-rating-estimates).
 
 For models of deviation explained by continuous peer-review ratings, when including both random effects for effect ID and Reviewer ID model fits were singular for both datasets (@tbl-explore-Zr-deviation-random-effects-structure).
-For the *Eucalyptus* dataset when including a random effect only for Reviewer ID and dropping the random effect for effect ID, this model passed the `performance::check_singularity()` check, however, however, the SD and CI could not be estimated by `parameters::model_parameters()` with a warning stating this was likely due to singular fit.
+For the *Eucalyptus* dataset when including a random effect only for Reviewer ID and dropping the random effect for effect ID, this model passed the `performance::check_singularity()` check, however, however, the $\text{SD}$ and CI could not be estimated by `parameters::model_parameters()` with a warning stating this was likely due to singular fit.
 Consequently, for both blue tit and *Euclayptus* datasets, we fitted and analysed models of deviation explained by continuous peer review ratings with a random effect for Effect ID only (See @tbl-deviation-rating-estimates).
 
 ```{r}
@@ -747,7 +747,7 @@ yi_singularity_convergence_sorensen_mixed_mod <-
 We fitted the same deviation models on the out-of-sample-predictions dataset that we fitted for the effect-size dataset. 
 However, while all models of deviation explained by categorical peer-ratings converged, the following datasets and estimate types suffered from singular fit: `r yi_convergence_singularity %>% filter(singularity == TRUE, str_detect(model_name, "categorical")) %>% unite("singular_models", dataset, estimate_type, sep = " - ") %>% pull(singular_models) %>% paste0(collapse = ", ") %>%  str_replace("y25", "$y_{25}$") %>%  str_replace("y50", "$y_{50}$") %>%  str_replace("y75", "$y_{75}$") %>% str_replace("Eucalyptus", "*Eucalyptus*")` (@tbl-yi-deviation-ratings-convergence-singularity).
 Models of deviation explained by *continuous* ratings all converged, however models for the `r yi_convergence_singularity %>% filter(convergence == FALSE, str_detect(model_name, "continuous")) %>% unite("non_converged", dataset, estimate_type, sep = " - ") %>% pull(non_converged) %>% paste0(collapse = ", ") %>%  str_replace("y25", "$y_{25}$") %>%  str_replace("y50", "$y_{50}$") %>%  str_replace("y75", "$y_{75}$") %>% str_replace("Eucalyptus", "*Eucalyptus*")` out-of-sample predictions model fit was singular.
-Similarly to the effect-size ($Z_r$) dataset, SD and CI could not be estimated for random effects in some models (@tbl-yi-deviation-ratings-convergence-singularity), consequently we interpreted this to mean the models had singular fit (See @sec-Zr-deviation-ratings). 
+Similarly to the effect-size ($Z_r$) dataset, $\text{SD}$ and CI could not be estimated for random effects in some models (@tbl-yi-deviation-ratings-convergence-singularity), consequently we interpreted this to mean the models had singular fit (See @sec-Zr-deviation-ratings). 
 Results of all deviation models are therefore presented only for models with non-singular fit, and that converged (@tbl-yi-deviation-ratings-convergence-singularity).
 
 
