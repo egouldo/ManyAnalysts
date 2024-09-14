@@ -636,19 +636,7 @@ ManyEcoEvo_viz %>%
 #| echo: false
 #| message: false
 
-# Constructed Variables Included in the ManyAnalysts meta-analysis
-ManyEcoEvo_constructed_vars <-
-  tribble(~response_variable_name,
-          "euc_sdlgs_all",
-          "euc_sdlgs>50cm",
-          "euc_sdlgs0_2m",
-          "small*0.25+medium*1.25+large*2.5",
-          "euc_sdlgs50cm_2m",
-          "average.proportion.of.plots.containing.at.least.one.euc.seedling.of.any.size",
-          "day_14_weight/(day_14_tarsus_length^2)",
-          "day_14_weight/day_14_tarsus_length",
-          "day_14_weight*day_14_tarsus_length"
-  )
+by <- join_by(response_variable_name) # don't join on id_col: inc. other excl.
 
 # Analyst Constructed Variables
 all_constructed_vars <- 
@@ -660,7 +648,23 @@ all_constructed_vars <-
     drop_na() %>% 
     arrange()
 
-by <- join_by(response_variable_name)
+# Constructed Variables Included in the ManyAnalysts meta-analysis
+# (i.e. we have included them in the parameter tables)
+ManyEcoEvo_yi_constructed_vars <-
+ ManyEcoEvo:::analysis_data_param_tables %>% 
+  distinct(variable, dataset) %>% 
+  rename(response_variable_name = variable) %>% 
+  semi_join(all_constructed_vars, by) %>% 
+  filter(!str_detect(response_variable_name, 
+                     "average.proportion.of")) # was excluded
+
+yi_constructed <-
+  ManyEcoEvo_yi %>% 
+    pull(data, dataset) %>% 
+    list_rbind(names_to = "dataset") %>% 
+    filter(str_detect(response_variable_type, "constructed")) %>% 
+    distinct(dataset, id_col, TeamIdentifier, response_variable_name) %>% 
+    drop_na() 
 
 excluded_yi_constructed <- 
   ManyEcoEvo %>% 
@@ -669,7 +673,7 @@ excluded_yi_constructed <-
   filter(str_detect(response_variable_type, "constructed")) %>% 
   distinct(dataset, id_col, TeamIdentifier, response_variable_name) %>% 
   drop_na() %>% 
-  anti_join(ManyEcoEvo_constructed_vars, by)
+  anti_join(yi_constructed, by) #rm response vars in yi_constructed
 
 n_dropped_analyses <- 
   excluded_yi_constructed %>% 
