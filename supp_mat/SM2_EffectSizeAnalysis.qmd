@@ -659,7 +659,7 @@ ManyEcoEvo_yi_constructed_vars <-
                      "average.proportion.of")) # was excluded
 
 yi_constructed <-
-  ManyEcoEvo_yi %>% 
+  ManyEcoEvo_yi_results %>% 
     pull(data, dataset) %>% 
     list_rbind(names_to = "dataset") %>% 
     filter(str_detect(response_variable_type, "constructed")) %>% 
@@ -692,15 +692,14 @@ We standardized the $y_i$ estimates and their standard errors for the blue tit a
 $$
 Z_j = \frac{\mu_i-\bar{x}_j}{\text{SD}_j} \\
 \\
-{\text{VAR}}_{Z_j} = \frac{{\text{SE}}_{\mu_i}}{{\text{SD}_j}}
+{\text{VAR}}_{Z_j} = \frac{{\text{SE}}_{\mu_i}}{{\text{SD}_j}} \\
 $$ {#eq-Z-VZ}
 
-Where $\mu$ is the population parameter taken from our original dataset for variable $i$, and $\bar{x}_j$ and $\text{SD}_j$ are the out of sample point estimate values supplied for analysis $j$. $\text{SE}_{{\mu}_{i}}$ is the standard error of the population mean for variable $i$, while ${\text{VAR}}_{{Z}_{j}}$ and ${Z}_{j}$ are the standardized variance and mean estimate for analysis $j$. Note that for the response variables that were scaled-and-centered, or else mean-centred before model fitting, we do not need to standardise because these are already on the Z-scale. In doing so we make the assumption that analysts' data subsetting will have little effect on the outcomes. For some analyses of the blue tit dataset, analysts constructed their own unique response variables, which meant we needed to reconstruct these variables in order to calculate the population parameters. Unfortunately we were not able to re-construct all variables used by the analysts, as we were unable to reproduce the data required for their re-construction. Included and excluded constructed variables are illustrated in @tbl-constructed-var-exclusions.
-A total of `r n_dropped_analyses` were excluded from out-of-sample meta-analysis, from `r n_teams_w_dropped_analyses` teams, including the following analysis identifiers: `r pull(excluded_yi_constructed, id_col) %>% gluedown::md_italic() %>% glue::glue_collapse(", ",last = " and ")`.
+Where $\mu$ is the population parameter taken from our original dataset for variable $i$, and $\bar{x}_j$ and $\text{SD}_j$ are the out of sample point estimate values supplied for analysis $j$. $\text{SE}_{{\mu}_{i}}$ is the standard error of the population mean for variable $i$, while ${\text{VAR}}_{{Z}_{j}}$ and ${Z}_{j}$ are the standardized variance and mean estimate for analysis $j$. Note that for the response variables that were scaled-and-centered, or else mean-centred before model fitting, we do not need to standardise because these are already on the Z-scale. In doing so we make the assumption that analysts' data subsetting will have little effect on the outcomes. For some analyses of the blue tit dataset, analysts constructed their own unique response variables, which meant we needed to reconstruct these variables in order to calculate the population parameters. Unfortunately we were not able to re-construct all variables used by the analysts, as we were unable to reproduce the data required for their re-construction, e.g. we were unable to reproduce principal component analyses or fitted models for extracting residuals [@tbl-constructed-var-exclusions]. A total of `r n_dropped_analyses` were excluded from out-of-sample meta-analysis, from `r n_teams_w_dropped_analyses` teams, including the following analysis identifiers: `r pull(excluded_yi_constructed, id_col) %>% gluedown::md_italic() %>% glue::glue_collapse(", ",last = " and ")`.
 
 ```{r}
 #| label: tbl-constructed-var-exclusions
-#| tbl-cap: "Analyst-constructed variables and their inclusion in meta-analyses of out-of-sample predictions, $y\\_i$"
+#| tbl-cap: "Analyst-constructed variables and their inclusion in meta-analyses of out-of-sample predictions, $y\\_i$."
 all_constructed_vars %>% 
   semi_join(ManyEcoEvo_yi_constructed_vars, by) %>% 
   mutate(included_in_yi = TRUE) %>% 
@@ -711,25 +710,31 @@ all_constructed_vars %>%
         mutate(included_in_yi = FALSE)
     }
   ) %>% 
-  dplyr::mutate(included_in_yi = case_match(included_in_yi, 
+  dplyr::mutate(included_in_yi = 
+                  case_match(included_in_yi, 
                                             TRUE ~ "check", 
                                             FALSE ~ "xmark" ),
-                response_variable_name = gluedown::md_code(response_variable_name)) %>% 
+                response_variable_name = 
+                  gluedown::md_code(response_variable_name)) %>% 
   group_by(dataset) %>% 
   gt::gt() %>% 
   gt::cols_label(response_variable_name = "Constructed Variable",
                  included_in_yi = gt::md("Variable reconstructed for meta-analysis?")) %>%
   gt::fmt_icon(included_in_yi) %>% 
-  gt::tab_style(style = cell_text(style = "italic",transform = "capitalize"), 
+  gt::tab_style(style = cell_text(style = "italic", transform = "capitalize"), 
                 locations = cells_row_groups(groups = "eucalyptus")) %>%
   gt::tab_style(style = cell_text(align = "center"), 
                 locations = cells_body(columns = included_in_yi)) %>% 
-    gt::tab_style(style = cell_text(align = "left"), 
+  gt::tab_style(style = cell_text(align = "left"), 
                 locations = cells_body(columns = response_variable_name)) %>% 
-      gt::tab_style(style = cell_text(align = "left"), 
+  gt::tab_style(style = cell_text(align = "left"), 
                 locations = cells_column_labels(response_variable_name)) %>% 
-  gt::opt_stylize(style = 6, color = "gray") %>% 
-  gt::fmt_markdown(columns = response_variable_name)
+  gt::tab_style(locations = cells_body(columns = response_variable_name), 
+                     style = cell_text(size = "small")) %>% 
+  gt::fmt_markdown(columns = response_variable_name) %>% 
+  gt::opt_stylize(style = 6, color = "gray", add_row_striping = TRUE) %>% 
+  gt::opt_row_striping(row_striping = TRUE) %>% 
+  gt::as_raw_html()
 ```
 
 #### Non-truncated $y_{i}$ meta-analysis forest plot
@@ -738,10 +743,11 @@ Below is the non-truncated version of @fig-euc-yi-forest-plot showing a forest p
 
 ```{r}
 #| label: fig-euc-yi-forest-plot-full
-#| fig-cap: "Forest plot of meta-analytic estimated out of sample  predictions, $y_{i}$, on the response-scale (stem counts) for *Eucalyptus* analyses. Circles represent individual analysis estimates. Triangles represent the meta-analytic mean for each prediction scenario. Navy blue coloured points correspond to $y_{25}$ scenario, blue coloured points correspond to the $y_{50}$ scenario, while light blue points correspond to the $y_{75}$ scenario. Error bars are 95% confidence intervals. Outliers (observations more than 3SD above the mean) have been removed prior to model fitting."
+#| fig-cap: "Forest plot of meta-analytic estimated out of sample  predictions, $y_{i}$, on the response-scale (stem counts) for *Eucalyptus* analyses. Circles represent individual analysis estimates. Triangles represent the meta-analytic mean for each prediction scenario. Navy blue coloured points correspond to $y_{25}$ scenario, blue coloured points correspond to the $y_{50}$ scenario, while light blue points correspond to the $y_{75}$ scenario. Error bars are 95% confidence intervals. Outliers (i.e. observations with mean estimates more than 3SD above the population parameter mean, see @sec-excluded-yi) have been removed prior to model fitting."
 #| fig-height: 8
 #| echo: true
 #| message: false
+#| fig-keep: last
 
 plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE, y_zoom = numeric(2L)){
   if(MA_mean == FALSE){
