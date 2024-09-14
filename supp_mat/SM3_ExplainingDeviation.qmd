@@ -350,7 +350,7 @@ Consequently, each dataset has its own unique value of $\lambda$, and therefore 
 
 ```{r}
 #| label: fig-box-cox-transformations
-#| fig-cap: "Box-Coxtransformed absolute deviation scores plotted against (untransformed) absolute deviation scores."
+#| fig-cap: "Box-Cox transformed absolute deviation scores plotted against (untransformed) absolute deviation scores."
 #| column: body-outset
 #| fig-height: 8
 #| message: false
