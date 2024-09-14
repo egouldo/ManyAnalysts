@@ -836,11 +836,12 @@ eucalyptus_yi_plot_data <-
   rename(study_id = term) %>% 
   ungroup()
 
+max_x_axis <- 
+  eucalyptus_yi_plot_data %>% 
+  pluck("conf.high", max) %>% 
+  round() + 10
+
 eucalyptus_yi_plot_data %>% 
-  plot_forest_2(MA_mean = T,y_zoom = c(0,140)) +
+  plot_forest_2(MA_mean = T, y_zoom = c(0, max_x_axis)) +
   theme(axis.text.y = element_blank())
-
-# mutate(exclusion_threshold = param_mean + 3*param_sd) %>% 
-
-
 ```
