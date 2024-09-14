@@ -701,12 +701,12 @@ A total of `r n_dropped_analyses` were excluded from out-of-sample meta-analysis
 #| label: tbl-constructed-var-exclusions
 #| tbl-cap: "Analyst-constructed variables and their inclusion in meta-analyses of out-of-sample predictions, $y\\_i$"
 all_constructed_vars %>% 
-  semi_join(ManyEcoEvo_constructed_vars, by) %>% 
+  semi_join(ManyEcoEvo_yi_constructed_vars, by) %>% 
   mutate(included_in_yi = TRUE) %>% 
   bind_rows(
     {
       all_constructed_vars %>% 
-        anti_join(ManyEcoEvo_constructed_vars, by) %>% 
+        anti_join(ManyEcoEvo_yi_constructed_vars, by) %>% 
         mutate(included_in_yi = FALSE)
     }
   ) %>% 
@@ -717,7 +717,7 @@ all_constructed_vars %>%
   group_by(dataset) %>% 
   gt::gt() %>% 
   gt::cols_label(response_variable_name = "Constructed Variable",
-                 included_in_yi = gt::md("Included in $y_i$ meta-analysis?")) %>% 
+                 included_in_yi = gt::md("Variable reconstructed for meta-analysis?")) %>%
   gt::fmt_icon(included_in_yi) %>% 
   gt::tab_style(style = cell_text(style = "italic",transform = "capitalize"), 
                 locations = cells_row_groups(groups = "eucalyptus")) %>%
