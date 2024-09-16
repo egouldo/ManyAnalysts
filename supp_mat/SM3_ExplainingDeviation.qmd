@@ -271,9 +271,6 @@ possibly_check_convergence <- possibly(performance::check_convergence,
 possibly_check_singularity <- possibly(performance::check_singularity,
                                        otherwise = NA)
 
-possibly_check_convergence <- possibly(performance::check_convergence,
-                                       otherwise = NA)
-
 # define plotting fun for walk plotting
 plot_continuous_rating <- function(plot_data){
   plot_data %>% 
