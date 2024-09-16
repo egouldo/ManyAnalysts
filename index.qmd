@@ -3729,7 +3729,7 @@ plot_model_means_box_cox_cat <- function(dat,
     theme(axis.text.x = element_text(angle = 90)) #+
   # ggtitle(label = title)
   
-  if(back_transform == TRUE){
+  if (back_transform == TRUE) {
     p <- p + 
       labs(x = "Categorical Peer Review Rating", 
            y = "Absolute Deviation from\n Meta-Anaytic Mean Zr") 
