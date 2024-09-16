@@ -2292,7 +2292,7 @@ ManyEcoEvo_viz %>%
          exclusion_set == "complete", 
          publishable_subset == "All") %>% 
   pull(model) %>% 
-  walk( equatiomatic::extract_eq, 
+  purrr::walk( equatiomatic::extract_eq, 
         wrap = TRUE, 
         swap_var_names = 
           c("box_cox_abs_deviation_score_estimate" = "Box Cox(|Deviation Score|)",
