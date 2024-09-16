@@ -3137,14 +3137,14 @@ zr_heterogeneity %>%
   gt::fmt_percent(columns = "I2_Total", scale_values = FALSE, decimals = 2) %>% 
   gt::fmt_percent(columns = starts_with("I2_TeamIdentifier"), scale_values = FALSE, decimals = 2) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
-  gt::cols_label(dataset="Dataset",
-                 I2_Total = "$${I^2}_\\text{Total}$$",
-                 I2_TeamIdentifier = "$${I^2}_\\text{Team}$$",
-                 `I2_TeamIdentifier/study_id` = "$${I^2}_\\text{Team, effectID}$$" ,
-                 sigma2_1 = "$${\\tau}_\\text{Team}^{2}$$",
-                 sigma2_2 = "$${\\tau}_\\text{effectID}^{2}$$",
-                 tau_total = "$${\\tau}_\\text{Total}^{2}$$",
-                 Nobs = "$${N}_\\text{Obs}$$"
+  gt::cols_label(dataset= gt::md("Dataset"),
+                 I2_Total = gt::md("$${I^2}_\\text{Total}$$"),
+                 I2_TeamIdentifier = gt::md("$${I^2}_\\text{Team}$$"),
+                 `I2_TeamIdentifier/study_id` = gt::md("$${I^2}_\\text{Team, effectID}$$"),
+                 sigma2_1 = gt::md("$${\\tau}_\\text{Team}^{2}$$"),
+                 sigma2_2 = gt::md("$${\\tau}_\\text{effectID}^{2}$$"),
+                 tau_total = gt::md("$${\\tau}_\\text{Total}^{2}$$"),
+                 Nobs = gt::md("$${N}_\\text{Obs}$$")
   ) %>% 
   gt::row_group_order(groups = c("All analyses",
                                  "Blue tit analyses containing highly collinear predictors removed",
@@ -3154,8 +3154,7 @@ zr_heterogeneity %>%
                                  "Analyses from teams with highly proficient or expert data analysts")) %>%
   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
                                        columns = dataset),
-                style = cell_text(style = "italic")) %>% 
-  gt::as_raw_html()
+                style = cell_text(style = "italic")) 
 
 ```
 
@@ -3212,8 +3211,7 @@ heterogeneity_data_yi %>% mutate(tau_total = sum(sigma2_1, sigma2_2),
                  estimate_type = gt::md("Prediction Scenario")) %>% 
   gt::text_transform(fn = function(x) map(x, gt::md), 
                      locations = gt::cells_row_groups()) %>% 
-  gt_fmt_yi(columns = "estimate_type") %>% 
-  gt::as_raw_html()
+  gt_fmt_yi(columns = "estimate_type")
 
 ```
 
@@ -3375,7 +3373,7 @@ effectsparams %>%
           fns = function(x) gtsummary::style_pvalue(x)) %>% 
   gt::fmt_number(columns = c(-p.value, -dataset)) %>% 
   gt::cols_label(dataset = "Dataset",
-                 estimate = "$$\\hat\\mu$$", 
+                 estimate = gt::md("$$\\hat\\mu$$"), 
                  std.error = gt::md("$$\\text{SE}[\\hat\\mu]$$"),
                  conf.low = gt::md("95\\%CI"),
                  p.value = gt::md("*p*")) %>% 
@@ -3390,8 +3388,7 @@ effectsparams %>%
                                  "Analyses from teams with highly proficient or expert data analysts")) %>% 
   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
                                        columns = dataset),
-                style = cell_text(style = "italic")) %>% 
-  gt::as_raw_html()
+                style = cell_text(style = "italic")) 
 ```
 
 ### Out-of-sample predictions ($y_{i}$)
@@ -3497,11 +3494,11 @@ modelfitstats %>%
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::sub_missing(missing_text = "") %>% 
   gt::cols_label(dataset = "Dataset",
-                 R2 = "$$R^2$$",
-                 R2_conditional = "$${R}_\\text{Conditional}^{2}$$",
-                 R2_marginal = "$${R}_\\text{Marginal}^{2}$$",
-                 Sigma = "$$\\sigma$$",
-                 nobs = "$$N_\\text{Obs.}$$") %>% 
+                 R2 = gt::md("$$R^2$$"),
+                 R2_conditional = gt::md("$${R}_\\text{Conditional}^{2}$$"),
+                 R2_marginal = gt::md("$${R}_\\text{Marginal}^{2}$$"),
+                 Sigma = gt::md("$$\\sigma$$"),
+                 nobs = gt::md("$$N_\\text{Obs.}$$")) %>% 
   gt::tab_style(locations = cells_body(rows = str_detect(dataset, "Eucalyptus"),
                                        columns = dataset),
                 style = cell_text(style = "italic")) %>% 
@@ -3526,8 +3523,7 @@ modelfitstats %>%
                      decimals = 2) %>%
   gt::fmt_scientific(columns = c("RMSE"), 
                      rows = abs(RMSE) < 0.01 | abs(RMSE) > 1000,
-                     decimals = 2) %>%
-  gt::as_raw_html()
+                     decimals = 2)
 ```
 
 ```{r}
