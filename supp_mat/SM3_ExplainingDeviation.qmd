@@ -477,7 +477,7 @@ model_vars <-
 
 # ----- Run all models for all combinations of dataset, exclusion_set, and publishable_subset ----
 # And Extract
-
+set.seed(1234)
 all_model_fits <- 
   model_vars %>% 
   cross_join(., 
