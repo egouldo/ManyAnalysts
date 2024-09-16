@@ -3653,7 +3653,7 @@ Analyses of the *Eucalyptus* dataset received a total of `r filter(ArticleReview
 We tested for inter-rater-reliability to examine how similarly reviewers reviewed each analysis and found approximately no agreement among reviewers.
 When considering continuous ratings, IRR was `r round(alpha_result_continuous$value,2)`, and for categorical ratings, IRR was `r round(alpha_result_ordinal$value, 2)`.
 
-Many of the models of deviance as a function of peer ratings faced issues of failure to converge or singularity due to sparse design matrices with our pre-registered random effects (`Effect_Id` and `Reviewer_ID`) ([see supplementary material -@tbl-explore-Zr-deviation-random-effects-structure]).
+Many of the models of deviation as a function of peer ratings faced issues of failure to converge or singularity due to sparse design matrices with our pre-registered random effects (`Effect_Id` and `Reviewer_ID`) ([see supplementary material -@tbl-explore-Zr-deviation-random-effects-structure]).
 These issues persisted after increasing the tolerance and changing the optimizer.
 For both *Eucalyptus* and blue tit datasets, models with continuous ratings as a predictor were singular when both pre-registered random effects were included.
 
