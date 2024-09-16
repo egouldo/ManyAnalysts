@@ -476,7 +476,7 @@ model_vars <-
   )
 
 # ----- Run all models for all combinations of dataset, exclusion_set, and publishable_subset ----
-# And Extract 
+# And Extract
 
 all_model_fits <- 
   model_vars %>% 
@@ -494,7 +494,7 @@ all_model_fits <-
            map(effects_analysis, 
                ~ .x %>% 
                  unnest(review_data) %>% 
-                 select(study_id, 
+                 select(any_of(c("id_col", "study_id")),
                         starts_with("box_cox_abs_dev"), 
                         RateAnalysis, 
                         PublishableAsIs,
@@ -529,7 +529,7 @@ Zr_singularity_convergence <-
   left_join({all_model_fits %>% 
       unnest(params) %>% 
       filter(Effects == "random") %>% 
-      filter(is.na(SE)) %>% 
+      filter(if_any(contains("SE"), list(is.infinite, is.na))) %>% 
       distinct(fixed_effects, 
                random_intercepts_1,
                random_intercepts_2, 
