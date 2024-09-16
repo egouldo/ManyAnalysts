@@ -146,15 +146,15 @@
     },
     "ManyEcoEvo": {
       "Package": "ManyEcoEvo",
-      "Version": "2.7.6.9003",
+      "Version": "2.7.6.9004",
       "Source": "GitHub",
       "Remotes": "daniel1noble/orchaRd, NightingaleHealth/ggforestplot",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "ManyEcoEvo",
       "RemoteUsername": "egouldo",
-      "RemoteRef": "50d0fbf",
-      "RemoteSha": "50d0fbf7efc095ea5af67695eceaf9a81c1799cc",
+      "RemoteRef": "e2507deca9a61b6e265a9a9a6bf27ba15a6a2581",
+      "RemoteSha": "e2507deca9a61b6e265a9a9a6bf27ba15a6a2581",
       "Requirements": [
         "R",
         "betapart",
@@ -180,7 +180,7 @@
         "tidyselect",
         "withr"
       ],
-      "Hash": "ccbd54cedc0e7272eb2667e179d06171"
+      "Hash": "0546197ea2bc22fa19f8b862a3c3c831"
     },
     "Matrix": {
       "Package": "Matrix",
@@ -2359,16 +2359,16 @@
     },
     "insight": {
       "Package": "insight",
-      "Version": "0.20.2.11",
+      "Version": "0.20.4",
       "Source": "Repository",
-      "Repository": "https://easystats.r-universe.dev",
+      "Repository": "RSPM",
       "Requirements": [
         "R",
         "methods",
         "stats",
         "utils"
       ],
-      "Hash": "bbbc1df2ee1faed9e4745019fbb09d42"
+      "Hash": "8457d6e682a49f2c87b698a830527b09"
     },
     "ipred": {
       "Package": "ipred",
@@ -3608,13 +3608,13 @@
     },
     "reactR": {
       "Package": "reactR",
-      "Version": "0.6.0",
+      "Version": "0.6.1",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
         "htmltools"
       ],
-      "Hash": "10f4d661c235181648a5958c02c0382a"
+      "Hash": "b8e3d93f508045812f47136c7c44c251"
     },
     "reactable": {
       "Package": "reactable",
