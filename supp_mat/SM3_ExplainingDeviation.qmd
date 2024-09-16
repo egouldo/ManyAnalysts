@@ -364,7 +364,7 @@ filter_vars_main_analysis <- rlang::exprs(estimate_type == "Zr",
                                           collinearity_subset == "All")
 
 transformation_plot_data <- 
-  ManyEcoEvo_yi_results %>% 
+  ManyEcoEvo::ManyEcoEvo_yi_results %>% 
   bind_rows(ManyEcoEvo_results %>%
               filter(!!!filter_vars_main_analysis)) %>% 
   select(dataset, estimate_type, effects_analysis) %>% 
@@ -429,6 +429,9 @@ Consequently, for both blue tit and *Euclayptus* datasets, we fitted and analyse
 
 library(multilevelmod)
 
+poss_extract_fit_engine <- purrr::possibly(extract_fit_engine, otherwise = NA)
+poss_parameters <- purrr::possibly(parameters::parameters, otherwise = NA)
+
 model <- linear_reg() %>%
   set_engine("lmer")
 
@@ -478,7 +481,7 @@ model_vars <-
 all_model_fits <- 
   model_vars %>% 
   cross_join(., 
-             {ManyEcoEvo_results %>% 
+             {ManyEcoEvo::ManyEcoEvo_results %>% 
                  select(estimate_type, ends_with("set"), effects_analysis) %>% 
                  dplyr::filter(expertise_subset == "All", 
                                collinearity_subset == "All") %>% 
@@ -686,7 +689,7 @@ MA_yi_summary_stats <-
 #| results: 'hide'
 
 yi_convergence_singularity <- 
-  ManyEcoEvo_yi_viz %>% 
+  ManyEcoEvo::ManyEcoEvo_yi_viz %>% 
   filter(model_name %in% c("box_cox_rating_cat", 
                            "box_cox_rating_cont", 
                            "sorensen_glm", 
@@ -814,10 +817,10 @@ The fixed effect of peer review rating also explains virtually no variability in
 
 # Omit all models that are singular/non-converged/non-computable RE CI's + SE's 
 yi_violin_cat_plot_data <- 
-  ManyEcoEvo_yi_viz %>% 
+  ManyEcoEvo::ManyEcoEvo_yi_viz %>% 
   filter(model_name %in% "box_cox_rating_cat") %>%
   left_join(., 
-            {ManyEcoEvo_yi_results %>% 
+            {ManyEcoEvo::ManyEcoEvo_yi_results %>% 
                 select(dataset, estimate_type, effects_analysis) %>% 
                 hoist(effects_analysis, "lambda", .transform = unique) %>% 
                 select(-effects_analysis)}, 
@@ -882,7 +885,7 @@ Because almost no variability in $y_i$ deviation score was explained by reviewer
 
 # Omit all singular models
 yi_cont_plot_data <-
-  ManyEcoEvo_yi_viz %>% 
+  ManyEcoEvo::ManyEcoEvo_yi_viz %>% 
   filter(model_name %in% c("box_cox_rating_cont")) %>% 
   mutate(dataset = case_match(dataset, "eucalyptus" ~ "Eucalyptus",.default = dataset)) %>% 
   semi_join({yi_convergence_singularity %>% 
