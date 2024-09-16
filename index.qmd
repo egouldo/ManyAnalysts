@@ -3035,7 +3035,7 @@ eucalyptus_yi_plot_data %>%
 
 ### Effect Sizes ($Z_r$)
 
-```{r zr heterogeneity values, echo = FALSE}
+```{r zr_heterogeneity_values, echo = FALSE}
 zr_heterogeneity <- ManyEcoEvo_viz %>% 
   dplyr::filter(estimate_type == "Zr", 
                 model_name == "MA_mod", 
