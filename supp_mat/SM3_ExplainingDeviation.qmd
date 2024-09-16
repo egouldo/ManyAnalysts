@@ -39,7 +39,7 @@ source(here::here("utils.R"))
 
 ```{r define-fns, eval = TRUE}
 plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
-  if(MA_mean == FALSE){
+  if (MA_mean == FALSE){
     data <- filter(data, study_id != "overall")
   }
   
