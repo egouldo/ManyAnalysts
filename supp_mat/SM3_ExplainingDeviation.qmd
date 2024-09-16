@@ -613,7 +613,8 @@ Zr_singularity_convergence %>%
                   cells_body(rows = str_detect(dataset, "Eucalyptus"),
                              columns = dataset),
                 style = cell_text(style = "italic")) %>% 
-  gt::text_transform(fn = function(x) str_replace(x, "publishable_as_is", "Categorical Peer Rating") %>% str_replace(., "rate_analysis", "Continuous Peer Rating"),
+  gt::text_transform(fn = function(x) str_replace(x, "publishable_as_is", "Categorical Peer Rating") %>% 
+                       str_replace(., "rate_analysis", "Continuous Peer Rating"),
                      locations = cells_body(columns = c("fixed_effects")))
 ```
 
@@ -872,7 +873,7 @@ yi_violin_cat_plots <- yi_violin_cat_plot_data %>%
       map_chr(pluck, 1) })
 
 library(patchwork)
-wrap_plots(yi_violin_cat_plots, ncol = 1, tag_levels = 'A', guides = 'collect')
+patchwork::wrap_plots(yi_violin_cat_plots, ncol = 1, tag_levels = 'A', guides = 'collect')
 ```
 
 There was a lack of any clear relationships between quantitative review scores and $y_i$ deviation scores (@tbl-yi-deviation-parameter-estimates).
@@ -890,7 +891,11 @@ yi_cont_plot_data <-
   mutate(dataset = case_match(dataset, "eucalyptus" ~ "Eucalyptus",.default = dataset)) %>% 
   semi_join({yi_convergence_singularity %>% 
       filter( str_detect(model_name, "cont"), 
-              !singularity, convergence, SE_calc, CI_calc)}, 
+              !singularity, 
+              convergence, 
+              #SE_calc, 
+              #CI_calc
+      )}, 
       by = join_by("dataset", "estimate_type")) %>% 
   select(dataset, estimate_type, model_name, model) %>% 
   mutate(plot_data = map(model, pluck, "frame")) 
@@ -922,7 +927,7 @@ yi_cont_plots <-
       unite(plot_name, dataset, estimate_type, sep = " ") %>% 
       pull(plot_name)})
 
-patchwork::wrap_plots(yi_cont_plots,heights = 4, byrow = TRUE) +
+patchwork::wrap_plots(yi_cont_plots, heights = 4, byrow = TRUE) +
   patchwork::plot_annotation(tag_levels = 'A')
 ```
 
@@ -1278,7 +1283,7 @@ multivar_mods %>%
     columns = c( starts_with("CI_")),
     rows = abs(CI_low) < 0.01 | abs(CI_high) < 0.01 | abs(CI_low) > 1000 | abs(CI_high) > 1000,
     decimals = 2) %>%
-    gt::fmt_scientific(
+  gt::fmt_scientific(
     columns = c( starts_with("Coefficient")),
     rows = abs(Coefficient) < 0.01 | abs(Coefficient) > 1000,
     decimals = 2) %>%
@@ -1578,10 +1583,10 @@ ManyEcoEvo_yi_viz %>%
                 style = cell_text(style = "italic")) %>% 
   gt::cols_hide(dataset) %>% 
   gt_fmt_yi(columns = "estimate_type") %>% 
-    gt::fmt_number(columns = c(gt::starts_with("R2"), "ICC", "Sigma", "RMSE"),
-                   drop_trailing_zeros = TRUE,
-                   drop_trailing_dec_mark = TRUE,
-                   decimals = 2) %>%
+  gt::fmt_number(columns = c(gt::starts_with("R2"), "ICC", "Sigma", "RMSE"),
+                 drop_trailing_zeros = TRUE,
+                 drop_trailing_dec_mark = TRUE,
+                 decimals = 2) %>%
   gt::fmt_scientific(columns = c("RMSE"),
                      rows = abs(RMSE) < 0.01 | abs(RMSE) > 1000,
                      decimals = 2) %>%
@@ -1792,7 +1797,7 @@ tbl_data_yi_deviation_model_params %>%
                  drop_trailing_zeros = T,
                  decimals = 2) %>% 
   gt::fmt_number(columns =  gt::contains(c("Sigma")),  
-                  drop_trailing_dec_mark = TRUE,
+                 drop_trailing_dec_mark = TRUE,
                  drop_trailing_zeros = T,
                  decimals = 2) %>% 
   gt::fmt_scientific(columns = c("Sigma"),
@@ -1805,15 +1810,15 @@ tbl_data_yi_deviation_model_params %>%
                      rows = abs(R2) < 0.01 | abs(R2) > 1000,
                      drop_trailing_zeros = T,
                      decimals = 2) %>% 
-    gt::fmt_scientific(columns = c("R2_conditional"),
+  gt::fmt_scientific(columns = c("R2_conditional"),
                      rows = abs(R2_conditional) < 0.01 | abs(R2_conditional) > 1000,
                      drop_trailing_zeros = T,
                      decimals = 2) %>% 
-      gt::fmt_scientific(columns = c("R2_marginal"),
+  gt::fmt_scientific(columns = c("R2_marginal"),
                      rows = abs(R2_marginal) < 0.01 | abs(R2_marginal) > 1000,
                      drop_trailing_zeros = T,
                      decimals = 2) %>% 
-    gt::fmt_scientific(columns = c("ICC"),
+  gt::fmt_scientific(columns = c("ICC"),
                      rows = abs(ICC) < 0.01 | abs(ICC) > 1000,
                      drop_trailing_zeros = T,
                      decimals = 2) %>% 
