@@ -3449,9 +3449,9 @@ These high values of the ${R}_\text{Conditional}^{2}$ result from the fact that 
 
 ```{r}
 #| label: tbl-model-summary-stats-ratings-cont
+#| tbl-cap: "Summary metrics for registered models seeking to explain deviation (Box-Cox transformed absolute deviation scores) from the mean $Z_r$ as a function of Sorensen's Index, categorical peer ratings, and continuous peer ratings for blue tit and *Eucalyptus* analyses, and as a function of the presence or absence of random effects (in the analyst's models) for *Eucalyptus* analyses. We report coefficient of determination, $R^2$, for our models including only fixed effects as predictors of deviation, and we report $R^{2}_\\text{Conditional}$, $R^{2}_\\text{Marginal}$ and the intra-class correlation (ICC) from our models that included both fixed and random effects. For all our models, we calculated the residual standard deviation $\\sigma$ and root mean squared error (RMSE)."
 #| echo: false
 #| message: false
-#| column: page-right
 
 modelfitstats <- ManyEcoEvo_viz %>% 
   filter(!!!filter_vars_main_analysis,
@@ -3468,7 +3468,7 @@ modelfitstats <- ManyEcoEvo_viz %>%
       hoist(mod_glance, "nobs") %>% 
       hoist(mod_fit_stats, "R2", "RMSE", "Sigma") %>% 
       select(-mod_fit_stats, -mod_glance) %>% 
-      drop_na() #rm uni_mixed_effects for blue tit, as was not fitted (N < 5)
+      drop_na() 
   }) %>% 
   group_by(model_name) %>% 
   relocate("R2", .before = starts_with("R2_")) %>% 
@@ -3490,7 +3490,6 @@ modelfitstats %>%
                              TRUE ~ dataset)) %>% 
   arrange(model_name, dataset) %>% 
   gt::gt() %>% 
-  gt::tab_caption(caption = gt::md("Summary metrics for registered models seeking to explain deviation (Box-Cox transformed absolute deviation scores) from the mean $Z_r$ as a function of Sorensen's Index, categorical peer ratings, and continuous peer ratings for blue tit and *Eucalyptus* analyses, and as a function of the presence or absence of random effects (in the analyst's models) for *Eucalyptus* analyses. We report coefficient of determination, $R^2$, for our models including only fixed effects as predictors of deviation, and we report $R^{2}_\\text{Conditional}$, $R^{2}_\\text{Marginal}$ and the intra-class correlation (ICC) from our models that included both fixed and random effects. For all our models, we calculated the residual standard deviation $\\sigma$ and root mean squared error (RMSE).")) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::sub_missing(missing_text = "") %>% 
   gt::cols_label(dataset = "Dataset",
