@@ -39,7 +39,7 @@ source(here::here("utils.R"))
 
 ```{r define-fns, eval = TRUE}
 plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
-  if (MA_mean == FALSE){
+  if (MA_mean == FALSE) {
     data <- filter(data, study_id != "overall")
   }
   
@@ -74,10 +74,10 @@ plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
                        minor_breaks = seq(from = -4.5, to = 1.5, by = 0.5)) +
     NatParksPalettes::scale_color_natparks_d("Glacier") 
   
-  if(intercept == TRUE){
+  if (intercept == TRUE) {
     p <- p + geom_hline(yintercept = 0)
   }
-  if(MA_mean == TRUE){
+  if (MA_mean == TRUE) {
     # p <- p + geom_hline(aes(yintercept = meta_analytic_mean), 
     #                     data = data,
     #                     colour = "#01353D", 
@@ -89,7 +89,7 @@ plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE){
 
 
 plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE){
-  if(MA_mean == FALSE){
+  if (MA_mean == FALSE) {
     data <- filter(data, study_id != "overall")
   }
   
@@ -121,10 +121,10 @@ plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE){
     scale_y_continuous(breaks = scales::breaks_extended(10)) +
     NatParksPalettes::scale_color_natparks_d("Glacier") 
   
-  if(intercept == TRUE){
+  if (intercept == TRUE) {
     p <- p + geom_hline(yintercept = 0)
   }
-  if(MA_mean == TRUE){
+  if (MA_mean == TRUE) {
     p <- p +
       geom_hline(aes(yintercept = plot_data %>%
                        filter(type == "summary", estimate_type == "y25") %>%
