@@ -623,61 +623,6 @@ Zr_singularity_convergence %>%
 #| warning: false
 #| message: false
 
-# note that this below code is duplicated in index.qmd chunk: define-plot-forest-function
-MA_yi_summary_stats <- 
-  ManyEcoEvo_yi_viz %>% 
-  filter(model_name == "MA_mod") %>% 
-  select(dataset, estimate_type, tidy_mod_summary) %>% 
-  mutate(tidy_mod_summary = map(tidy_mod_summary, rename, study_id = term)) %>% 
-  mutate(MA_mean = map(tidy_mod_summary, filter, type == "summary")) %>% 
-  hoist(MA_mean, 
-        mean = "estimate", 
-        MA_conf.low = "conf.low", 
-        MA_conf.high = "conf.high") %>% 
-  mutate(max_min_est = map(tidy_mod_summary, 
-                           ~ filter(.x, type == "study") %>%
-                             summarise(max_est = max(estimate),
-                                       min_est = min(estimate)))) %>% 
-  mutate(max_min_CI = map(tidy_mod_summary, 
-                          ~ filter(.x, type == "study") %>%
-                            summarise(max_upper_CI = max(conf.high),
-                                      min_lower_CI = min(conf.low)))) %>% 
-  unnest_wider(col = c(max_min_est, max_min_CI)) %>% 
-  select(-MA_mean) %>% 
-  rename(MA_mean = mean)
-
-MA_yi_summary_stats <- 
-  MA_yi_summary_stats %>% 
-  left_join(., {MA_yi_summary_stats %>% 
-      select(dataset, estimate_type, tidy_mod_summary) %>% 
-      filter(dataset == "blue tit") %>% 
-      mutate(no_effect = 
-               map_int(tidy_mod_summary, 
-                       ~ filter(.x, 
-                                estimate >0 & conf.low <= 0 | estimate <0 & conf.high >= 0, 
-                                type == "study") %>% 
-                         nrow() ),
-             pos_sign = 
-               map_int(tidy_mod_summary, 
-                       ~ filter(.x, estimate >0, conf.low > 0, 
-                                type == "study") %>% 
-                         nrow()),
-             neg_sign = 
-               map_int(tidy_mod_summary, 
-                       ~ filter(.x, estimate < 0, conf.high < 0, 
-                                type == "study") %>% 
-                         nrow()),
-             total_effects = 
-               map_int(tidy_mod_summary,
-                       ~ filter(.x, 
-                                type == "study") %>% 
-                         nrow()
-               ), 
-             .by = c("dataset", "estimate_type"), 
-             .keep = "none")}, 
-      by = join_by(dataset, estimate_type)) %>% 
-  select(-tidy_mod_summary)
-```
 
 ### Out of sample predictions $y_i$
 
