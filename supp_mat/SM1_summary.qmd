@@ -311,7 +311,6 @@ forest_plot_new_labels <- forest_plot_new_labels %>%
 
 ```{r}
 #| label: fig-specr-bt
-#| echo: true
 #| warning: false
 #| message: false
 #| fig-height: 15
@@ -412,7 +411,6 @@ In the *Eucalyptus* specification curve, there are no strong trends (@fig-specr-
 #| fig-align: center
 #| message: false
 #| warning: false
-#| echo: true
 #| fig-width: 12
 #| fig-height: 15
 #| fig-cap:  "**A.** Forest plot for *Eucalyptus* analyses: standardized effect-sizes (circles) and their 95% confidence intervals are displayed for each analysis included in the meta-analysis model. The meta-analytic mean effect-size is denoted by a black diamond, with error bars also representing the 95% confidence interval. The dashed black line demarcates effect sizes of 0, whereby no effect of the test variable on the response variable is found. Blue points where $Z_r$ and its associated confidence intervals are greater than 0 indicate analyses that found a positive relationship of grass cover on *Eucalyptus* seedling success. Gray coloured points have confidence intervals crossing 0, indicating no relationship between the test and response variable. Red points indicate the analysis found a negative relationship between grass cover and *Eucalyptus seedling success*. **B.** Analysis specification plot: for each analysis plotted in A, the corresponding combination of analysis decisions is plotted. Each decision and its alternative choices is grouped into its own facet, with the decision point described on the right of the panel, and the option shown on the left. Lines indicate the option chosen used in the corresponding point in plot A. **C.** Sample sizes of each analysis. Note that empty bars indicate analyst did not report sample size and sample size could not be derived by lead team."

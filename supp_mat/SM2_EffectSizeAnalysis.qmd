@@ -61,7 +61,7 @@ ManyEcoEvo_results <-
 
 The figures below (@fig-euc-cat-ratings-MA, @fig-bt-cat-ratings-MA) hows the fixed effect of categorical review rating on deviation from the meta-analytic mean. There is very little difference in deviation for analyses in any of the review categories. It is worth noting that each analysis features multiple times in these figures corresponding to the multiple reviewers that provided ratings.
 
-```{r fig-euc-cat-ratings-MA, echo = FALSE, warning = FALSE, message = FALSE, fig.cap = "Orchard plot of meta-analytic model fitted to all *Eucalyptus* analyses with a fixed effect for categorical peer-review ratings, and random effects for analyst ID and reviewer ID. Black circles denote coefficient mean for each categorical publishability rating. Thick error bars represent 95% confidence intervals and whiskers indicate 95% prediction intervals. Effect sizes are represented by circles and their size corresponds to the precision of the estimate.", fig.height=5, fig.width=8}
+```{r fig-euc-cat-ratings-MA, echo = TRUE, warning = FALSE, message = FALSE, fig.cap = "Orchard plot of meta-analytic model fitted to all *Eucalyptus* analyses with a fixed effect for categorical peer-review ratings, and random effects for analyst ID and reviewer ID. Black circles denote coefficient mean for each categorical publishability rating. Thick error bars represent 95% confidence intervals and whiskers indicate 95% prediction intervals. Effect sizes are represented by circles and their size corresponds to the precision of the estimate.", fig.height=5, fig.width=8}
 orchard_publishability <- function(dat){
   rma_mod_rating <-  
     metafor::rma.mv(yi = Zr, 
@@ -92,7 +92,7 @@ ManyEcoEvo_results$effects_analysis[[2]] %>%
     scale_x_discrete(labels=c("Deeply Flawed\n & Unpublishable", "Publishable With\n Major Revision", "Publishable With\n Minor Revision", "Publishable\n As Is"))
 ```
 
-```{r fig-bt-cat-ratings-MA, echo = FALSE, warning = FALSE, message = FALSE, fig.cap = "Orchard plot of meta-analytic model fitted to all blue tit analyses with a fixed effect for categorical peer-review ratings, and random effects for analyst ID and reviewer ID. Black circles denote coefficient mean for each categorical publishability rating. Thick error bars represent 95% confidence intervals and whiskers indicate 95% prediction intervals. Effect sizes are represented by circles and their size corresponds to the precision of the estimate.", fig.height=5, fig.width=8}
+```{r fig-bt-cat-ratings-MA, echo = TRUE, warning = FALSE, message = FALSE, fig.cap = "Orchard plot of meta-analytic model fitted to all blue tit analyses with a fixed effect for categorical peer-review ratings, and random effects for analyst ID and reviewer ID. Black circles denote coefficient mean for each categorical publishability rating. Thick error bars represent 95% confidence intervals and whiskers indicate 95% prediction intervals. Effect sizes are represented by circles and their size corresponds to the precision of the estimate.", fig.height=5, fig.width=8}
 
 ManyEcoEvo_results$effects_analysis[[1]] %>% 
 #    filter(Zr > -4) %>% 
@@ -117,7 +117,6 @@ The forest plots in @fig-all-forest-plots-Zr compare the distributions of $Z_r$ 
 #| column: body-outset-right
 #| fig-cap: 'Forest plots of meta-analytic estimated standardized effect sizes ($Z_r$, blue circles) and their 95% confidence intervals for each effect size included in the meta-analysis model. The meta-analytic mean effect size is denoted by a black triangle and a dashed vertical line, with error bars also representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0, indicating no relationship between the test variable and the response variable. The left side of each panel shows the analysis team names (anonymous arbitrary names assigned by us), each followed by three numbers. The first number is the submission ID (some analyst teams submitted results to us on >1 submission form), the second number is the analysis ID (some analyst teams included results of >1 analysis in a given submission), and the third number is the effect ID (some analysts submitted values for >1 effect per analysis). Thus, each row in each forest plot is uniquely identified, but it is possible to determine which effects come from which analyses and which analysis teams. The plots in the top row depict effects from analyses of blue tit data, and the bottom row plots depict effects from analyses of Eucalyptus data. The right-most plots depict all usable effect sizes. The plots on the left exclude effects from analysis sets that received at least one rating of “unpublishable” from peer reviewers, and the plots in the middle exclude effects from analysis sets that received at least one rating of either “unpublishable” or “major revision” from peer reviewers.'
 #| message: false
-#| echo: false
 #| fig-height: 14
 #| fig-width: 10
 # TeamIdentifier_lookup <- read_csv(here::here("data-raw/metadata_and_key_data/TeamIdentifierAnonymised.csv"))
@@ -334,7 +333,6 @@ plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE ){
 
 ```{r}
 #| label: euc-Zr-outliers-sm
-#| echo: true
 #| warning: false
 #| message: false
 complete_euc_data <- 
@@ -580,7 +578,6 @@ For the blue tit dataset, we created a subset of analyses that excluded effects 
 #| label: fig-forest-plot-Zr-collinear-rm-subset
 #| fig-cap: "Forest plot of meta-analytic estimated effect-sizes $Z_{r}$, standard error and 95% confidence intervals of blue tit analyses with highly collinear analyses removed. The meta-analytic mean for the reduced subset is denoted by the black triangle, and a dashed vertical line, with error bars representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0."
 #| fig-height: 6
-#| echo: true
 
 filter_collinear <- rlang::exprs(exclusion_set == "complete", 
                               publishable_subset == "All", 
@@ -635,7 +632,6 @@ ManyEcoEvo_viz %>%
 
 ```{r}
 #| label: excluded-constructed-yi
-#| echo: false
 #| message: false
 
 by <- join_by(response_variable_name) # don't join on id_col: inc. other excl.
@@ -735,8 +731,7 @@ all_constructed_vars %>%
                      style = cell_text(size = "small")) %>% 
   gt::fmt_markdown(columns = response_variable_name) %>% 
   gt::opt_stylize(style = 6, color = "gray", add_row_striping = TRUE) %>% 
-  gt::opt_row_striping(row_striping = TRUE) %>% 
-  gt::as_raw_html()
+  gt::opt_row_striping(row_striping = TRUE) 
 ```
 
 #### Non-truncated $y_{i}$ meta-analysis forest plot
@@ -747,7 +742,6 @@ Below is the non-truncated version of @fig-euc-yi-forest-plot showing a forest p
 #| label: fig-euc-yi-forest-plot-full
 #| fig-cap: "Forest plot of meta-analytic estimated out of sample  predictions, $y_{i}$, on the response-scale (stem counts) for *Eucalyptus* analyses. Circles represent individual analysis estimates. Triangles represent the meta-analytic mean for each prediction scenario. Navy blue coloured points correspond to $y_{25}$ scenario, blue coloured points correspond to the $y_{50}$ scenario, while light blue points correspond to the $y_{75}$ scenario. Error bars are 95% confidence intervals. Outliers (i.e. observations with mean estimates more than 3SD above the population parameter mean, see @sec-excluded-yi) have been removed prior to model fitting."
 #| fig-height: 8
-#| echo: true
 #| message: false
 #| fig-keep: last
 
