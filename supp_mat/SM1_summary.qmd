@@ -1,8 +1,10 @@
 ---
 title: "Summarising Variation Among Analysis Specifications"
-format: html
+format: 
+  html:
+    code-fold: true
+    echo: true
 editor: visual
-code-fold: true
 execute:
   freeze: auto  # re-render only when source changes
 bibliography: ../ms/references.bib

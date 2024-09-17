@@ -1,11 +1,13 @@
 ---
 title: "Correlation Matrices of Case Study Data"
-format: html
+format: 
+  html:
+    code-fold: true
+    echo: true
 editor: visual
 number-sections: true
-code-fold: true
 execute:
-  freeze: false  # re-render only when source changes
+  freeze: auto  # re-render only when source changes
 toc: false
 pre-render: "utils.R"
 bibliography: 

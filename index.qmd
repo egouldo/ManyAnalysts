@@ -1885,6 +1885,8 @@ editor:
   markdown: 
     wrap: sentence
 pre-render: utils.R
+execute:
+  freeze: auto
 ---
 
 ```{r load-libs, include=FALSE,eval=TRUE,message=FALSE, echo=FALSE}

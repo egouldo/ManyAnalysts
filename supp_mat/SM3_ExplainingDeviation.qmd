@@ -1,10 +1,12 @@
 ---
 title: "Explaining Variation in Deviation Scores"
-format: html
-code-fold: true
+format: 
+  html:
+    code-fold: true
+    echo: true
 number-sections: true
 execute:
-  freeze: false  # re-render only when source changes
+  freeze: auto  # re-render only when source changes
 pre-render: "utils.R"
 bibliography: 
   - ../ms/references.bib

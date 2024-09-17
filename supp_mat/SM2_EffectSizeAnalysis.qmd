@@ -1,10 +1,12 @@
 ---
 title: "Effect Size Analysis"
 # lib-dir: "renv/library/R-4.4/aarch64-apple-darwin20/"
-format: html
+format: 
+  html:
+    code-fold: true
+    echo: true
 editor: visual
 number-sections: true
-code-fold: true
 pre-render: "utils.R"
 execute:
   freeze: auto  # re-render only when source changes
