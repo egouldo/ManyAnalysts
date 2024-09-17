@@ -153,8 +153,8 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "ManyEcoEvo",
       "RemoteUsername": "egouldo",
-      "RemoteRef": "e2507deca9a61b6e265a9a9a6bf27ba15a6a2581",
-      "RemoteSha": "e2507deca9a61b6e265a9a9a6bf27ba15a6a2581",
+      "RemoteRef": "b4851853",
+      "RemoteSha": "b485185349a46f7d29c0c6e7dcf0ea9ca2f3d976",
       "Requirements": [
         "R",
         "betapart",
@@ -180,7 +180,7 @@
         "tidyselect",
         "withr"
       ],
-      "Hash": "0546197ea2bc22fa19f8b862a3c3c831"
+      "Hash": "3d044204cf705234f3e746e22151ade5"
     },
     "Matrix": {
       "Package": "Matrix",
