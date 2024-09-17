@@ -1,11 +1,13 @@
 project:
   type: book
   # lib-dir: "renv/library/R-4.4/aarch64-apple-darwin20/"
+  pre-render: "utils.R"
   render:
      - "!internal/"
      - "!outputs/"
      - "!vignettes/"
      - "supp_mat/"
+  execute-dir: project
 
 book:
   chapters:
@@ -55,7 +57,8 @@ format:
             }
           };
           </script>
-
+    code-link: true
+css: "stylefile.css"
   
     # toc-location: left
     # number-depth: 1
@@ -66,8 +69,9 @@ format:
   # (other formats)
   # pdf: default
 
-execute:
-  freeze: true
+# execute:
+#   freeze: false
+#   cache: false
 
 
 

@@ -1,10 +1,13 @@
 ---
 title: "Effect Size Analysis"
 # lib-dir: "renv/library/R-4.4/aarch64-apple-darwin20/"
-format: html
+format: 
+  html:
+    code-fold: true
+    echo: true
 editor: visual
 number-sections: true
-code-fold: true
+pre-render: "utils.R"
 execute:
   freeze: auto  # re-render only when source changes
 ---
@@ -16,6 +19,7 @@ library(tidyverse)
 library(performance)
 library(broom.mixed)
 library(gt)
+library(gtExtras)
 library(lme4)
 library(MuMIn)
 library(ManyEcoEvo)
@@ -23,6 +27,7 @@ library(ggrepel)
 library(glue)
 library(gluedown)
 set.seed(1234)
+source(here::here("utils.R"))
 ```
 
 ```{r}
@@ -54,9 +59,9 @@ ManyEcoEvo_results <-
 
 #### Effect of categorical review rating
 
-The figures below (@fig-euc-cat-ratings-MA,@fig-bt-cat-ratings-MA) shows the fixed effect of categorical review rating on deviation from the meta-analytic mean. There is very little difference in deviation for analyses in any of the review categories. It is worth noting that each analysis features multiple times in these figures corresponding to the multiple reviewers that provided ratings.
+The figures below (@fig-euc-cat-ratings-MA, @fig-bt-cat-ratings-MA) hows the fixed effect of categorical review rating on deviation from the meta-analytic mean. There is very little difference in deviation for analyses in any of the review categories. It is worth noting that each analysis features multiple times in these figures corresponding to the multiple reviewers that provided ratings.
 
-```{r fig-euc-cat-ratings-MA, echo = FALSE, warning = FALSE, message = FALSE, fig.cap = "Orchard plot of meta-analytic model fitted to all eucalyptus analyses with a fixed effect for categorical peer-review ratings, and random effects for analyst ID and reviewer ID. Black circles denote coefficient mean for each categorical publishability rating. Thick error bars represent 95% confidence intervals and whiskers indicate 95% prediction intervals. Effect sizes are represented by circles and their size corresponds to the precision of the estimate.", fig.height=5, fig.width=8}
+```{r fig-euc-cat-ratings-MA, echo = TRUE, warning = FALSE, message = FALSE, fig.cap = "Orchard plot of meta-analytic model fitted to all *Eucalyptus* analyses with a fixed effect for categorical peer-review ratings, and random effects for analyst ID and reviewer ID. Black circles denote coefficient mean for each categorical publishability rating. Thick error bars represent 95% confidence intervals and whiskers indicate 95% prediction intervals. Effect sizes are represented by circles and their size corresponds to the precision of the estimate.", fig.height=5, fig.width=8}
 orchard_publishability <- function(dat){
   rma_mod_rating <-  
     metafor::rma.mv(yi = Zr, 
@@ -87,7 +92,7 @@ ManyEcoEvo_results$effects_analysis[[2]] %>%
     scale_x_discrete(labels=c("Deeply Flawed\n & Unpublishable", "Publishable With\n Major Revision", "Publishable With\n Minor Revision", "Publishable\n As Is"))
 ```
 
-```{r fig-bt-cat-ratings-MA, echo = FALSE, warning = FALSE, message = FALSE, fig.cap = "Orchard plot of meta-analytic model fitted to all blue tit analyses with a fixed effect for categorical peer-review ratings, and random effects for analyst ID and reviewer ID. Black circles denote coefficient mean for each categorical publishability rating. Thick error bars represent 95% confidence intervals and whiskers indicate 95% prediction intervals. Effect sizes are represented by circles and their size corresponds to the precision of the estimate.", fig.height=5, fig.width=8}
+```{r fig-bt-cat-ratings-MA, echo = TRUE, warning = FALSE, message = FALSE, fig.cap = "Orchard plot of meta-analytic model fitted to all blue tit analyses with a fixed effect for categorical peer-review ratings, and random effects for analyst ID and reviewer ID. Black circles denote coefficient mean for each categorical publishability rating. Thick error bars represent 95% confidence intervals and whiskers indicate 95% prediction intervals. Effect sizes are represented by circles and their size corresponds to the precision of the estimate.", fig.height=5, fig.width=8}
 
 ManyEcoEvo_results$effects_analysis[[1]] %>% 
 #    filter(Zr > -4) %>% 
@@ -112,7 +117,6 @@ The forest plots in @fig-all-forest-plots-Zr compare the distributions of $Z_r$ 
 #| column: body-outset-right
 #| fig-cap: 'Forest plots of meta-analytic estimated standardized effect sizes ($Z_r$, blue circles) and their 95% confidence intervals for each effect size included in the meta-analysis model. The meta-analytic mean effect size is denoted by a black triangle and a dashed vertical line, with error bars also representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0, indicating no relationship between the test variable and the response variable. The left side of each panel shows the analysis team names (anonymous arbitrary names assigned by us), each followed by three numbers. The first number is the submission ID (some analyst teams submitted results to us on >1 submission form), the second number is the analysis ID (some analyst teams included results of >1 analysis in a given submission), and the third number is the effect ID (some analysts submitted values for >1 effect per analysis). Thus, each row in each forest plot is uniquely identified, but it is possible to determine which effects come from which analyses and which analysis teams. The plots in the top row depict effects from analyses of blue tit data, and the bottom row plots depict effects from analyses of Eucalyptus data. The right-most plots depict all usable effect sizes. The plots on the left exclude effects from analysis sets that received at least one rating of “unpublishable” from peer reviewers, and the plots in the middle exclude effects from analysis sets that received at least one rating of either “unpublishable” or “major revision” from peer reviewers.'
 #| message: false
-#| echo: false
 #| fig-height: 14
 #| fig-width: 10
 # TeamIdentifier_lookup <- read_csv(here::here("data-raw/metadata_and_key_data/TeamIdentifierAnonymised.csv"))
@@ -243,26 +247,21 @@ publishable_subsets_forest_data %>%
 
 #### Post-hoc analysis: Exploring the effect of excluding estimates in which we had reduced confidence
 
-For each dataset (blue tit, Eucalyptus), we created a second, more conservative version, that excluded effects based on estimates of $df$ that we considered less reliable (@tbl-Zr-exclusion-subsetting). We compared the outcomes of analyses of the primary dataset (constituted according to our registered plan) with the outcomes of analyses of the more conservative version of the dataset. We also compared results from analyses of both of these versions of the dataset to versions with our post-hoc removal of outliers described in the main text. Our more conservative exclusions (based on unreliable estimates of $df$) had minimal impact on the meta-analytic mean for both blue tit and Eucalyptus analyses, regardless of whether outliers were excluded (@tbl-Zr-exclusion-subsetting).
+For each dataset (blue tit, Eucalyptus), we created a second, more conservative version, that excluded effects based on estimates of $\mathit{df}$ that we considered less reliable (@tbl-Zr-exclusion-subsetting). We compared the outcomes of analyses of the primary dataset (constituted according to our registered plan) with the outcomes of analyses of the more conservative version of the dataset. We also compared results from analyses of both of these versions of the dataset to versions with our post-hoc removal of outliers described in the main text. Our more conservative exclusions (based on unreliable estimates of $\mathit{df}$ ) had minimal impact on the meta-analytic mean for both blue tit and Eucalyptus analyses, regardless of whether outliers were excluded (@tbl-Zr-exclusion-subsetting).
 
 ```{r}
 #| label: tbl-Zr-exclusion-subsetting
-#| tbl-cap: "Estimated meta-analytic mean, standard error, and 95% confidence intervals, from analyses of the primary data set, the more conservative version of the dataset which excluded effects based on less reliable estimates of $df$, and both of these datasets with outliers removed."
+#| tbl-cap: "Estimated meta-analytic mean, standard error, and 95% confidence intervals, from analyses of the primary data set, the more conservative version of the dataset which excluded effects based on less reliable estimates of $\\mathit{df}$, and both of these datasets with outliers removed."
 ManyEcoEvo_viz %>% 
     dplyr::filter(estimate_type == "Zr", 
                   model_name == "MA_mod", 
-                  collinearity_subset != "collinearity_removed") %>% 
-  hoist(tidy_mod_summary) %>% 
-  unnest(tidy_mod_summary) %>% 
-    filter(publishable_subset == "All", expertise_subset == "All") %>% 
-  select(-publishable_subset, -expertise_subset) %>% 
-  select(dataset, 
-         exclusion_set, 
-         estimate, 
-         std.error, 
-         statistic, 
-         p.value, 
-         starts_with("conf")) %>% 
+                  collinearity_subset != "collinearity_removed",
+                  publishable_subset == "All", 
+                  expertise_subset == "All") %>% 
+    select(dataset, exclusion_set, tidy_mod_summary) %>% 
+    unnest(tidy_mod_summary) %>% 
+    filter(type == "summary") %>% 
+  select(-term, -type) %>% 
   mutate(exclusion_set = 
            case_when(exclusion_set == "complete" ~ 
                        "Primary dataset",
@@ -278,7 +277,7 @@ group_by(exclusion_set) %>%
           fns = function(x) gtsummary::style_pvalue(x, prepend_p = FALSE)) %>% 
   gt::fmt_number(columns = c(-p.value, -dataset)) %>% 
   gt::cols_label(estimate = gt::md("$$\\hat\\mu$$"), 
-                 std.error = gt::md("$$SE[\\hat\\mu]$$"),
+                 std.error = gt::md("$$\text{SE}[\\hat\\mu]$$"),
                  conf.low = gt::md("95\\%CI")) %>% 
   gt::cols_merge(columns = starts_with("conf"), 
                  pattern = "[{1},{2}]") %>% 
@@ -334,7 +333,6 @@ plot_forest <- function(data, intercept = TRUE, MA_mean = TRUE ){
 
 ```{r}
 #| label: euc-Zr-outliers-sm
-#| echo: true
 #| warning: false
 #| message: false
 complete_euc_data <- 
@@ -343,22 +341,21 @@ complete_euc_data <-
          estimate_type == "Zr", 
          model_name == "MA_mod",
          dataset == "eucalyptus",
-         publishable_subset == "All") %>% 
-  select(model) %>% 
-  mutate(plot_data = map(model, 
-                         .f = ~ broom::tidy(.x, 
-                                            conf.int = TRUE, 
-                                            include_studies = TRUE) %>% 
-                           dplyr::mutate(point_shape = 
-                                           ifelse(stringr::str_detect(term, "overall"), 
-                                                  "diamond", 
-                                                  "circle"),
-                                         Parameter = 
-                                           forcats::fct_reorder(term, 
-                                                                estimate) %>% 
-                                           forcats::fct_reorder(., 
-                                                                point_shape,
-                                                                .desc = TRUE))
+         publishable_subset == "All",
+         expertise_subset == "All") %>% 
+  select(tidy_mod_summary) %>% 
+  mutate(plot_data = map(tidy_mod_summary, 
+                         .f = ~ dplyr::mutate(.x, 
+                                            point_shape = 
+                                              ifelse(stringr::str_detect(term, "overall"), 
+                                                     "diamond", 
+                                                     "circle"),
+                                            Parameter = 
+                                              forcats::fct_reorder(term, 
+                                                                   estimate) %>% 
+                                              forcats::fct_reorder(., 
+                                                                   point_shape,
+                                                                   .desc = TRUE))
   ),
   meta_analytic_mean = map_dbl(plot_data, 
                                ~ filter(.x, Parameter == "overall") %>% 
@@ -368,16 +365,14 @@ complete_euc_data <-
   mutate(parameter_type = case_when(str_detect(Parameter, "overall") ~ "mean",
                                     TRUE ~ "study"))
 
-# complete_euc_data <- 
-#   complete_euc_data %>% 
-#   rename(id_col = term) %>% 
-#   group_by(type) %>%  
-#   group_split() %>% 
-#   set_names(., complete_euc_data$type %>%  unique) %>% 
-#   # map_if(.x = ., names(.) == "study",
-#          # .f = ~ anonymise_teams(.x, TeamIdentifier_lookup)) %>% 
-#   bind_rows() %>% 
-#   rename(term = id_col)
+  # ManyEcoEvo_viz %>% 
+  # filter(exclusion_set == "complete", 
+  #        estimate_type == "Zr", 
+  #        model_name == "MA_mod",
+  #        dataset == "eucalyptus",
+  #        publishable_subset == "All",
+  #        expertise_subset == "All") %>% 
+  # )
 
 min_outlier_euc <- complete_euc_data %>% 
   filter(type == "study") %>% 
@@ -465,21 +460,19 @@ bt_experts_only <-
   ManyEcoEvo_viz %>% 
   filter(!!!filter_experts, 
          dataset == "blue tit") %>% 
-  select(model) %>% 
-  mutate(plot_data = map(model, 
-                         .f = ~ broom::tidy(.x, 
-                                            conf.int = TRUE, 
-                                            include_studies = TRUE)%>% 
-                           dplyr::mutate(point_shape = 
-                                           ifelse(stringr::str_detect(term, "overall"), 
-                                                  "diamond", 
-                                                  "circle"),
-                                         Parameter = 
-                                           forcats::fct_reorder(term, 
-                                                                estimate) %>% 
-                                           forcats::fct_reorder(., 
-                                                                point_shape,
-                                                                .desc = TRUE))
+  select(tidy_mod_summary) %>% 
+  mutate(plot_data = map(tidy_mod_summary, 
+                         .f = ~ dplyr::mutate(.x, 
+                                            point_shape = 
+                                              ifelse(stringr::str_detect(term, "overall"), 
+                                                     "diamond", 
+                                                     "circle"),
+                                            Parameter = 
+                                              forcats::fct_reorder(term, 
+                                                                   estimate) %>% 
+                                              forcats::fct_reorder(., 
+                                                                   point_shape,
+                                                                   .desc = TRUE))
   ),
   meta_analytic_mean = map_dbl(plot_data, 
                                ~ filter(.x, Parameter == "overall") %>% 
@@ -585,7 +578,6 @@ For the blue tit dataset, we created a subset of analyses that excluded effects 
 #| label: fig-forest-plot-Zr-collinear-rm-subset
 #| fig-cap: "Forest plot of meta-analytic estimated effect-sizes $Z_{r}$, standard error and 95% confidence intervals of blue tit analyses with highly collinear analyses removed. The meta-analytic mean for the reduced subset is denoted by the black triangle, and a dashed vertical line, with error bars representing the 95% confidence interval. The solid black vertical line demarcates effect size of 0."
 #| fig-height: 6
-#| echo: true
 
 filter_collinear <- rlang::exprs(exclusion_set == "complete", 
                               publishable_subset == "All", 
@@ -598,20 +590,18 @@ filter_collinear <- rlang::exprs(exclusion_set == "complete",
 
 ManyEcoEvo_viz %>% 
   filter(!!!filter_collinear) %>% 
-  mutate(plot_data = map(model, 
-                         .f = ~ broom::tidy(.x, 
-                                            conf.int = TRUE, 
-                                            include_studies = TRUE)%>% 
-                           dplyr::mutate(point_shape = 
-                                           ifelse(stringr::str_detect(term, "overall"), 
-                                                  "diamond", 
-                                                  "circle"),
-                                         Parameter = 
-                                           forcats::fct_reorder(term, 
-                                                                estimate) %>% 
-                                           forcats::fct_reorder(., 
-                                                                point_shape,
-                                                                .desc = TRUE))
+  mutate(plot_data = map(tidy_mod_summary, 
+                         .f = ~ dplyr::mutate(.x, 
+                                            point_shape = 
+                                              ifelse(stringr::str_detect(term, "overall"), 
+                                                     "diamond", 
+                                                     "circle"),
+                                            Parameter = 
+                                              forcats::fct_reorder(term, 
+                                                                   estimate) %>% 
+                                              forcats::fct_reorder(., 
+                                                                   point_shape,
+                                                                   .desc = TRUE))
   ),
   meta_analytic_mean = map_dbl(plot_data, 
                                ~ filter(.x, Parameter == "overall") %>% 
@@ -638,16 +628,122 @@ ManyEcoEvo_viz %>%
 
 ### Out of sample predictions $y_i$
 
+#### Excluded analyses with constructed variables {#sec-excluded-yi}
+
+```{r}
+#| label: excluded-constructed-yi
+#| message: false
+
+by <- join_by(response_variable_name) # don't join on id_col: inc. other excl.
+
+# Analyst Constructed Variables
+all_constructed_vars <- 
+  ManyEcoEvo %>% 
+    pull(data, dataset) %>% 
+    list_rbind(names_to = "dataset") %>% 
+    filter(str_detect(response_variable_type, "constructed")) %>% 
+    distinct(dataset,response_variable_name) %>% 
+    drop_na() %>% 
+    arrange()
+
+# Constructed Variables Included in the ManyAnalysts meta-analysis
+# (i.e. we have included them in the parameter tables)
+ManyEcoEvo_yi_constructed_vars <-
+ ManyEcoEvo:::analysis_data_param_tables %>% 
+  distinct(variable, dataset) %>% 
+  rename(response_variable_name = variable) %>% 
+  semi_join(all_constructed_vars, by) %>% 
+  filter(!str_detect(response_variable_name, 
+                     "average.proportion.of")) # was excluded
+
+yi_constructed <-
+  ManyEcoEvo_yi_results %>% 
+    pull(data, dataset) %>% 
+    list_rbind(names_to = "dataset") %>% 
+    filter(str_detect(response_variable_type, "constructed")) %>% 
+    distinct(dataset, id_col, TeamIdentifier, response_variable_name) %>% 
+    drop_na() 
+
+excluded_yi_constructed <- 
+  ManyEcoEvo %>% 
+  pull(data, dataset) %>% 
+  list_rbind(names_to = "dataset") %>% 
+  filter(str_detect(response_variable_type, "constructed"),
+         str_detect(exclusions_all, "retain")) %>% 
+  distinct(dataset, id_col, TeamIdentifier, response_variable_name) %>% 
+  drop_na() %>% 
+  anti_join(yi_constructed, by) #rm response vars in yi_constructed
+
+n_dropped_analyses <- 
+  excluded_yi_constructed %>% 
+  n_distinct("id_col")
+
+n_teams_w_dropped_analyses <- 
+  excluded_yi_constructed %>% 
+  group_by(TeamIdentifier) %>%  
+  count() %>% 
+  n_distinct("TeamIdentifier")
+```
+
+We standardized the $y_i$ estimates and their standard errors for the blue tit analyses using the population mean and standard deviations of the corresponding dependent variable for that analysis, as shown in @eq-Z-VZ, using the function `ManyEcoEvo::Z_VZ_preds()`. Note that this is NOT the same process as standardizing the effect sizes $Z_r$. We used the mean and standard deviation of the relevant raw datasets as our 'population' parameters.
+
+$$
+Z_j = \frac{\mu_i-\bar{x}_j}{\text{SD}_j} \\
+\\
+{\text{VAR}}_{Z_j} = \frac{{\text{SE}}_{\mu_i}}{{\text{SD}_j}} \\
+$$ {#eq-Z-VZ}
+
+Where $\mu$ is the population parameter taken from our original dataset for variable $i$, and $\bar{x}_j$ and $\text{SD}_j$ are the out of sample point estimate values supplied for analysis $j$. $\text{SE}_{{\mu}_{i}}$ is the standard error of the population mean for variable $i$, while ${\text{VAR}}_{{Z}_{j}}$ and ${Z}_{j}$ are the standardized variance and mean estimate for analysis $j$. Note that for the response variables that were scaled-and-centered, or else mean-centred before model fitting, we do not need to standardise because these are already on the Z-scale. In doing so we make the assumption that analysts' data subsetting will have little effect on the outcomes. For some analyses of the blue tit dataset, analysts constructed their own unique response variables, which meant we needed to reconstruct these variables in order to calculate the population parameters. Unfortunately we were not able to re-construct all variables used by the analysts, as we were unable to reproduce the data required for their re-construction, e.g. we were unable to reproduce principal component analyses or fitted models for extracting residuals [@tbl-constructed-var-exclusions]. A total of `r n_dropped_analyses` were excluded from out-of-sample meta-analysis, from `r n_teams_w_dropped_analyses` teams, including the following analysis identifiers: `r pull(excluded_yi_constructed, id_col) %>% gluedown::md_italic() %>% glue::glue_collapse(", ",last = " and ")`.
+
+```{r}
+#| label: tbl-constructed-var-exclusions
+#| tbl-cap: "Analyst-constructed variables and their inclusion in meta-analyses of out-of-sample predictions, $y\\_i$."
+all_constructed_vars %>% 
+  semi_join(ManyEcoEvo_yi_constructed_vars, by) %>% 
+  mutate(included_in_yi = TRUE) %>% 
+  bind_rows(
+    {
+      all_constructed_vars %>% 
+        anti_join(ManyEcoEvo_yi_constructed_vars, by) %>% 
+        mutate(included_in_yi = FALSE)
+    }
+  ) %>% 
+  dplyr::mutate(included_in_yi = 
+                  case_match(included_in_yi, 
+                                            TRUE ~ "check", 
+                                            FALSE ~ "xmark" ),
+                response_variable_name = 
+                  gluedown::md_code(response_variable_name)) %>% 
+  group_by(dataset) %>% 
+  gt::gt() %>% 
+  gt::cols_label(response_variable_name = "Constructed Variable",
+                 included_in_yi = gt::md("Variable reconstructed for meta-analysis?")) %>%
+  gt::fmt_icon(included_in_yi) %>% 
+  gt::tab_style(style = cell_text(style = "italic", transform = "capitalize"), 
+                locations = cells_row_groups(groups = "eucalyptus")) %>%
+  gt::tab_style(style = cell_text(align = "center"), 
+                locations = cells_body(columns = included_in_yi)) %>% 
+  gt::tab_style(style = cell_text(align = "left"), 
+                locations = cells_body(columns = response_variable_name)) %>% 
+  gt::tab_style(style = cell_text(align = "left"), 
+                locations = cells_column_labels(response_variable_name)) %>% 
+  gt::tab_style(locations = cells_body(columns = response_variable_name), 
+                     style = cell_text(size = "small")) %>% 
+  gt::fmt_markdown(columns = response_variable_name) %>% 
+  gt::opt_stylize(style = 6, color = "gray", add_row_striping = TRUE) %>% 
+  gt::opt_row_striping(row_striping = TRUE) 
+```
+
 #### Non-truncated $y_{i}$ meta-analysis forest plot
 
-Below is the non-truncated version of @fig-euc-yi-forest-plot showing a forest plot of the out-of-sample predictions, $y_{i}$, on the response-scale (stems counts), for *Eucalyptus* analyses, showing the full error bars of all model estimates.
+Below is the non-truncated version of @fig-euc-yi-forest-plot showing a forest plot of the out-of-sample predictions, $y_{i}$, on the response-scale (stem counts), for *Eucalyptus* analyses, showing the full error bars of all model estimates.
 
 ```{r}
 #| label: fig-euc-yi-forest-plot-full
-#| fig-cap: "Forest plot of meta-analytic estimated out of sample  predictions, $y_{i}$, on the response-scale (stems counts), for *Eucalyptus* analyses. Circles represent individual analysis estimates. Triangles represent the meta-analytic mean for each prediction scenario. Navy blue coloured points correspond to $y_{25}$ scenario, blue coloured points correspond to the $y_{50}$ scenario, while light blue points correspond to the $y_{75}$ scenario. Error bars are 95% confidence intervals. Outliers (observations more than 3SD above the mean) have been removed prior to model fitting."
+#| fig-cap: "Forest plot of meta-analytic estimated out of sample  predictions, $y_{i}$, on the response-scale (stem counts) for *Eucalyptus* analyses. Circles represent individual analysis estimates. Triangles represent the meta-analytic mean for each prediction scenario. Navy blue coloured points correspond to $y_{25}$ scenario, blue coloured points correspond to the $y_{50}$ scenario, while light blue points correspond to the $y_{75}$ scenario. Error bars are 95% confidence intervals. Outliers (i.e. observations with mean estimates more than 3SD above the population parameter mean, see @sec-excluded-yi) have been removed prior to model fitting."
 #| fig-height: 8
-#| echo: true
 #| message: false
+#| fig-keep: last
 
 plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE, y_zoom = numeric(2L)){
   if(MA_mean == FALSE){
@@ -692,6 +788,7 @@ plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE, y_zoom = numer
   if(intercept == TRUE){
     p <- p + geom_hline(yintercept = 0)
   }
+  
   if(MA_mean == TRUE){
     p <- p +
       geom_hline(aes(yintercept = plot_data %>%
@@ -717,71 +814,30 @@ plot_forest_2 <- function(data, intercept = TRUE, MA_mean = TRUE, y_zoom = numer
   print(p)
 }
 
-# TODO put into R/ and build into package to call!
-fit_MA_mv <- function(effects_analysis, Z_colname, VZ_colname, estimate_type){
-  Zr <- effects_analysis %>%  pull({{Z_colname}})
-  VZr <- effects_analysis %>%  pull({{VZ_colname}})
-  mod <- ManyEcoEvo::fit_metafor_mv(estimate = Zr, 
-                        variance = VZr, 
-                        estimate_type = estimate_type, 
-                        data = effects_analysis)
-  return(mod)
-}
+# ---- new code ----
 
-back_transformed_predictions <- 
-  ManyEcoEvo_yi %>% 
-  dplyr::mutate(data = 
-                  purrr::map(data, 
-                             ~ dplyr::filter(.x,
-                                             stringr::str_detect(response_variable_type, "constructed",                                                                       negate = TRUE)))) %>% 
-  prepare_response_variables_yi(estimate_type = "yi",
-                                param_table = ManyEcoEvo:::analysis_data_param_tables) %>% 
-  generate_yi_subsets()
-
-
-raw_mod_data_logged <- 
-  back_transformed_predictions %>% 
-  filter(dataset == "eucalyptus") %>%
-  group_by(estimate_type) %>% 
-  select(estimate_type, data) %>% 
-  unnest(data) %>% 
-  rename(study_id = id_col) %>% 
-  hoist(params, param_mean = list("value", 1), param_sd = list("value", 2)) %>% 
-  rowwise() %>% 
-  mutate(exclusion_threshold = param_mean + 3*param_sd) %>% 
-  filter(fit < exclusion_threshold) %>% 
-  mutate(log_vals = map2(fit, se.fit, log_transform, 1000)) %>% 
-  unnest(log_vals) %>%
-  select(study_id, 
-         TeamIdentifier,
-         estimate_type, 
-         starts_with("response_"), 
-         -response_id_S2, 
-         ends_with("_log")) %>% 
-  group_by(estimate_type) %>% 
-  nest()
-  
-
-mod_data_logged <- raw_mod_data_logged %>% 
-  mutate(MA_mod = 
-           map(data, 
-               ~fit_MA_mv(.x, mean_log, std.error_log, "yi")))
-
-
-plot_data_logged <- mod_data_logged %>% 
-  mutate(tidy_mod = map(.x = MA_mod,
-                        ~broom::tidy(.x,
-                                     conf.int = TRUE, 
-                                     include_studies = TRUE) %>% 
-                          rename(study_id = term))) %>% 
-  select(tidy_mod) %>% 
-  unnest(cols = c(tidy_mod)) 
-
-plot_data_logged %>% 
-  mutate(response_scale = map2(estimate, std.error, log_back, 1000)) %>% 
-  select(estimate_type, study_id, type, response_scale) %>% 
-  unnest(response_scale) %>% 
+eucalyptus_yi_plot_data <- 
+  ManyEcoEvo_yi_viz %>% 
+  filter(dataset == "eucalyptus", model_name == "MA_mod")  %>% 
+  unnest(cols = tidy_mod_summary) %>%  
+  mutate(response_scale = list(log_back(estimate, std.error, 1000)), 
+         .by = c(dataset, estimate_type, term, type), 
+         .keep = "used") %>% 
+  select(-estimate, -std.error) %>% 
+  unnest_wider(response_scale) %>% 
   rename(estimate = mean_origin, conf.low = lower, conf.high = upper) %>% 
-#  filter(estimate <1000) %>% 
-  plot_forest_2(MA_mean = T,y_zoom = c(0,140))
+  nest(tidy_mod_summary = c(-dataset, -estimate_type)) %>% #extract euc data for plotting (on count scale, not log scale)
+  select(dataset, estimate_type, tidy_mod_summary) %>% 
+  unnest(cols = tidy_mod_summary) %>% 
+  rename(study_id = term) %>% 
+  ungroup()
+
+max_x_axis <- 
+  eucalyptus_yi_plot_data %>% 
+  pluck("conf.high", max) %>% 
+  round() + 10
+
+eucalyptus_yi_plot_data %>% 
+  plot_forest_2(MA_mean = T, y_zoom = c(0, max_x_axis)) +
+  theme(axis.text.y = element_blank())
 ```
