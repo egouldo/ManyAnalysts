@@ -2313,13 +2313,13 @@ Each of the four responses ($Z_r$, $y_{25th}$, $y_{50th}$, $y_{75th}$) were to b
 1.  We planned to include random effects of both analysis identity and reviewer identity in these models comparing reviewer ratings with deviation scores.
 However, after we received the analyses, we discovered that a subset of analyst teams had either conducted multiple analyses and/or identified multiple effects per analysis as answering the target question.
 We therefore faced an even more complex potential set of random effects.
-We decided that including team ID, analysis ID, and effect ID along with reviewer ID as random effects in the same model would almost certainly lead to model fit problems, and so we started with simpler models including just effect ID and reviewer ID.
+We decided that including team ID and effect ID along with reviewer ID as random effects in the same model would almost certainly lead to model fit problems, and so we started with simpler models including just effect ID and reviewer ID.
 However, even with this simpler structure, our dataset was sparse, with reviewers rating a small number of analyses, resulting in models with singular fit (@sec-convergence-singularity).
 Removing one of the random effects was necessary for the models to converge.
-The models that included the categorical quality rating converged when including reviewer ID, and the models that included the continuous quality rating converged when including effect ID.
+For both models of deviation from the meta-analytic mean explained by categorical or continuous reviewer ratings, we removed the random effect of effect ID, leaving reviewer ID as the only random effect.
 
 2.  We conducted analyses only with the final peer ratings after the opportunity for revision, not with the initial ratings.
-This was because when we recorded the final ratings, they over-wrote the initial ratings, and so we did not have access to those initial values.
+This was because when we recorded the final ratings, the initial ratings were over-written, therefore we did not have access to those initial values.
 :::
 
 The next set of univariate analyses sought to explain deviations from the mean effects based on a measure of the distinctiveness of the set of variables included in each analysis.
@@ -3446,8 +3446,6 @@ Inclusion of collinear predictors does not harm model prediction, and so we did 
 ## Explaining Variation in Deviation Scores
 
 None of the pre-registered predictors explained substantial variation in deviation among submitted statistical effects from the meta-analytic mean (@tbl-model-summary-stats-ratings-cont, @tbl-deviation-rating-estimates).
-Note that the extremely high ${R}_\text{Conditional}^{2}$ values from the analyses of continuous peer ratings as predictors of deviation scores are a function of the random effects, not the fixed effect of interest.
-These high values of the ${R}_\text{Conditional}^{2}$ result from the fact that each effect size was included in the analysis multiple times, to allow comparison with ratings from the multiple peer reviewers who reviewed each analysis, and therefore when we included effect ID as a random effect, the observations within each random effect category were identical.
 
 ```{r}
 #| label: tbl-model-summary-stats-ratings-cont
@@ -4136,7 +4134,7 @@ All authors read and approved the final manuscript.
 ```{r}
 #| label: tbl-grateful-pkg-list
 #| echo: false
-#| tbl-cap: "R packages used to generate this manuscript. Please see the ManyEcoEvo package for a full list of packages used in the analysis pipeline."
+#| tbl-cap: "R packages used to generate this manuscript. Please see the `ManyEcoEvo::` package for a full list of packages used in the analysis pipeline."
 
 # pkgs <- cite_packages(output = "table", out.dir = here::here("ms/"))
 # knitr::kable(pkgs) #NOTE manually edited grateful-refs.bib and updated pkgs below due to bug
