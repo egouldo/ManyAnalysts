@@ -2253,7 +2253,7 @@ We used the Box-Cox transformation on the absolute values of deviation scores to
 We described variation in this dependent variable with both a series of univariate analyses and a multivariate analysis.
 All these analyses were general linear (mixed) models.
 These analyses were secondary to our estimation of variation in effect sizes described above.
-We wished to quantify relationships among variables, but we had no a priori expectation of effect size and made no dichotomous decisions about statistical significance.
+We wished to quantify relationships among variables, but we had no *a priori* expectation of effect size and made no dichotomous decisions about statistical significance.
 
 ::: {#nte-box-weight-deviation .callout-note appearance="simple"}
 ## Additional Explanation:
@@ -2383,7 +2383,7 @@ Also, as described above, any analysis that could not produce an effect that cou
 ## Preregistration Deviation:
 
 Some analysts had difficulty implementing our instructions to derive the out-of-sample predictions, and in some cases (especially for the *Eucalyptus* data), they submitted predictions with implausibly extreme values.
-We believed these values were incorrect and thus made the conservative decision to exclude out-of-sample predictions where the estimates were \> 3 standard deviations from the mean value from the full dataset.
+We believed these values were incorrect and thus made the conservative decision to exclude out-of-sample predictions where the estimates were \> 3 standard deviations from the mean value from the full dataset provided to teams for analysis.
 :::
 
 ::: {.callout-note appearance="simple"}
@@ -2391,9 +2391,9 @@ We believed these values were incorrect and thus made the conservative decision 
 
 **1. Evaluating model fit.**
 
-We evaluated all fitted models using the `performance()` function from the *performance* package [@performance] and the `glance()` function from the *broom.mixed* package [@broommixed].
+We evaluated all fitted models using the `performance::performance()` function from the *performance* package [@performance] and the `glance()` function from the *broom.mixed* package [@broommixed].
 For all models, we calculated the square root of the residual variance (Sigma) and the root mean squared error (RMSE).
-For GLMMs `performance()` calculates the marginal and conditional $R^2$ values as well as the contribution of random effects (ICC), based on Nakagawa et al. [-@nakagawa2017].
+For GLMMs `performance::performance()` calculates the marginal and conditional $R^2$ values as well as the contribution of random effects (ICC), based on Nakagawa et al. [-@nakagawa2017].
 The conditional $R^2$ accounts for both the fixed and random effects, while the marginal $R^2$ considers only the variance of the fixed effects.
 The contribution of random effects is obtained by subtracting the marginal $R^2$ from the conditional $R^2$.
 
@@ -2433,7 +2433,7 @@ We planned for analysts and initiating authors to discuss the limitations, resul
 As described above, due to the large number of recruited analysts and reviewers and the anticipated challenges of receiving and integrating feedback from so many authors, we limited analyst and reviewer participation in the production of the final manuscript to an invitation to call attention to serious problems with the manuscript draft.
 :::
 
-We built an R package, `ManyEcoEvo` to conduct the analyses described in this study [@ManyEcoEvo], which can be downloaded from [https://github.com/egouldo/ManyEcoEvo/](https://github.com/egouldo/ManyEcoEvo) to reproduce our analyses or replicate the analyses described here using alternate datasets. Data cleaning and preparation of analysis-data, as well as the analysis, is conducted in R [@base] reproducibly using the `targets` package [@targets]. This data and analysis pipeline is stored in the `ManyEcoEvo` package repository and its outputs are made available to users of the package when the library is loaded. 
+We built an R package, `ManyEcoEvo::` to conduct the analyses described in this study [@ManyEcoEvo], which can be downloaded from [https://github.com/egouldo/ManyEcoEvo/](https://github.com/egouldo/ManyEcoEvo) to reproduce our analyses or replicate the analyses described here using alternate datasets. Data cleaning and preparation of analysis-data, as well as the analysis, is conducted in R [@base] reproducibly using the `targets` package [@targets]. This data and analysis pipeline is stored in the `ManyEcoEvo::` package repository and its outputs are made available to users of the package when the library is loaded. 
 
 The full manuscript, including further analysis and presentation of results is written in Quarto [@AllaireQuarto2024]. The source code to reproduce the manuscript is hosted at [https://github.com/egouldo/ManyAnalysts/](https://github.com/egouldo/ManyAnalysts/), and the rendered version of the source code may be viewed at [https://egouldo.github.io/ManyAnalysts/](https://egouldo.github.io/ManyAnalysts/). All R packages and their versions used in the production of the manuscript are listed at @sec-sesion-info.
 
@@ -2991,10 +2991,10 @@ plot_forest_yi <- function(data, intercept = TRUE, MA_mean = TRUE){
                        minor_breaks = seq(from = -4.5, to = 1.5, by = 0.5)) +
     NatParksPalettes::scale_color_natparks_d("Glacier") 
   
-  if (intercept == TRUE){
+  if (intercept == TRUE) {
     p <- p + geom_hline(yintercept = 0)
   }
-  if (MA_mean == TRUE){
+  if (MA_mean == TRUE) {
     # p <- p + geom_hline(aes(yintercept = meta_analytic_mean), 
     #                     data = data,
     #                     colour = "#01353D", 
@@ -3577,7 +3577,7 @@ ManyEcoEvo_viz %>%
   gt::cols_label(CI_low = gt::md("95\\%CI")) %>% 
   gt::cols_label(df_error = "df", p = gt::md("*p*")) %>% 
   gt::cols_merge(columns = starts_with("CI_"), 
-                 pattern = "[{1},{2}]") %>% 
+                 pattern = "[{1}, {2}]") %>% 
   gt::cols_move(columns = CI_low, after = SE) %>% 
   gt::opt_stylize(style = 6, color = "gray") %>% 
   gt::fmt(columns = c(Coefficient, SE, starts_with("CI_"), t) ,
@@ -3649,8 +3649,8 @@ alpha_result_ordinal <- review_data %>%
 ```
 
 We obtained reviews from 153 reviewers who reviewed analyses for a mean of `r mean_reviews_by_reviewer` (range `r min_reviews_by_reviewer` - `r max_reviews_by_reviewer`) analysis teams.
-Analyses of the blue tit dataset received a total of `r filter(ArticleReviewSummary, dataset == "blue tit") %>% round_pluck("sum")` reviews, each was reviewed by a mean of `r filter(ArticleReviewSummary, dataset == "blue tit") %>% round_pluck("mean")` (SD `r filter(ArticleReviewSummary, dataset == "blue tit") %>% round_pluck("sd")`, range `r filter(ArticleReviewSummary, dataset == "blue tit") %>% round_pluck("min")`-`r filter(ArticleReviewSummary, dataset == "blue tit") %>% round_pluck("max")`) reviewers.
-Analyses of the *Eucalyptus* dataset received a total of `r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% round_pluck("sum")` reviews, each was reviewed by a mean of `r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% round_pluck("mean")` (SD `r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% round_pluck("sd")`, range `r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% round_pluck("min")`-`r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% round_pluck("max")`) reviewers.
+Analyses of the blue tit dataset received a total of `r filter(ArticleReviewSummary, dataset == "blue tit") %>% round_pluck("sum")` reviews, each was reviewed by a mean of `r filter(ArticleReviewSummary, dataset == "blue tit") %>% round_pluck("mean")` ($\text{SD}$ `r filter(ArticleReviewSummary, dataset == "blue tit") %>% round_pluck("sd")`, range `r filter(ArticleReviewSummary, dataset == "blue tit") %>% round_pluck("min")`-`r filter(ArticleReviewSummary, dataset == "blue tit") %>% round_pluck("max")`) reviewers.
+Analyses of the *Eucalyptus* dataset received a total of `r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% round_pluck("sum")` reviews, each was reviewed by a mean of `r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% round_pluck("mean")` ($\text{SD}$ `r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% round_pluck("sd")`, range `r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% round_pluck("min")`-`r filter(ArticleReviewSummary, dataset == "eucalyptus") %>% round_pluck("max")`) reviewers.
 We tested for inter-rater-reliability to examine how similarly reviewers reviewed each analysis and found approximately no agreement among reviewers.
 When considering continuous ratings, IRR was `r round(alpha_result_continuous$value,2)`, and for categorical ratings, IRR was `r round(alpha_result_ordinal$value, 2)`.
 
@@ -3805,7 +3805,7 @@ Some models of the influence of reviewer ratings on out-of-sample predictions ($
 ### Effect Sizes ($Z_r$)
 
 We employed Sorensen's index to calculate the distinctiveness of the set of predictor variables used in each model (@fig-sorensen-plots).
-The mean Sorensen's score for blue tit analyses was `r filter(SorensenSummary, subset_name == "effects", dataset == "blue tit") %>% round_pluck("mean")` (SD: `r filter(SorensenSummary, subset_name == "effects", dataset == "blue tit") %>% round_pluck("sd")`, range `r filter(SorensenSummary, subset_name == "effects", dataset == "blue tit") %>% round_pluck("min")`-`r filter(SorensenSummary, subset_name == "effects", dataset == "blue tit") %>% round_pluck("max")`), and for *Eucalyptus* analyses was `r filter(SorensenSummary, subset_name == "effects", dataset == "eucalyptus") %>% round_pluck("mean")` (SD: `r filter(SorensenSummary, subset_name == "effects", dataset == "eucalyptus") %>% round_pluck("sd")`, range `r filter(SorensenSummary, subset_name == "effects", dataset == "eucalyptus") %>% round_pluck("min")`-`r filter(SorensenSummary, subset_name == "effects", dataset == "eucalyptus") %>% round_pluck("max")`).
+The mean Sorensen's score for blue tit analyses was `r filter(SorensenSummary, subset_name == "effects", dataset == "blue tit") %>% round_pluck("mean")` ($\text{SD}$: `r filter(SorensenSummary, subset_name == "effects", dataset == "blue tit") %>% round_pluck("sd")`, range `r filter(SorensenSummary, subset_name == "effects", dataset == "blue tit") %>% round_pluck("min")`-`r filter(SorensenSummary, subset_name == "effects", dataset == "blue tit") %>% round_pluck("max")`), and for *Eucalyptus* analyses was `r filter(SorensenSummary, subset_name == "effects", dataset == "eucalyptus") %>% round_pluck("mean")` ($\text{SD}$: `r filter(SorensenSummary, subset_name == "effects", dataset == "eucalyptus") %>% round_pluck("sd")`, range `r filter(SorensenSummary, subset_name == "effects", dataset == "eucalyptus") %>% round_pluck("min")`-`r filter(SorensenSummary, subset_name == "effects", dataset == "eucalyptus") %>% round_pluck("max")`).
 
 We found no meaningful relationship between distinctiveness of variables selected and deviation from the meta-analytic mean (@tbl-deviation-rating-estimates, @fig-sorensen-plots) for either blue tit (mean `r filter(p_cat_bt_tidy, term == "mean_diversity_index") %>% round_pluck("estimate")`, 95$\%$CI `r filter(p_cat_bt_tidy, term == "mean_diversity_index") %>% round_pluck("conf.low")`,`r filter(p_cat_bt_tidy, term == "mean_diversity_index") %>% round_pluck("conf.high")`) or *Eucalyptus* effects (mean `r filter(p_cat_euc_tidy, term == "mean_diversity_index") %>% round_pluck("estimate")`, 95$\%$CI `r filter(p_cat_euc_tidy, term == "mean_diversity_index") %>% round_pluck("conf.low")`,`r filter(p_cat_euc_tidy, term == "mean_diversity_index") %>% round_pluck("conf.high")`).
 
