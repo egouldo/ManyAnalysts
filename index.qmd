@@ -2435,7 +2435,7 @@ As described above, due to the large number of recruited analysts and reviewers 
 
 We built an R package, `ManyEcoEvo::` to conduct the analyses described in this study [@ManyEcoEvo], which can be downloaded from [https://github.com/egouldo/ManyEcoEvo/](https://github.com/egouldo/ManyEcoEvo) to reproduce our analyses or replicate the analyses described here using alternate datasets. Data cleaning and preparation of analysis-data, as well as the analysis, is conducted in R [@base] reproducibly using the `targets` package [@targets]. This data and analysis pipeline is stored in the `ManyEcoEvo::` package repository and its outputs are made available to users of the package when the library is loaded. 
 
-The full manuscript, including further analysis and presentation of results is written in Quarto [@AllaireQuarto2024]. The source code to reproduce the manuscript is hosted at [https://github.com/egouldo/ManyAnalysts/](https://github.com/egouldo/ManyAnalysts/), and the rendered version of the source code may be viewed at [https://egouldo.github.io/ManyAnalysts/](https://egouldo.github.io/ManyAnalysts/). All R packages and their versions used in the production of the manuscript are listed at @sec-sesion-info.
+The full manuscript, including further analysis and presentation of results is written in Quarto [@AllaireQuarto2024]. The source code to reproduce the manuscript is hosted at [https://github.com/egouldo/ManyAnalysts/](https://github.com/egouldo/ManyAnalysts/) [@Gould2024], and the rendered version of the source code may be viewed at [https://egouldo.github.io/ManyAnalysts/](https://egouldo.github.io/ManyAnalysts/). All R packages and their versions used in the production of the manuscript are listed at @sec-sesion-info.
 
 
 # Results
