@@ -1962,7 +1962,7 @@ This degree of variation in peer-reviewed analyses from identical data is striki
 
 In the neuroimaging study, 70 teams evaluated each of the nine different hypotheses with the available fMRI data [@botvinik-nezer2020].
 These 70 teams followed a divergent set of workflows that produced a wide range of results.
-The rate of reporting of statistically significant support for the nine hypotheses ranged from 21$\%$to 84$\%$, and for each hypothesis on average, 20 [correlation of 0.89, @fig-ggpairs-bt] of research teams observed effects that differed substantially from the majority of other teams.
+The rate of reporting of statistically significant support for the nine hypotheses ranged from 21$\%$to 84$\%$, and for each hypothesis on average, 20$\%$ of research teams observed effects that differed substantially from the majority of other teams.
 Some of the variability in results among studies could be explained by analytical decisions such as choice of software package, smoothing function, and parametric versus non-parametric corrections for multiple comparisons.
 However, substantial variability among analyses remained unexplained, and presumably emerged from the many different decisions each analyst made in their long workflows.
 Such variability in results among analyses from this dataset and from the very different red-card dataset suggests that sensitivity of analytical outcome to analytical choices may characterize many distinct fields, as several more recent many-analyst studies also suggest [@huntington-klein2021; @schweinsberg2021; @breznau2022].
